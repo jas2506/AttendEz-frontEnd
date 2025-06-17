@@ -1,10 +1,13 @@
-import { Button } from "@/components/ui/button"
-import Profile from "./projectComponents/Profile.jsx"
+import { Button } from "@/components/ui/button";
+import Profile from "./projectComponents/Profile.jsx";
+import Navbar from "./projectComponents/Navbar.jsx";
 
 function App() {
   return (
-   <Profile/>
-  )
+    <>
+      <Navbar></Navbar>
+    </>
+  );
 }
 
-export default App
+export default App;
