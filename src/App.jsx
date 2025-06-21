@@ -11,12 +11,11 @@ import GPAForm from "./projectComponents/GPAForm.jsx";
 import StudentAttendanceTable from "./projectComponents/StudentAttendanceTable.jsx";
 
 function App() {
-  return <>
-    
+  return (
+    <>
       <Navbar />
-    
-
-  </>;
+    </>
+  );
 }
 
 export default App;
