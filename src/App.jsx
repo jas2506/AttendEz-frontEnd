@@ -9,11 +9,14 @@ import StudentHomepageSubject from "./projectComponents/studentHomepageSubject.j
 import GPAcalccurrent from "./projectComponents/GPAcalccurrent.jsx";
 import GPAForm from "./projectComponents/GPAForm.jsx";
 import StudentAttendanceTable from "./projectComponents/StudentAttendanceTable.jsx";
+import HomepageStudent from "./Pages/HomepageStudent.jsx";
 
 function App() {
   return (
     <>
       <Navbar />
+      <HomepageStudent></HomepageStudent>
+
     </>
   );
 }
