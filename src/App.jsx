@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import Profile from "./projectComponents/Profile.jsx";
 import Timetable from "./projectComponents/Timetable.jsx";
 import DetailedProfile from "./projectComponents/DetailedProfile.jsx";
 import DetailedCalendar from "./projectComponents/DetailedCalendar.jsx";
@@ -12,7 +11,17 @@ import GPAForm from "./projectComponents/GPAForm.jsx";
 import StudentAttendanceTable from "./projectComponents/StudentAttendanceTable.jsx";
 
 function App() {
-  return <></>;
+  return <>
+    <DetailedProfile />
+      <DetailedCalendar />
+      <Navbar />
+      <GPAForm />
+      <GPAcalccurrent />
+      <Timetable />
+      <StudentHomepageSubject />
+      <Profile />
+
+  </>;
 }
 
 export default App;
