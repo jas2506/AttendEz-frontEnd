@@ -29,7 +29,6 @@ function Navbar() {
               />
               <NavItem icon={<CalendarSearch className="w-5 h-5" />} label="Timetable" />
               <NavItem icon={<Pencil className="w-5 h-5" />} label="OD-form" />
-              <NavItem icon={<CalendarDays className="w-5 h-5" />} label="Calendar View" />
               <NavItem icon={<User className="w-5 h-5" />} label="Profile" />
               <NavItem icon={<Calculator className="w-5 h-5" />} label="GPA Calculator" />
               <NavItem icon={<Code className="w-5 h-5" />} label="Devs" />

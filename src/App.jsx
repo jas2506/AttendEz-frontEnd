@@ -12,14 +12,9 @@ import StudentAttendanceTable from "./projectComponents/StudentAttendanceTable.j
 
 function App() {
   return <>
-    <DetailedProfile />
-      <DetailedCalendar />
+    
       <Navbar />
-      <GPAForm />
-      <GPAcalccurrent />
-      <Timetable />
-      <StudentHomepageSubject />
-      <Profile />
+    
 
   </>;
 }
