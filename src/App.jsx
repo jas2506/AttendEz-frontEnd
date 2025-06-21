@@ -7,15 +7,17 @@ import Profile from "./projectComponents/Profile.jsx";
 import Navbar from "./projectComponents/Navbar.jsx";
 import StudentHomepageSubject from "./projectComponents/studentHomepageSubject.jsx";
 import GPAcalccurrent from "./projectComponents/GPAcalccurrent.jsx";
-import GPAForm from "./projectComponents/GPAForm.jsx";
 import StudentAttendanceTable from "./projectComponents/StudentAttendanceTable.jsx";
 import HomepageStudent from "./Pages/HomepageStudent.jsx";
+import CurrentGPAPage from "./Pages/CurrentGPAPage.jsx";
+import CustomGPAcalc from "./Pages/CustomGPAcalc.jsx";
 
 function App() {
   return (
     <>
       <Navbar />
-      <HomepageStudent></HomepageStudent>
+      <CurrentGPAPage></CurrentGPAPage>
+
 
     </>
   );
