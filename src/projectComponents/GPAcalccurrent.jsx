@@ -1,14 +1,12 @@
 import { use, useState } from "react";
 
-function GPAcalccurrent({ subject = "Operating Systems", credits = 3, onGradeChange }) {
+function GPAcalccurrent({ subject, credits, passingfunc }) {
   const [grade, setGrade] = useState("");
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e,subjectt) => {
     const value = e.target.value;
     setGrade(value);
-    if (onGradeChange) {
-      onGradeChange(value);
-    }
+    passingfunc(value,subjectt);
   };
 
   return (
@@ -16,10 +14,10 @@ function GPAcalccurrent({ subject = "Operating Systems", credits = 3, onGradeCha
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 rounded-2xl border border-gray-300 bg-white shadow-md px-6 py-4 max-w-4xl mx-auto transition-shadow hover:shadow-lg">
 
         {/* Subject Name */}
-        <p className="font-bold text-xl text-blue-600">{subject}</p>
+        <p className="font-bold w-1/3 text-xl text-blue-600">{subject}</p>
 
         {/* Credits Display */}
-        <div className="px-4 py-2 rounded-lg border border-blue-500 bg-blue-50 text-blue-700 font-medium text-sm">
+        <div className="px-4 py-2  rounded-lg border border-blue-500 bg-blue-50 text-blue-700 font-medium text-sm">
           Credits: {credits}
         </div>
 
@@ -27,7 +25,7 @@ function GPAcalccurrent({ subject = "Operating Systems", credits = 3, onGradeCha
         <input
           type="text"
           value={grade}
-          onChange={handleInputChange}
+          onChange={(e)=>{handleInputChange(e,subject)}}
           placeholder="Enter grade  (e.g. O, A+, etc.)"
           className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 w-full md:w-1/3"
         />
