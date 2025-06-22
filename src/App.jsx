@@ -11,14 +11,13 @@ import StudentAttendanceTable from "./projectComponents/StudentAttendanceTable.j
 import HomepageStudent from "./Pages/HomepageStudent.jsx";
 import CurrentGPAPage from "./Pages/CurrentGPAPage.jsx";
 import CustomGPAcalc from "./Pages/CustomGPAcalc.jsx";
+import TimetablePage from "./Pages/TimetablePage.jsx";
+import StudentLoginPage from "./Pages/StudentLoginPage.jsx";
 
 function App() {
   return (
     <>
-      <Navbar />
-      <CurrentGPAPage></CurrentGPAPage>
-
-
+      <StudentLoginPage></StudentLoginPage>
     </>
   );
 }

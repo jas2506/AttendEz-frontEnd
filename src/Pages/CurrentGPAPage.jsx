@@ -304,7 +304,7 @@ function CurrentGPAPage() {
         );
       })}
 
-<div className="flex justify-center">
+      <div className="flex justify-center">
         <Popover>
           <PopoverTrigger
             onClick={() => gpacalc(grades, classes)}
@@ -314,7 +314,14 @@ function CurrentGPAPage() {
           </PopoverTrigger>
 
           <PopoverContent className="text-sm font-medium shadow-2xl text-gray-700">
-            {gpa ? <p>Your estimated Gpa is <span className="text-cyan-500">{gpa}</span></p>  : "No data yet."}
+            {gpa ? (
+              <p>
+                Your estimated Gpa is{" "}
+                <span className="text-cyan-500">{gpa}</span>
+              </p>
+            ) : (
+              "No data yet."
+            )}
           </PopoverContent>
         </Popover>
       </div>
