@@ -1,53 +1,175 @@
 import Profile from "./Profile";
-import {Calculator, Code, User, Menu, Home, Pencil, CalendarDays, CalendarSearch, Settings, Info, LogOut, Notebook } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import {
+  Calculator,
+  Code,
+  Menu,
+  Home,
+  Pencil,
+  CalendarSearch,
+  Notebook,
+} from "lucide-react";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-function Navbar() {
+function Navbar({setIsLoggedIn}) {
+  const location = useLocation(); // ✅ get current path
+
+  const details = {
+    email: "saipranav2310324@ssn.edu.in",
+    name: "Saipranav M",
+    registerNumber: "3122235001110",
+    department: "CSE",
+    passout: "2027",
+    course: "Computer Science and Engineering",
+    degree: "B.E",
+    digitalid: "2310324",
+    registeredClasses: ["CSE3H15C"],
+  };
+
   return (
-    <>
-      <div className="h-20 flex items-center justify-between px-4 w-full  bg-blue-500 ">
+    <div className="h-14 flex items-center justify-between px-3 w-full bg-blue-500">
+      {/* Mobile View: Hamburger Sheet */}
+      <div className="block md:hidden">
         <Sheet>
           <SheetTrigger>
-            <Menu className="w-9 h-9 text-white cursor-pointer"></Menu>
+            <Menu className="w-6 h-6 text-white cursor-pointer" />
           </SheetTrigger>
-          <SheetContent side="top" className=" h-fit text-center">
+          <SheetContent side="left" className="h-full text-center">
             <SheetHeader>
               <SheetTitle>Menu</SheetTitle>
             </SheetHeader>
-            <div className="flex flex-col gap-4 items-center">
-              <NavItem icon={<Home className="w-5 h-5" />} label="Home" />
-              <NavItem
-                icon={<Notebook className="w-5 h-5" />}
-                label="Subjects"
-              />
-              <NavItem icon={<CalendarSearch className="w-5 h-5" />} label="Timetable" />
-              <NavItem icon={<Pencil className="w-5 h-5" />} label="OD-form" />
-              <NavItem icon={<CalendarDays className="w-5 h-5" />} label="Calendar View" />
-              <NavItem icon={<User className="w-5 h-5" />} label="Profile" />
-              <NavItem icon={<Calculator className="w-5 h-5" />} label="GPA Calculator" />
-              <NavItem icon={<Code className="w-5 h-5" />} label="Devs" />
+            <div className="flex flex-col gap-4 items-start mt-4">
+              <Link to="/Home">
+                <NavItem
+                  icon={<Home className="w-4 h-4" />}
+                  label="Home"
+                  active={location.pathname === "/Home"}
+                />
+              </Link>
+              <Link to="/Subjects">
+                <NavItem
+                  icon={<Notebook className="w-4 h-4" />}
+                  label="Subjects"
+                  active={location.pathname === "/Subjects"}
+                />
+              </Link>
+              <Link to="/Timetable">
+                <NavItem
+                  icon={<CalendarSearch className="w-4 h-4" />}
+                  label="Timetable"
+                  active={location.pathname === "/Timetable"}
+                />
+              </Link>
+              <Link to="#">
+                <NavItem
+                  icon={<Pencil className="w-4 h-4" />}
+                  label="OD-form"
+                  active={false}
+                />
+              </Link>
+              <Link to="/GPAcalculator">
+                <NavItem
+                  icon={<Calculator className="w-4 h-4" />}
+                  label="GPA Calculator"
+                  active={location.pathname === "/GPAcalculator"}
+                />
+              </Link>
+              <Link to="/CustomGPAcalculator">
+                <NavItem
+                  icon={<Calculator className="w-4 h-4" />}
+                  label="Custom GPA Calculator"
+                  active={location.pathname === "/CustomGPAcalculator"}
+                />
+              </Link>
+              <Link to="#">
+                <NavItem
+                  icon={<Code className="w-4 h-4" />}
+                  label="Devs"
+                  active={false}
+                />
+              </Link>
             </div>
           </SheetContent>
         </Sheet>
-
-        <Profile></Profile>
       </div>
-    </>
+
+      {/* Desktop View */}
+      <div className="hidden md:flex gap-4 text-white items-center">
+        <Link to="/Home">
+          <NavItem
+            icon={<Home className="w-4 h-4" />}
+            label="Home"
+            active={location.pathname === "/Home"}
+          />
+        </Link>
+        <Link to="/Subjects">
+          <NavItem
+            icon={<Notebook className="w-4 h-4" />}
+            label="Subjects"
+            active={location.pathname === "/Subjects"}
+          />
+        </Link>
+        <Link to="/Timetable">
+          <NavItem
+            icon={<CalendarSearch className="w-4 h-4" />}
+            label="Timetable"
+            active={location.pathname === "/Timetable"}
+          />
+        </Link>
+        <Link to="#">
+          <NavItem
+            icon={<Pencil className="w-4 h-4" />}
+            label="OD-form"
+            active={false}
+          />
+        </Link>
+        <Link to="/GPAcalculator">
+          <NavItem
+            icon={<Calculator className="w-4 h-4" />}
+            label="GPA Calculator"
+            active={location.pathname === "/GPAcalculator"}
+          />
+        </Link>
+        <Link to="/CustomGPAcalculator">
+          <NavItem
+            icon={<Calculator className="w-4 h-4" />}
+            label="Custom GPA Calculator"
+            active={location.pathname === "/CustomGPAcalculator"}
+          />
+        </Link>
+        <Link to="#">
+          <NavItem
+            icon={<Code className="w-4 h-4" />}
+            label="Devs"
+            active={false}
+          />
+        </Link>
+      </div>
+
+      {/* Profile */}
+      <Profile det={details} setIsLoggedIn={setIsLoggedIn} />
+    </div>
   );
 }
 
-function NavItem({ icon, label }) {
+function NavItem({ icon, label, active }) {
   return (
-    <button className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md transition">
+    <button
+      className={`flex cursor-pointer items-center gap-1 text-xs px-2 py-1 rounded-md transition 
+        ${
+          active
+            ? "bg-white text-blue-600 font-semibold"
+            : "text-white hover:bg-blue-600"
+        }`}
+    >
       {icon}
-      {label}
+      <span className="inline">{label}</span>
     </button>
   );
 }
