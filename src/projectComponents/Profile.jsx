@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/popover";
 import DetailedProfile from "./DetailedProfile";
 
-function Profile({ det }) {
+function Profile({ det,setIsLoggedIn }) {
   return (
     <>
       <Popover>
@@ -22,7 +22,7 @@ function Profile({ det }) {
           </button>
         </PopoverTrigger>
         <PopoverContent className="w-[400px] p-0">
-          <DetailedProfile details={det}></DetailedProfile>
+          <DetailedProfile details={det} setIsLoggedIn={setIsLoggedIn}></DetailedProfile>
         </PopoverContent>
       </Popover>
     </>

@@ -1,6 +1,17 @@
 import { Button } from "@/components/ui/button";
+import { useNavigate } from 'react-router-dom';
 
-function StudentLoginPage() {
+
+function StudentLoginPage({setIsLoggedIn}) {
+
+  const navigate = useNavigate(); 
+
+
+  function loginclick(){
+    setIsLoggedIn(true);
+    navigate("/Home");
+  }
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-white">
       <div className="bg-white rounded-3xl p-12 shadow-xl border border-gray-100 text-center space-y-8 w-full max-w-md">
@@ -16,7 +27,7 @@ function StudentLoginPage() {
         </div>
 
         <div className="space-y-6">
-          <Button className="group cursor-pointer relative flex items-center justify-center gap-4 px-8 py-4 bg-white text-gray-700 text-base font-medium rounded-full hover:bg-gray-50 transition-all duration-200 w-full border border-gray-200 hover:border-gray-300 hover:shadow-md">
+          <Button onClick={loginclick} className="group cursor-pointer relative flex items-center justify-center gap-4 px-8 py-4 bg-white text-gray-700 text-base font-medium rounded-full hover:bg-gray-50 transition-all duration-200 w-full border border-gray-200 hover:border-gray-300 hover:shadow-md">
             <div className="relative flex items-center gap-4">
               <div className={`transition-transform duration-200 `}>
                 <div className="w-5 h-5 flex items-center justify-center">

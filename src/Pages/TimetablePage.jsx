@@ -105,9 +105,14 @@ function TimetablePage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4">
-      <h1 className="text-3xl font-bold text-center text-blue-800 my-8">
-        Class Schedule
-      </h1>
+      <div className="bg-white p-6 rounded-xl flex flex-col items-center justify-center text-center">
+        <div>
+          <p className="text-2xl font-bold text-blue-700">Timetable</p>
+          <p className="text-sm text-gray-600 mt-1">
+            Weekly Class Schedule
+          </p>
+        </div>
+      </div>
       <LandscapeTimetable timetable={timetableData} />
     </div>
   );
@@ -141,7 +146,7 @@ function LandscapeTimetable({ timetable }) {
     <div className="overflow-x-auto">
       <table className="table-auto border-collapse border w-full text-sm">
         <thead>
-          <tr className="bg-blue-100 text-blue-800">
+          <tr className="bg-blue-50 text-blue-800">
             <th className="border px-4 py-2 text-left">Time</th>
             {days.map((day) => (
               <th key={day} className="border px-4 py-2">
@@ -151,10 +156,10 @@ function LandscapeTimetable({ timetable }) {
           </tr>
         </thead>
         <tbody>
-          {allSlots.map((slotTime) => (
+          {allSlots.map((slotTime,index) => (
             <tr key={slotTime} className="even:bg-gray-50">
               <td className="border px-4 py-2 font-medium text-blue-700">
-                {slotTime}
+                {index+1}
               </td>
               {days.map((day) => {
                 const cls =

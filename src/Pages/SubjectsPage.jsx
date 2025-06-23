@@ -477,7 +477,7 @@ function SubjectsPage() {
     <div className="max-w-4xl mx-auto p-6 bg-white">
       <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
         {/* Header */}
-        <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+        <div className="bg-blue-50 px-6 py-4 border-b border-gray-200">
           <h2 className="text-2xl font-semibold text-gray-800">Attendance</h2>
           <p className="text-gray-600 text-sm mt-1">Course Wise Attendance</p>
         </div>
@@ -485,7 +485,7 @@ function SubjectsPage() {
         {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-blue-50 border-b border-gray-200">
               <tr>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
                   Subject Name
@@ -507,7 +507,7 @@ function SubjectsPage() {
                 const isLowAttendance = parseFloat(percentage) < 75;
                 
                 return (
-                  <tr key={index} className="hover:bg-gray-50 transition-colors duration-150">
+                  <tr key={index} className="hover:bg-blue-50 transition-colors duration-150">
                     <td className="px-6 py-4">
                       <div>
                         <div className="text-sm font-medium text-gray-900">{subject.className}</div>
@@ -543,7 +543,7 @@ function SubjectsPage() {
         </div>
 
         {/* Average Attendance */}
-        <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
+        <div className="bg-blue-50 px-6 py-4 border-t border-gray-200">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-semibold text-gray-800">Overall Average Attendance</h3>

@@ -1,4 +1,5 @@
 import Profile from "./Profile";
+import { Link, useLocation } from "react-router-dom";
 import {
   Calculator,
   Code,
@@ -16,8 +17,9 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-function Navbar() {
-  //get details from api
+function Navbar({setIsLoggedIn}) {
+  const location = useLocation(); // ✅ get current path
+
   const details = {
     email: "saipranav2310324@ssn.edu.in",
     name: "Saipranav M",
@@ -43,51 +45,129 @@ function Navbar() {
               <SheetTitle>Menu</SheetTitle>
             </SheetHeader>
             <div className="flex flex-col gap-4 items-start mt-4">
-              <NavItem icon={<Home className="w-4 h-4" />} label="Home" />
-              <NavItem
-                icon={<Notebook className="w-4 h-4" />}
-                label="Subjects"
-              />
-              <NavItem
-                icon={<CalendarSearch className="w-4 h-4" />}
-                label="Timetable"
-              />
-              <NavItem icon={<Pencil className="w-4 h-4" />} label="OD-form" />
-              <NavItem
-                icon={<Calculator className="w-4 h-4" />}
-                label="GPA Calculator"
-              />
-              <NavItem icon={<Code className="w-4 h-4" />} label="Devs" />
+              <Link to="/Home">
+                <NavItem
+                  icon={<Home className="w-4 h-4" />}
+                  label="Home"
+                  active={location.pathname === "/Home"}
+                />
+              </Link>
+              <Link to="/Subjects">
+                <NavItem
+                  icon={<Notebook className="w-4 h-4" />}
+                  label="Subjects"
+                  active={location.pathname === "/Subjects"}
+                />
+              </Link>
+              <Link to="/Timetable">
+                <NavItem
+                  icon={<CalendarSearch className="w-4 h-4" />}
+                  label="Timetable"
+                  active={location.pathname === "/Timetable"}
+                />
+              </Link>
+              <Link to="#">
+                <NavItem
+                  icon={<Pencil className="w-4 h-4" />}
+                  label="OD-form"
+                  active={false}
+                />
+              </Link>
+              <Link to="/GPAcalculator">
+                <NavItem
+                  icon={<Calculator className="w-4 h-4" />}
+                  label="GPA Calculator"
+                  active={location.pathname === "/GPAcalculator"}
+                />
+              </Link>
+              <Link to="/CustomGPAcalculator">
+                <NavItem
+                  icon={<Calculator className="w-4 h-4" />}
+                  label="Custom GPA Calculator"
+                  active={location.pathname === "/CustomGPAcalculator"}
+                />
+              </Link>
+              <Link to="#">
+                <NavItem
+                  icon={<Code className="w-4 h-4" />}
+                  label="Devs"
+                  active={false}
+                />
+              </Link>
             </div>
           </SheetContent>
         </Sheet>
       </div>
 
-      {/* Desktop View: Horizontal Nav */}
+      {/* Desktop View */}
       <div className="hidden md:flex gap-4 text-white items-center">
-        <NavItem icon={<Home className="w-4 h-4" />} label="Home" />
-        <NavItem icon={<Notebook className="w-4 h-4" />} label="Subjects" />
-        <NavItem
-          icon={<CalendarSearch className="w-4 h-4" />}
-          label="Timetable"
-        />
-        <NavItem icon={<Pencil className="w-4 h-4" />} label="OD-form" />
-        <NavItem
-          icon={<Calculator className="w-4 h-4" />}
-          label="GPA Calculator"
-        />
-        <NavItem icon={<Code className="w-4 h-4" />} label="Devs" />
+        <Link to="/Home">
+          <NavItem
+            icon={<Home className="w-4 h-4" />}
+            label="Home"
+            active={location.pathname === "/Home"}
+          />
+        </Link>
+        <Link to="/Subjects">
+          <NavItem
+            icon={<Notebook className="w-4 h-4" />}
+            label="Subjects"
+            active={location.pathname === "/Subjects"}
+          />
+        </Link>
+        <Link to="/Timetable">
+          <NavItem
+            icon={<CalendarSearch className="w-4 h-4" />}
+            label="Timetable"
+            active={location.pathname === "/Timetable"}
+          />
+        </Link>
+        <Link to="#">
+          <NavItem
+            icon={<Pencil className="w-4 h-4" />}
+            label="OD-form"
+            active={false}
+          />
+        </Link>
+        <Link to="/GPAcalculator">
+          <NavItem
+            icon={<Calculator className="w-4 h-4" />}
+            label="GPA Calculator"
+            active={location.pathname === "/GPAcalculator"}
+          />
+        </Link>
+        <Link to="/CustomGPAcalculator">
+          <NavItem
+            icon={<Calculator className="w-4 h-4" />}
+            label="Custom GPA Calculator"
+            active={location.pathname === "/CustomGPAcalculator"}
+          />
+        </Link>
+        <Link to="#">
+          <NavItem
+            icon={<Code className="w-4 h-4" />}
+            label="Devs"
+            active={false}
+          />
+        </Link>
       </div>
 
       {/* Profile */}
-      <Profile det={details} />
+      <Profile det={details} setIsLoggedIn={setIsLoggedIn} />
     </div>
   );
 }
 
-function NavItem({ icon, label }) {
+function NavItem({ icon, label, active }) {
   return (
-    <button className="flex items-center gap-1 text-xs hover:bg-gray-200 px-2 py-1 rounded-md transition md:hover:bg-blue-600">
+    <button
+      className={`flex cursor-pointer items-center gap-1 text-xs px-2 py-1 rounded-md transition 
+        ${
+          active
+            ? "bg-white text-blue-600 font-semibold"
+            : "text-white hover:bg-blue-600"
+        }`}
+    >
       {icon}
       <span className="inline">{label}</span>
     </button>

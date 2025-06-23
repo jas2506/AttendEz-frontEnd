@@ -1,10 +1,17 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Mail, BadgeInfo, User2 } from "lucide-react";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
+export default function DetailedProfile({ details, setIsLoggedIn }) {
+  const navigate = useNavigate();
 
-export default function DetailedProfile({ details }) {
+  function Logoutfunc() {
+    setIsLoggedIn(false);
+
+    navigate("/");
+  }
   return (
     <Card className="w-full p-4">
       <CardContent className="flex flex-col items-center space-y-4">
@@ -34,10 +41,14 @@ export default function DetailedProfile({ details }) {
           />
         </div>
       </CardContent>
-      <Button variant="ghost" className="hover:bg-gray-200">Log out</Button>
-      
+      <Button
+        onClick={Logoutfunc}
+        variant="ghost"
+        className="hover:bg-gray-200 cursor-pointer"
+      >
+        Log out
+      </Button>
     </Card>
-
   );
 }
 
