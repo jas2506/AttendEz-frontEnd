@@ -12,7 +12,10 @@ function FacultyProfile({ det }) {
       <Popover>
         <PopoverTrigger>
           <button
-            className="border border-white m-2 cursor-pointer rounded-2xl px-3 py-1.5 flex items-center gap-2 bg-blue-500 hover:bg-blue-600 transition-colors duration-300"
+            className="m-2 cursor-pointer rounded-2xl px-3 py-1.5 flex items-center gap-2 
+                       bg-gradient-to-r from-blue-600 to-indigo-600 
+                       hover:from-blue-700 hover:to-indigo-700 
+                       transition-colors duration-300 hover:shadow-xl border border-white"
           >
             <User className="w-4 h-4 text-white" />
             <div className="text-white font-mono text-left leading-tight">
@@ -22,7 +25,7 @@ function FacultyProfile({ det }) {
           </button>
         </PopoverTrigger>
         <PopoverContent className="w-[400px] p-0">
-          <FacultyDetailedProfile details={det} ></FacultyDetailedProfile>
+          <FacultyDetailedProfile details={det} />
         </PopoverContent>
       </Popover>
     </>

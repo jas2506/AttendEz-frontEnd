@@ -9,7 +9,7 @@ import {
   Pencil,
   CalendarSearch,
   Notebook,
-  User
+  User,
 } from "lucide-react";
 import {
   Sheet,
@@ -36,7 +36,7 @@ function FacultyNavbar_j() {
 
   return (
     <>
-      <div className="h-14 flex items-center justify-between px-3 w-full bg-blue-500">
+      <div className="h-14 flex items-center justify-between px-3 w-full bg-gradient-to-r from-blue-600 to-indigo-600 shadow-xl">
         {/* Mobile View: Hamburger Sheet */}
         <div className="block md:hidden">
           <Sheet>
@@ -49,11 +49,26 @@ function FacultyNavbar_j() {
               </SheetHeader>
               <div className="flex flex-col gap-4 items-start mt-4">
                 <NavItem icon={<Home className="w-4 h-4" />} label="Home" />
-                <NavItem icon={<Notebook className="w-4 h-4" />} label="Subjects Handled" />
-                <NavItem icon={<CalendarSearch className="w-4 h-4" />} label="Faculty Timetable" />
-                <NavItem icon={<Pencil className="w-4 h-4" />} label="Approve OD" />
-                <NavItem icon={<Presentation className="w-4 h-4" />} label="Mentor View" />
-                <NavItem icon={<Users className="w-4 h-4" />} label="Class Advisor View" />
+                <NavItem
+                  icon={<Notebook className="w-4 h-4" />}
+                  label="Subjects Handled"
+                />
+                <NavItem
+                  icon={<CalendarSearch className="w-4 h-4" />}
+                  label="Faculty Timetable"
+                />
+                <NavItem
+                  icon={<Pencil className="w-4 h-4" />}
+                  label="Approve OD"
+                />
+                <NavItem
+                  icon={<Presentation className="w-4 h-4" />}
+                  label="Mentor View"
+                />
+                <NavItem
+                  icon={<Users className="w-4 h-4" />}
+                  label="Class Advisor View"
+                />
                 <NavItem icon={<Code className="w-4 h-4" />} label="Devs" />
               </div>
             </SheetContent>
@@ -63,11 +78,23 @@ function FacultyNavbar_j() {
         {/* Desktop View */}
         <div className="hidden md:flex gap-4 text-white items-center">
           <NavItem icon={<Home className="w-4 h-4" />} label="Home" />
-          <NavItem icon={<Notebook className="w-4 h-4" />} label="Subjects Handled" />
-          <NavItem icon={<CalendarSearch className="w-4 h-4" />} label="Faculty Timetable" />
+          <NavItem
+            icon={<Notebook className="w-4 h-4" />}
+            label="Subjects Handled"
+          />
+          <NavItem
+            icon={<CalendarSearch className="w-4 h-4" />}
+            label="Faculty Timetable"
+          />
           <NavItem icon={<Pencil className="w-4 h-4" />} label="Approve OD" />
-          <NavItem icon={<Presentation className="w-4 h-4" />} label="Mentor View" />
-          <NavItem icon={<User className="w-4 h-4" />} label="Class Advisor View" />
+          <NavItem
+            icon={<Presentation className="w-4 h-4" />}
+            label="Mentor View"
+          />
+          <NavItem
+            icon={<User className="w-4 h-4" />}
+            label="Class Advisor View"
+          />
           <NavItem icon={<Code className="w-4 h-4" />} label="Devs" />
         </div>
 
@@ -80,7 +107,18 @@ function FacultyNavbar_j() {
 
 function NavItem({ icon, label }) {
   return (
-    <button className="cursor-pointer hover:bg-blue-600 flex items-center gap-2 text-sm font-medium px-3 py-1.5 rounded-md transition text-white">
+    <button
+      className="cursor-pointer 
+                 flex items-center gap-2 
+                 text-sm font-medium 
+                 px-3 py-1.5 
+                 rounded-md 
+                 text-white 
+                 transition-all duration-200 
+                 hover:bg-white/10 
+                 hover:shadow 
+                 hover:scale-[1.02]"
+    >
       {icon}
       <span>{label}</span>
     </button>
