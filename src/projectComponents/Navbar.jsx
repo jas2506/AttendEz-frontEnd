@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/sheet";
 
 function Navbar({setIsLoggedIn}) {
-  const location = useLocation(); // ✅ get current path
+  const location = useLocation(); 
 
   const details = {
     email: "saipranav2310324@ssn.edu.in",
