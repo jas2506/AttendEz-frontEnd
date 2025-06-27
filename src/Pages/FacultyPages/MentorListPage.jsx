@@ -330,18 +330,30 @@ function getStudentSummaries(apiValue) {
 }
 
 const studentSummaries = getStudentSummaries(apiValue);
+
 function MentorListPage() {
   return (
-    <div className="space-y-6 w-full max-w-5xl px-4">
-      {studentSummaries.map((student, index) => (
-        <FacultyStudentView_g
-          key={index}
-          name={student.name}
-          details={student.details}
-          percentage={student.percentage}
-          onViewDetails={() => console.log("Details of:", student.details)}
-        />
-      ))}
+    <div className="min-h-screen bg-gray-50 py-6">
+      {/* Header */}
+      <div className="flex items-center justify-between px-6 pb-6 max-w-5xl mx-auto">
+        <h1 className="text-2xl font-bold text-indigo-700">
+          Mentor: <span className="text-black">Dr. Pranav R</span>
+        </h1>
+        <h2 className="text-xl font-semibold text-gray-700">Section: B3</h2>
+      </div>
+
+      {/* Student Cards */}
+      <div className="space-y-6 w-full max-w-5xl px-4 mx-auto">
+        {studentSummaries.map((student, index) => (
+          <FacultyStudentView_g
+            key={index}
+            name={student.name}
+            details={student.details}
+            percentage={student.percentage}
+            onViewDetails={() => console.log("Details of:", student.details)}
+          />
+        ))}
+      </div>
     </div>
   );
 }
