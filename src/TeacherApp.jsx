@@ -9,7 +9,6 @@ import FacultyLogin from "./Pages/FacultyPages/FacultyLogin";
 import MentorListPage from "./Pages/FacultyPages/MentorListPage";
 import DevsPage from "./Pages/DevsPage";
 import { useState } from "react";
-
 import {
   BrowserRouter as Router,
   Routes,
@@ -19,7 +18,7 @@ import {
 
 function TeacherApp() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+  
   return (
     <>
       <Router>
@@ -27,9 +26,14 @@ function TeacherApp() {
         <Routes>
           <Route
             path="/"
-            element={<FacultyLogin setIsLoggedIn={setIsLoggedIn} />}
+            element={
+              isLoggedIn ? (
+                <Navigate to="/FacultyHomepage" />
+              ) : (
+                <FacultyLogin setIsLoggedIn={setIsLoggedIn} />
+              )
+            }
           />
-
           {isLoggedIn ? (
             <>
               <Route path="/FacultyHomepage" element={<FacultyHomepage />} />
@@ -44,6 +48,7 @@ function TeacherApp() {
               <Route path="/MentorView" element={<MentorListPage />} />
               <Route path="/CreateClass" element={<FacultyCreateClassPage />} />
               <Route path="/Devs" element={<DevsPage />} />
+              <Route path="*" element={<Navigate to="/FacultyHomepage" />} />
             </>
           ) : (
             <Route path="*" element={<Navigate to="/" />} />

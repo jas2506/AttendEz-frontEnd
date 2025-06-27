@@ -40,8 +40,8 @@ function FacultyLogin({ setIsLoggedIn }) {
 
         <CardFooter className="flex flex-col gap-4">
           <Button
-            onClick={LoginClick()}
-            className="w-full bg-blue-600 text-white hover:bg-blue-700"
+            onClick={LoginClick}
+            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white cursor-pointer hover:bg-indigo-900 "
           >
             Log in
           </Button>

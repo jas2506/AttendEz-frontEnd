@@ -289,8 +289,7 @@ function SubjectsHandledPage() {
   const subs = getFacultySubjects(tt);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 md:p-10">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto px-4 py-6">
         {/* Header */}
         <div className="bg-white border border-gray-200 shadow-lg rounded-2xl overflow-hidden mb-6">
           <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
@@ -321,7 +320,6 @@ function SubjectsHandledPage() {
           </p>
         )}
       </div>
-    </div>
   );
 }
 

@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
-import {
-  Keyboard,
-  Calendar,
-  Clock,
-  User
-} from "lucide-react";
+import { Keyboard, Calendar, Clock, User } from "lucide-react";
 import FacultyHomepageComponent from "../../projectComponents/facultyComponents/FacultyHomepageComponent";
 
 function FacultyHomepage() {
@@ -30,260 +25,256 @@ function FacultyHomepage() {
   };
 
   const tt = {
-    "message": "Timetable refreshed successfully",
-    "timetable": {
-        "classDetails": {
-            "ELE2H22A": {
-                "facultyEmail": "saipranav2310324@ssn.edu.in",
-                "classCode": "ELE2H22A",
-                "passoutYear": "2027",
-                "credits": "4",
-                "className": "IMAGE ANALYSIS",
-                "facultyName": "Dr. Saipranav",
-                "department": "CSE",
-                "regNumbers": [
-                    "3122235001110",
-                    "3122235001087",
-                    "3122235001008"
-                ],
-                "groupCode": "CSEELE2H22A2027"
-            },
-            "CSE2704B": {
-                "facultyEmail": "saipranav2310324@ssn.edu.in",
-                "classCode": "CSE2704B",
-                "passoutYear": "2027",
-                "credits": "4",
-                "className": "COA",
-                "facultyName": "Dr. Saipranav",
-                "department": "CSE",
-                "regNumbers": [
-                    "3122235001110",
-                    "3122235001087",
-                    "3122225001002",
-                    "3122225001003",
-                    "3122235001004",
-                    "3122215001006",
-                    "3122215001007"
-                ],
-                "groupCode": "CSE2027B"
-            },
-            "CSE2703B": {
-                "facultyEmail": "saipranav2310324@ssn.edu.in",
-                "classCode": "CSE2703B",
-                "passoutYear": "2027",
-                "credits": "4",
-                "className": "COA",
-                "facultyName": "Dr. Saipranav",
-                "department": "CSE",
-                "regNumbers": [
-                    "3122235001110",
-                    "3122235001087",
-                    "3122225001002",
-                    "3122225001003",
-                    "3122235001004",
-                    "3122215001006",
-                    "3122215001007"
-                ],
-                "groupCode": "CSE2027B"
-            },
-            "CSE2702B": {
-                "facultyEmail": "saipranav2310324@ssn.edu.in",
-                "classCode": "CSE2702B",
-                "passoutYear": "2027",
-                "credits": "4",
-                "className": "COA",
-                "facultyName": "Dr. Saipranav",
-                "department": "CSE",
-                "regNumbers": [
-                    "3122235001110",
-                    "3122235001087",
-                    "3122225001002",
-                    "3122225001003",
-                    "3122235001004",
-                    "3122215001006",
-                    "3122215001007"
-                ],
-                "groupCode": "CSE2027B"
-            },
-            "CSE2701B": {
-                "facultyEmail": "saipranav2310324@ssn.edu.in",
-                "classCode": "CSE2701B",
-                "passoutYear": "2027",
-                "credits": "4",
-                "className": "COA",
-                "facultyName": "Dr. Saipranav",
-                "department": "CSE",
-                "regNumbers": [
-                    "3122235001110",
-                    "3122235001087",
-                    "3122225001002",
-                    "3122225001003",
-                    "3122235001004",
-                    "3122215001006",
-                    "3122215001007"
-                ],
-                "groupCode": "CSE2027B"
-            },
-            "CSE2705B": {
-                "facultyEmail": "saipranav2310324@ssn.edu.in",
-                "classCode": "CSE2705B",
-                "passoutYear": "2027",
-                "credits": "4",
-                "className": "COA",
-                "facultyName": "Dr. Saipranav",
-                "department": "CSE",
-                "regNumbers": [
-                    "3122235001110",
-                    "3122235001087",
-                    "3122225001002",
-                    "3122225001003",
-                    "3122235001004",
-                    "3122215001006",
-                    "3122215001007"
-                ],
-                "groupCode": "CSE2027B"
-            }
+    message: "Timetable refreshed successfully",
+    timetable: {
+      classDetails: {
+        ELE2H22A: {
+          facultyEmail: "saipranav2310324@ssn.edu.in",
+          classCode: "ELE2H22A",
+          passoutYear: "2027",
+          credits: "4",
+          className: "IMAGE ANALYSIS",
+          facultyName: "Dr. Saipranav",
+          department: "CSE",
+          regNumbers: ["3122235001110", "3122235001087", "3122235001008"],
+          groupCode: "CSEELE2H22A2027",
         },
-        "timetable": {
-            "Monday": [
-                {
-                    "classCode": "CSE2701B",
-                    "startTime": "09:00",
-                    "durationMinutes": 50
-                },
-                {
-                    "classCode": "CSE2702B",
-                    "startTime": "10:00",
-                    "durationMinutes": 50
-                },
-                {
-                    "classCode": "CSE2703B",
-                    "startTime": "11:00",
-                    "durationMinutes": 50
-                },
-                {
-                    "classCode": "CSE2704B",
-                    "startTime": "12:00",
-                    "durationMinutes": 50
-                },
-                {
-                    "classCode": "ELE2H22A",
-                    "startTime": "14:00",
-                    "durationMinutes": 100
-                }
-            ],
-            "Thursday": [
-                {
-                    "classCode": "CSE2701B",
-                    "startTime": "12:00",
-                    "durationMinutes": 50
-                },
-                {
-                    "classCode": "CSE2703B",
-                    "startTime": "09:00",
-                    "durationMinutes": 50
-                },
-                {
-                    "classCode": "CSE2704B",
-                    "startTime": "10:00",
-                    "durationMinutes": 50
-                },
-                {
-                    "classCode": "CSE2705B",
-                    "startTime": "11:00",
-                    "durationMinutes": 50
-                },
-                {
-                    "classCode": "ELE2H22A",
-                    "startTime": "14:00",
-                    "durationMinutes": 50
-                }
-            ],
-            "Friday": [
-                {
-                    "classCode": "CSE2702B",
-                    "startTime": "09:00",
-                    "durationMinutes": 50
-                },
-                {
-                    "classCode": "CSE2703B",
-                    "startTime": "10:00",
-                    "durationMinutes": 50
-                },
-                {
-                    "classCode": "CSE2704B",
-                    "startTime": "11:00",
-                    "durationMinutes": 50
-                },
-                {
-                    "classCode": "CSE2705B",
-                    "startTime": "12:00",
-                    "durationMinutes": 50
-                },
-                {
-                    "classCode": "ELE2H22A",
-                    "startTime": "14:00",
-                    "durationMinutes": 100
-                }
-            ],
-            "Wednesday": [
-                {
-                    "classCode": "CSE2701B",
-                    "startTime": "11:00",
-                    "durationMinutes": 50
-                },
-                {
-                    "classCode": "CSE2702B",
-                    "startTime": "12:00",
-                    "durationMinutes": 50
-                },
-                {
-                    "classCode": "CSE2704B",
-                    "startTime": "09:00",
-                    "durationMinutes": 50
-                },
-                {
-                    "classCode": "CSE2705B",
-                    "startTime": "10:00",
-                    "durationMinutes": 50
-                },
-                {
-                    "classCode": "ELE2H22A",
-                    "startTime": "14:00",
-                    "durationMinutes": 100
-                }
-            ],
-            "Tuesday": [
-                {
-                    "classCode": "CSE2701B",
-                    "startTime": "10:00",
-                    "durationMinutes": 50
-                },
-                {
-                    "classCode": "CSE2702B",
-                    "startTime": "11:00",
-                    "durationMinutes": 50
-                },
-                {
-                    "classCode": "CSE2703B",
-                    "startTime": "12:00",
-                    "durationMinutes": 50
-                },
-                {
-                    "classCode": "CSE2705B",
-                    "startTime": "09:00",
-                    "durationMinutes": 50
-                },
-                {
-                    "classCode": "ELE2H22A",
-                    "startTime": "14:00",
-                    "durationMinutes": 50
-                }
-            ]
-        }
+        CSE2704B: {
+          facultyEmail: "saipranav2310324@ssn.edu.in",
+          classCode: "CSE2704B",
+          passoutYear: "2027",
+          credits: "4",
+          className: "COA",
+          facultyName: "Dr. Saipranav",
+          department: "CSE",
+          regNumbers: [
+            "3122235001110",
+            "3122235001087",
+            "3122225001002",
+            "3122225001003",
+            "3122235001004",
+            "3122215001006",
+            "3122215001007",
+          ],
+          groupCode: "CSE2027B",
+        },
+        CSE2703B: {
+          facultyEmail: "saipranav2310324@ssn.edu.in",
+          classCode: "CSE2703B",
+          passoutYear: "2027",
+          credits: "4",
+          className: "COA",
+          facultyName: "Dr. Saipranav",
+          department: "CSE",
+          regNumbers: [
+            "3122235001110",
+            "3122235001087",
+            "3122225001002",
+            "3122225001003",
+            "3122235001004",
+            "3122215001006",
+            "3122215001007",
+          ],
+          groupCode: "CSE2027B",
+        },
+        CSE2702B: {
+          facultyEmail: "saipranav2310324@ssn.edu.in",
+          classCode: "CSE2702B",
+          passoutYear: "2027",
+          credits: "4",
+          className: "COA",
+          facultyName: "Dr. Saipranav",
+          department: "CSE",
+          regNumbers: [
+            "3122235001110",
+            "3122235001087",
+            "3122225001002",
+            "3122225001003",
+            "3122235001004",
+            "3122215001006",
+            "3122215001007",
+          ],
+          groupCode: "CSE2027B",
+        },
+        CSE2701B: {
+          facultyEmail: "saipranav2310324@ssn.edu.in",
+          classCode: "CSE2701B",
+          passoutYear: "2027",
+          credits: "4",
+          className: "COA",
+          facultyName: "Dr. Saipranav",
+          department: "CSE",
+          regNumbers: [
+            "3122235001110",
+            "3122235001087",
+            "3122225001002",
+            "3122225001003",
+            "3122235001004",
+            "3122215001006",
+            "3122215001007",
+          ],
+          groupCode: "CSE2027B",
+        },
+        CSE2705B: {
+          facultyEmail: "saipranav2310324@ssn.edu.in",
+          classCode: "CSE2705B",
+          passoutYear: "2027",
+          credits: "4",
+          className: "COA",
+          facultyName: "Dr. Saipranav",
+          department: "CSE",
+          regNumbers: [
+            "3122235001110",
+            "3122235001087",
+            "3122225001002",
+            "3122225001003",
+            "3122235001004",
+            "3122215001006",
+            "3122215001007",
+          ],
+          groupCode: "CSE2027B",
+        },
+      },
+      timetable: {
+        Monday: [
+          {
+            classCode: "CSE2701B",
+            startTime: "09:00",
+            durationMinutes: 50,
+          },
+          {
+            classCode: "CSE2702B",
+            startTime: "10:00",
+            durationMinutes: 50,
+          },
+          {
+            classCode: "CSE2703B",
+            startTime: "11:00",
+            durationMinutes: 50,
+          },
+          {
+            classCode: "CSE2704B",
+            startTime: "12:00",
+            durationMinutes: 50,
+          },
+          {
+            classCode: "ELE2H22A",
+            startTime: "14:00",
+            durationMinutes: 100,
+          },
+        ],
+        Thursday: [
+          {
+            classCode: "CSE2701B",
+            startTime: "12:00",
+            durationMinutes: 50,
+          },
+          {
+            classCode: "CSE2703B",
+            startTime: "09:00",
+            durationMinutes: 50,
+          },
+          {
+            classCode: "CSE2704B",
+            startTime: "10:00",
+            durationMinutes: 50,
+          },
+          {
+            classCode: "CSE2705B",
+            startTime: "11:00",
+            durationMinutes: 50,
+          },
+          {
+            classCode: "ELE2H22A",
+            startTime: "14:00",
+            durationMinutes: 50,
+          },
+        ],
+        Friday: [
+          {
+            classCode: "CSE2702B",
+            startTime: "09:00",
+            durationMinutes: 50,
+          },
+          {
+            classCode: "CSE2703B",
+            startTime: "10:00",
+            durationMinutes: 50,
+          },
+          {
+            classCode: "CSE2704B",
+            startTime: "11:00",
+            durationMinutes: 50,
+          },
+          {
+            classCode: "CSE2705B",
+            startTime: "12:00",
+            durationMinutes: 50,
+          },
+          {
+            classCode: "ELE2H22A",
+            startTime: "14:00",
+            durationMinutes: 100,
+          },
+        ],
+        Wednesday: [
+          {
+            classCode: "CSE2701B",
+            startTime: "11:00",
+            durationMinutes: 50,
+          },
+          {
+            classCode: "CSE2702B",
+            startTime: "12:00",
+            durationMinutes: 50,
+          },
+          {
+            classCode: "CSE2704B",
+            startTime: "09:00",
+            durationMinutes: 50,
+          },
+          {
+            classCode: "CSE2705B",
+            startTime: "10:00",
+            durationMinutes: 50,
+          },
+          {
+            classCode: "ELE2H22A",
+            startTime: "14:00",
+            durationMinutes: 100,
+          },
+        ],
+        Tuesday: [
+          {
+            classCode: "CSE2701B",
+            startTime: "10:00",
+            durationMinutes: 50,
+          },
+          {
+            classCode: "CSE2702B",
+            startTime: "11:00",
+            durationMinutes: 50,
+          },
+          {
+            classCode: "CSE2703B",
+            startTime: "12:00",
+            durationMinutes: 50,
+          },
+          {
+            classCode: "CSE2705B",
+            startTime: "09:00",
+            durationMinutes: 50,
+          },
+          {
+            classCode: "ELE2H22A",
+            startTime: "14:00",
+            durationMinutes: 50,
+          },
+        ],
+      },
     },
-    "status": "S"
-};
+    status: "S",
+  };
 
   function getTodaySchedule(data) {
     const days = [
@@ -295,7 +286,8 @@ function FacultyHomepage() {
       "Friday",
       "Saturday",
     ];
-    const today = days[new Date().getDay()];
+    // const today = days[new Date().getDay()];
+    const today = "Monday";
     const timetableToday = data.timetable.timetable[today];
     const classDetails = data.timetable.classDetails;
 
@@ -357,8 +349,12 @@ function FacultyHomepage() {
         {/* Substitution Code Section */}
         <div className="bg-white border border-gray-200 shadow-lg rounded-2xl p-4">
           <div className="mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">Substitution Code</h2>
-            <p className="text-gray-600 text-sm">Enter Code for Substitution if any</p>
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">
+              Substitution Code
+            </h2>
+            <p className="text-gray-600 text-sm">
+              Enter Code for Substitution if any
+            </p>
           </div>
 
           <div className="flex flex-col md:flex-row items-center gap-4">
@@ -383,7 +379,9 @@ function FacultyHomepage() {
                 <Clock className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">Today's Schedule</h2>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Today's Schedule
+                </h2>
                 <p className="text-gray-600 text-sm">Your classes for today</p>
               </div>
             </div>
@@ -395,8 +393,12 @@ function FacultyHomepage() {
                 <div className="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Calendar className="w-8 h-8 text-gray-400" />
                 </div>
-                <p className="text-gray-500 text-base font-medium">No classes scheduled for today</p>
-                <p className="text-gray-400 text-sm mt-1">Enjoy your free day!</p>
+                <p className="text-gray-500 text-base font-medium">
+                  No classes scheduled for today
+                </p>
+                <p className="text-gray-400 text-sm mt-1">
+                  Enjoy your free day!
+                </p>
               </div>
             ) : (
               <div className="space-y-4">
