@@ -2,12 +2,17 @@ import FacultyNavbar_j from "./projectComponents/facultyComponents/facultyNavbar
 import FacultyHomepageComponent from "./projectComponents/facultyComponents/FacultyHomepageComponent";
 import FacultyTransfersubjectComp from "./projectComponents/facultyComponents/FacultyTransfersubjectComp";
 import FacultyHomepage from "./Pages/FacultyPages/FacultyHomepage";
+import SubjectsHandledPage from "./Pages/FacultyPages/SubjectsHandledPage";
+import FacultyTimetablePage from "./Pages/FacultyPages/FacultyTimetablePage";
 
 function TeacherTest() {
+  
+  
+
   return (
     <>
       <FacultyNavbar_j />
-      <FacultyHomepage></FacultyHomepage>
+      <SubjectsHandledPage></SubjectsHandledPage>
     </>
   );
 }

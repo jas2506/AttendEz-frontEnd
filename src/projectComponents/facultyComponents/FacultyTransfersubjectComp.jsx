@@ -1,17 +1,11 @@
 import { BookOpen, Users, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-function FacultyTransfersubjectComp() {
-  const classdetails = {
-    className: "COA",
-    section: "CSE-B",
-    year: "UG-2027",
-    start: "09:00",
-    durationMinutes: 50,
-  };
+function FacultyTransfersubjectComp({c}) {
+  const classdetails = c
 
   return (
-    <div className="rounded-2xl border border-gray-300 bg-white shadow-md overflow-hidden p-4 md:p-5 w-full max-w-4xl mx-auto">
+    <div className="rounded-2xl border border-gray-300 bg-white shadow-md overflow-hidden p-4 md:p-5 w-full max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-3">
         <div className="flex flex-col gap-1">
@@ -33,7 +27,7 @@ function FacultyTransfersubjectComp() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-2 mt-2 md:mt-0">
+        <div className="flex gap-10 mt-2 md:mt-0">
           <Button className="cursor-pointer flex items-center gap-2 text-sm text-blue-700 border-blue-200 bg-blue-50 hover:bg-blue-100">
             <Users className="w-4 h-4" />
             Transfer to another Faculty

@@ -10,6 +10,7 @@ import {
   CalendarSearch,
   Notebook,
   User,
+  GraduationCap
 } from "lucide-react";
 import {
   Sheet,
@@ -38,16 +39,16 @@ function FacultyNavbar_j() {
     <>
       <div className="h-14 flex items-center justify-between px-3 w-full bg-gradient-to-r from-blue-600 to-indigo-600 shadow-xl">
         {/* Mobile View: Hamburger Sheet */}
-        <div className="block md:hidden">
-          <Sheet>
-            <SheetTrigger>
-              <Menu className="w-6 h-6 text-white cursor-pointer" />
+        <div className="block  lg:hidden ">
+          <Sheet className=" ">
+            <SheetTrigger >
+              <Menu className="w-6 h-6 cursor-pointer text-white" />
             </SheetTrigger>
-            <SheetContent side="left" className="h-full text-center">
+            <SheetContent side="left" className="h-full text-white w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-center">
               <SheetHeader>
-                <SheetTitle>Menu</SheetTitle>
+                <SheetTitle className="text-white">Menu</SheetTitle>
               </SheetHeader>
-              <div className="flex flex-col gap-4 items-start mt-4">
+              <div className="flex   flex-col gap-4 items-start mt-4">
                 <NavItem icon={<Home className="w-4 h-4" />} label="Home" />
                 <NavItem
                   icon={<Notebook className="w-4 h-4" />}
@@ -70,13 +71,15 @@ function FacultyNavbar_j() {
                   label="Class Advisor View"
                 />
                 <NavItem icon={<Code className="w-4 h-4" />} label="Devs" />
+                <NavItem icon={<GraduationCap className="w-4 h-4" />} label="Create Class" />
+
               </div>
             </SheetContent>
           </Sheet>
         </div>
 
         {/* Desktop View */}
-        <div className="hidden md:flex gap-4 text-white items-center">
+        <div className="hidden lg:flex gap-4 text-white items-center">
           <NavItem icon={<Home className="w-4 h-4" />} label="Home" />
           <NavItem
             icon={<Notebook className="w-4 h-4" />}
@@ -96,6 +99,8 @@ function FacultyNavbar_j() {
             label="Class Advisor View"
           />
           <NavItem icon={<Code className="w-4 h-4" />} label="Devs" />
+          <NavItem icon={<GraduationCap className="w-4 h-4" />} label="Create Class" />
+
         </div>
 
         {/* Profile */}
