@@ -4,6 +4,7 @@ import FacultyTransfersubjectComp from "./projectComponents/facultyComponents/Fa
 import FacultyHomepage from "./Pages/FacultyPages/FacultyHomepage";
 import SubjectsHandledPage from "./Pages/FacultyPages/SubjectsHandledPage";
 import FacultyTimetablePage from "./Pages/FacultyPages/FacultyTimetablePage";
+import FacultyCreateClassPage from "./Pages/FacultyPages/FacultyCreateClassPage";
 
 function TeacherTest() {
   
@@ -12,7 +13,7 @@ function TeacherTest() {
   return (
     <>
       <FacultyNavbar_j />
-      <SubjectsHandledPage></SubjectsHandledPage>
+      <FacultyCreateClassPage></FacultyCreateClassPage>
     </>
   );
 }
