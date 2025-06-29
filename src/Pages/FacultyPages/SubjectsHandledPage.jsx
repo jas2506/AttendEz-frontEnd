@@ -258,10 +258,10 @@ function SubjectsHandledPage() {
     const result = [];
     const seen = new Set();
     const classDetails = tt?.timetable?.classDetails || {};
-
-    for (const key in classDetails) {
-      const { className, passoutYear, groupCode } = classDetails[key];
-
+  
+    for (const classCode in classDetails) {
+      const { className, passoutYear, groupCode } = classDetails[classCode];
+  
       let section;
       if (groupCode.includes("ELE")) {
         section = "ELECTIVE";
@@ -269,22 +269,26 @@ function SubjectsHandledPage() {
         const match = groupCode.match(/^([A-Z]+)\d{4}([A-Z])$/);
         section = match ? `${match[1]}-${match[2]}` : groupCode;
       }
-
-      const subjectEntry = {
-        className,
-        section,
-        year: `UG-${passoutYear}`,
-      };
-
+  
       const uniqueKey = `${className}-${section}-${passoutYear}`;
       if (!seen.has(uniqueKey)) {
         seen.add(uniqueKey);
-        result.push(subjectEntry);
+        result.push({
+          classCode,
+          className,
+          section,
+          year: `UG-${passoutYear}`,
+        });
       }
     }
-
+  
     return result;
   }
+  
+  
+
+
+
 
   const subs = getFacultySubjects(tt);
 
