@@ -4,14 +4,14 @@ import { Mail, BadgeInfo, User2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
-export default function FacultyDetailedProfile({ details }) {
-//   const navigate = useNavigate();
+export default function FacultyDetailedProfile({ details, setIsLoggedIn }) {
+  const navigate = useNavigate();
 
-//   function Logoutfunc() {
-//     setIsLoggedIn(false);
+  function Logoutfunc() {
+    setIsLoggedIn(false);
 
-//     navigate("/");
-//   }
+    navigate("/");
+  }
   return (
     <Card className="w-full p-4">
       <CardContent className="flex flex-col items-center space-y-4">
@@ -33,7 +33,7 @@ export default function FacultyDetailedProfile({ details }) {
         </div>
       </CardContent>
       <Button
-        // onClick={Logoutfunc}
+        onClick={Logoutfunc}
         variant="ghost"
         className="hover:bg-gray-200 cursor-pointer"
       >

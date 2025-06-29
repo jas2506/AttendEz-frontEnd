@@ -258,10 +258,10 @@ function SubjectsHandledPage() {
     const result = [];
     const seen = new Set();
     const classDetails = tt?.timetable?.classDetails || {};
-
-    for (const key in classDetails) {
-      const { className, passoutYear, groupCode } = classDetails[key];
-
+  
+    for (const classCode in classDetails) {
+      const { className, passoutYear, groupCode } = classDetails[classCode];
+  
       let section;
       if (groupCode.includes("ELE")) {
         section = "ELECTIVE";
@@ -269,28 +269,31 @@ function SubjectsHandledPage() {
         const match = groupCode.match(/^([A-Z]+)\d{4}([A-Z])$/);
         section = match ? `${match[1]}-${match[2]}` : groupCode;
       }
-
-      const subjectEntry = {
-        className,
-        section,
-        year: `UG-${passoutYear}`,
-      };
-
+  
       const uniqueKey = `${className}-${section}-${passoutYear}`;
       if (!seen.has(uniqueKey)) {
         seen.add(uniqueKey);
-        result.push(subjectEntry);
+        result.push({
+          classCode,
+          className,
+          section,
+          year: `UG-${passoutYear}`,
+        });
       }
     }
-
+  
     return result;
   }
+  
+  
+
+
+
 
   const subs = getFacultySubjects(tt);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 md:p-10">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto px-4 py-6">
         {/* Header */}
         <div className="bg-white border border-gray-200 shadow-lg rounded-2xl overflow-hidden mb-6">
           <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
@@ -321,7 +324,6 @@ function SubjectsHandledPage() {
           </p>
         )}
       </div>
-    </div>
   );
 }
 

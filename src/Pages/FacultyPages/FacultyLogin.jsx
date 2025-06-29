@@ -8,8 +8,16 @@ import {
 } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
+import { useNavigate } from "react-router-dom";
 
-function FacultyLogin() {
+function FacultyLogin({ setIsLoggedIn }) {
+  const navigate = useNavigate();
+
+  function LoginClick() {
+    setIsLoggedIn(true);
+    navigate("/FacultyHomepage");
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted">
       <Card className="w-full max-w-md p-6 rounded-2xl shadow-md">
@@ -31,7 +39,10 @@ function FacultyLogin() {
         </CardContent>
 
         <CardFooter className="flex flex-col gap-4">
-          <Button className="w-full bg-blue-600 text-white hover:bg-blue-700">
+          <Button
+            onClick={LoginClick}
+            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white cursor-pointer hover:bg-indigo-900 "
+          >
             Log in
           </Button>
 
