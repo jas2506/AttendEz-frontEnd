@@ -1,4 +1,4 @@
-import FacultyNavbar_j from "./projectComponents/facultyComponents/facultyNavbar_j";
+import FacultyNavbar_j from "./projectComponents/facultyComponents/FacultyNavbar_j";
 import FacultyHomepageComponent from "./projectComponents/facultyComponents/FacultyHomepageComponent";
 import FacultyTransfersubjectComp from "./projectComponents/facultyComponents/FacultyTransfersubjectComp";
 import FacultyHomepage from "./Pages/FacultyPages/FacultyHomepage";
@@ -18,7 +18,7 @@ import {
 
 function TeacherApp() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  
+
   return (
     <>
       <Router>
