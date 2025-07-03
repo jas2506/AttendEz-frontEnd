@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Keyboard } from "lucide-react";
-import StudentHomepageSubject from "../projectComponents/studentHomepageSubject";
+import StudentHomepageSubject from "../projectComponents/StudentHomepageSubject";
 
 //set day properly for testing
 function getTodayAttendanceStats(attendance, timetable) {
