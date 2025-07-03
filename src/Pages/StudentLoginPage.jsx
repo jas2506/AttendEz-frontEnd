@@ -19,7 +19,7 @@ function StudentLoginPage({ setIsLoggedIn }) {
       setIsLoggedIn(true);
       navigate("/Home");
     } catch (err) {
-      console.error("Login failed:", err);
+      console.error("Login failed jas:", err);
     }
   };
 
