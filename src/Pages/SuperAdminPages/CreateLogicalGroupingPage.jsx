@@ -1,23 +1,98 @@
 import React, { useState } from "react";
 import Papa from "papaparse";
 import NavbarSuperAdmin from "./NavBarSuperAdmin";
+import ClassAdvisorPopup from "./ClassAdvisorPopup";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
 import {
   Select,
   SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+} from "../../components/ui/select";
+import { Card, CardContent } from "../../components/ui/card";
+import { Label } from "../../components/ui/label";
+import { ToggleGroup, ToggleGroupItem } from "../../components/ui/toggle-group";
+import CreateTimetablePopup from "./CreateTimetablePage";
 
 export default function ElectiveSectionPage() {
   const [uploadedData, setUploadedData] = useState([]);
   const [electiveOrSection, setElectiveOrSection] = useState("");
-  const [advisor, setAdvisor] = useState("");
+  const [advisorName, setAdvisorName] = useState("");
+  const [advisorEmail, setAdvisorEmail] = useState("");
+  const [classType, setClassType] = useState("normal");
+  const [popupOpen, setPopupOpen] = useState(false);
+  const [advisorPopupOpen, setAdvisorPopupOpen] = useState(false);
+
+  const allTeachers = {
+    details: [
+      {
+        facultyClasses: ["CSE2702B"],
+        mentor: "False",
+        name: "Dr.Gautham",
+        class_advisor: "True",
+        class_advisor_list: {
+          CSE2027B: [
+            "3122235001110",
+            "3122235001087",
+            "3122235001052",
+            "3122235001059",
+          ],
+        },
+        position: "Asssociate Professor",
+        department: "CSE",
+        faculty_email: "murari2310237@ssn.edu.in",
+      },
+      {
+        facultyClasses: ["CSE2703B"],
+        mentor: "False",
+        name: "Dr.Srividya",
+        class_advisor: "False",
+        position: "Asssociate Professor",
+        department: "CSE",
+        faculty_email: "srividyagsreekumar@gmail.com",
+      },
+      {
+        facultyClasses: ["CSE2705B"],
+        mentor: "False",
+        name: "Dr.Sreekumar",
+        class_advisor: "False",
+        position: "Asssociate Professor",
+        department: "CSE",
+        faculty_email: "gauthamnarayan2310332@ssn.edu.in",
+      },
+      {
+        facultyClasses: ["CSE2704B"],
+        mentor: "False",
+        name: "Dr.Jagan",
+        class_advisor: "False",
+        position: "Assistant Professor",
+        department: "CSE",
+        faculty_email: "mukundhsreekumar@gmail.com",
+      },
+      {
+        facultyClasses: ["ELE2H22A"],
+        mentor: "False",
+        name: "Dr.Thenmozhi",
+        class_advisor: "False",
+        position: "Assistant Professor",
+        department: "CSE",
+        faculty_email: "murarisreekumar@gmail.com",
+      },
+      {
+        name: "Dr.Saipranav",
+        class_advisor: "True",
+        mentor: "True",
+        position: "Associate Professor",
+        department: "CSE",
+        faculty_email: "saipranv2310234@ssn.edu.in",
+      },
+    ],
+    message: "Faculty details retrieved succesfully!",
+    status: "S",
+  };
 
   const handleCSVUpload = (e) => {
     const file = e.target.files[0];
@@ -46,16 +121,39 @@ export default function ElectiveSectionPage() {
 
   return (
     <div className="min-h-screen bg-blue-50">
-      {/* ✅ Navbar at the top */}
       <NavbarSuperAdmin setIsLoggedIn={() => {}} />
 
-      {/* ✅ Page content */}
       <div className="p-6 flex justify-center items-start">
         <Card className="w-full max-w-4xl shadow-xl bg-white">
           <CardContent className="p-6">
             <h2 className="text-2xl font-bold mb-6 text-center text-blue-700">
               Add or Remove
             </h2>
+
+            {/* 🔘 Toggle Group: Normal or Elective */}
+            <div className="flex justify-center mb-6">
+              <ToggleGroup
+                type="single"
+                value={classType}
+                onValueChange={(val) => {
+                  if (val) setClassType(val);
+                }}
+                className="bg-blue-100 rounded-lg"
+              >
+                <ToggleGroupItem
+                  value="normal"
+                  className="data-[state=on]:bg-blue-600 data-[state=on]:text-white px-4 py-2"
+                >
+                  Normal Class
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="elective"
+                  className="data-[state=on]:bg-blue-600 data-[state=on]:text-white px-4 py-2"
+                >
+                  Elective
+                </ToggleGroupItem>
+              </ToggleGroup>
+            </div>
 
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
@@ -87,13 +185,14 @@ export default function ElectiveSectionPage() {
                 </Select>
               </div>
               <div>
-                <Label>Section / Elective</Label>
+                <Label>Section</Label>
                 <Input
-                  placeholder="Enter section or elective name"
+                  placeholder="Enter section"
                   value={electiveOrSection}
                   onChange={(e) => setElectiveOrSection(e.target.value)}
                 />
               </div>
+
               <div>
                 <Label>Upload CSV File</Label>
                 <div className="flex flex-col sm:flex-row gap-2">
@@ -116,14 +215,29 @@ export default function ElectiveSectionPage() {
                   )}
                 </div>
               </div>
-              <div>
-                <Label>Class Advisor</Label>
-                <Input
-                  placeholder="Enter advisor name"
-                  value={advisor}
-                  onChange={(e) => setAdvisor(e.target.value)}
-                />
-              </div>
+
+              {classType === "normal" && (
+                <>
+                  <div className="md:col-span-2">
+                    <Label>Class Advisor</Label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        placeholder="Advisor email"
+                        value={advisorEmail}
+                        disabled
+                        className="bg-gray-100"
+                      />
+                      <Button
+                        variant="outline"
+                        className="text-blue-700 border-blue-700 whitespace-nowrap"
+                        onClick={() => setAdvisorPopupOpen(true)}
+                      >
+                        Select
+                      </Button>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
             {uploadedData.length > 0 && (
@@ -142,9 +256,13 @@ export default function ElectiveSectionPage() {
             )}
 
             <div className="flex flex-wrap justify-center gap-4 mt-6">
-              <Button className="bg-blue-600 text-white px-6">
+              <Button
+                className="bg-blue-600 text-white px-6"
+                onClick={() => setPopupOpen(true)}
+              >
                 Create Timetable
               </Button>
+
               <Button className="bg-blue-600 text-white px-6">Delete</Button>
               <Button className="bg-blue-600 text-white px-6">Edit</Button>
               <Button className="bg-blue-600 text-white px-6">Save</Button>
@@ -152,6 +270,16 @@ export default function ElectiveSectionPage() {
           </CardContent>
         </Card>
       </div>
+      <CreateTimetablePopup open={popupOpen} setOpen={setPopupOpen} />
+      <ClassAdvisorPopup
+        open={advisorPopupOpen}
+        setOpen={setAdvisorPopupOpen}
+        teachers={allTeachers.details.filter((t) => t.department === "CSE")}
+        onSelect={(teacher) => {
+          setAdvisorName(teacher.name);
+          setAdvisorEmail(teacher.faculty_email);
+        }}
+      />
     </div>
   );
 }

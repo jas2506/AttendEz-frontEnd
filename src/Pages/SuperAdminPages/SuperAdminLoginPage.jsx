@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import {
   Card,
   CardHeader,
@@ -12,9 +14,31 @@ import { Button } from "../../components/ui/button";
 
 function SuperAdminLoginPage() {
   const navigate = useNavigate();
-  const handleLogin = () => {
-    navigate("/superadmin/add-teacher");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleLogin = async () => {
+    setError("");
+    try {
+      const res = await axios.post(
+        "http://localhost:8443/SuperAdmin/login",
+        {
+          email,
+          password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+
+      navigate("/superadmin/add-teacher");
+    } catch (err) {
+      console.error("Login failed:", err);
+      setError("Invalid email or password");
+    }
   };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200">
       <Card className="w-full max-w-md p-8 rounded-2xl shadow-xl bg-white/90 backdrop-blur-sm border border-blue-300">
@@ -31,11 +55,15 @@ function SuperAdminLoginPage() {
           <Input
             type="email"
             placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="focus-visible:ring-2 focus-visible:ring-blue-500"
           />
           <Input
             type="password"
             placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             className="focus-visible:ring-2 focus-visible:ring-blue-500"
           />
           <div className="text-right">
@@ -43,6 +71,7 @@ function SuperAdminLoginPage() {
               Forgot password? Contact developers
             </span>
           </div>
+          {error && <p className="text-red-600 text-sm text-center">{error}</p>}
         </CardContent>
 
         <CardFooter className="flex flex-col gap-4 mt-4">

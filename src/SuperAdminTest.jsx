@@ -11,7 +11,7 @@ function SuperAdminTest() {
     <Router>
       <Routes>
         <Route path="/superadmin/login" element={<SuperAdminLoginPage />} />
-        <Route path="/superadmin/add-teacher" element={<AddTeacherPage />} />
+        <Route path="/superadmin/manageteacher" element={<AddTeacherPage />} />
         <Route
           path="/superadmin/students"
           element={<CreateDeleteStudentPage />}
