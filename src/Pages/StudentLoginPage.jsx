@@ -40,7 +40,7 @@ function StudentLoginPage({ setIsLoggedIn }) {
         <div className="space-y-6">
           <GoogleLogin
             onSuccess={handleGoogleLogin}
-            onError={() => console.error("Login Failed")}
+            onError={() => console.error("Login Failed jas")}
           />
         </div>
 
