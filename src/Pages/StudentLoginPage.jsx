@@ -37,7 +37,7 @@ function StudentLoginPage({ setIsLoggedIn }) {
           </p>
         </div>
 
-        <div className="space-y-6 flex items-center justify-center">
+        <div className="mt-6 flex justify-center">
           <GoogleLogin
             onSuccess={handleGoogleLogin}
             onError={() => console.error("Login Failed jas")}
