@@ -12,4 +12,7 @@ export default defineConfig({
     },
   },
   base: "/",
+  // server: {
+  //   port: 3000, // ← change this to whatever port you want
+  // },
 })

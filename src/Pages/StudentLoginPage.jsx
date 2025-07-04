@@ -9,13 +9,17 @@ function StudentLoginPage({ setIsLoggedIn }) {
   const handleGoogleLogin = async (credentialResponse) => {
     try {
       const idToken = credentialResponse.credential;
+      console.log(idToken);
 
       const res = await axios.post("http://localhost:8443/student/googleAuth", {
         idToken,
       });
 
       const jwt = res.data.token;
+      const hmacpasscode = res.data.hmacpasscode;
       localStorage.setItem("jwtToken", jwt);
+      localStorage.setItem("hmacpasscode", hmacpasscode);
+
       setIsLoggedIn(true);
       navigate("/Home");
     } catch (err) {

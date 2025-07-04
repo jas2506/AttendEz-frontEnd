@@ -1,5 +1,6 @@
 import Profile from "./Profile";
 import { Link, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 import {
   Calculator,
   Code,
@@ -16,21 +17,29 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { fetchDetails } from "../Api";
 
-function Navbar({setIsLoggedIn}) {
-  const location = useLocation(); 
+function Navbar({ setIsLoggedIn }) {
+  const location = useLocation();
+  const [details, setDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const details = {
-    email: "saipranav2310324@ssn.edu.in",
-    name: "Saipranav M",
-    registerNumber: "3122235001110",
-    department: "CSE",
-    passout: "2027",
-    course: "Computer Science and Engineering",
-    degree: "B.E",
-    digitalid: "2310324",
-    registeredClasses: ["CSE3H15C"],
-  };
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const d = (await fetchDetails()).details;
+        setDetails(d);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div className="h-14 flex items-center justify-between px-3 w-full bg-blue-500">
