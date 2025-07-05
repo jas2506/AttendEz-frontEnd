@@ -86,6 +86,16 @@ function HomepageStudent() {
   const [popup, setPopup] = useState(null);
 
   useEffect(() => {
+    if (popup) {
+      const timer = setTimeout(() => {
+        setPopup(null);
+      }, 2500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [popup]);
+
+  useEffect(() => {
     const today = new Date();
     const options = {
       weekday: "long",
@@ -138,7 +148,6 @@ function HomepageStudent() {
     setIsSubmitting(true);
 
     try {
-      // Replace mockSendPasscode with your actual sendPasscode function
       const response = await sendPasscode(classCode);
 
       setPopup({
@@ -146,13 +155,22 @@ function HomepageStudent() {
         type: response.status === "S" ? "success" : "error",
       });
 
-      // Clear the input on success
       if (response.status === "S") {
         setClassCode("");
       }
     } catch (error) {
+      let message = "An error occurred. Please try again.";
+
+      if (error.response) {
+        if (error.response.status === 404) {
+          message = "Invalid passcode. Please check and try again.";
+        } else if (error.response.status === 500) {
+          message = "Please try again.";
+        }
+      }
+
       setPopup({
-        message: "An error occurred. Please try again.",
+        message,
         type: "error",
       });
     } finally {
@@ -183,17 +201,27 @@ function HomepageStudent() {
         </div>
 
         {/* Input Section */}
-        <div className="max-w-2xl mx-auto p-6">
+        <div className="max-w-7xl mx-auto p-6">
           <div className="bg-white p-6 rounded-xl shadow-sm flex flex-col md:flex-row items-center gap-4">
             <div className="relative w-full">
               <Keyboard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Enter Class Code"
+                placeholder="Enter Class Code (e.g., nzlah0~CSE2701B)"
                 value={classCode}
-                onChange={(e) => setClassCode(e.target.value)}
+                onChange={(e) => {
+                  let value = e.target.value.replace(/[^a-zA-Z0-9]/g, ""); // Remove all non-alphanumeric characters
+
+                  if (value.length > 6) {
+                    // Insert tilde after 6 characters
+                    value = value.slice(0, 6) + "~" + value.slice(6, 14); // Limit to 14 total characters (6 + 8)
+                  }
+
+                  setClassCode(value);
+                }}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 disabled={isSubmitting}
+                maxLength={15} // 6 + 1 (tilde) + 8 = 15
               />
             </div>
             <button
@@ -215,7 +243,7 @@ function HomepageStudent() {
           {popup && (
             <div className="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 toast-slide-in">
               <div
-                className={`border-l-4 p-4 rounded-md shadow-md bg-white w-80 ${
+                className={`border-l-4 p-4 rounded-md shadow-md bg-white w-80 transition-opacity duration-500 ${
                   popup.type === "success"
                     ? "border-green-500"
                     : "border-red-500"
