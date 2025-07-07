@@ -67,8 +67,9 @@ const TeacherLogin = ({ setIsLoggedIn }) => {
       });
 
       setSuccess("Login successful!");
+      localStorage.setItem("facultyToken", response.token);
       setToken(response.token);
-      // Here you would typically redirect to dashboard or store token
+      
       console.log("Login successful:", response);
       setIsLoggedIn(true);
       navigate("/FacultyHomepage");

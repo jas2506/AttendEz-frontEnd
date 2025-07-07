@@ -36,7 +36,11 @@ function FacultyHomepageComponent({ c }) {
                   </span>
                 </div>
                 <div className="flex items-center gap-1">
+                  <span>{classdetails.classCode}</span>
+                </div>
+                <div className="flex items-center gap-1">
                   <UsersRound className="w-4 h-4" />
+
                   <span>{classdetails.section}</span>
                 </div>
                 <div className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">

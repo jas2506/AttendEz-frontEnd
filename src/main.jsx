@@ -12,11 +12,10 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <TeacherApp></TeacherApp>
-    
   </StrictMode>
 );
 
 
-{/* <GoogleOAuthProvider clientId="486291190133-rfd0p9spon54i2b8ioj4hferrd2uj80l.apps.googleusercontent.com">
-      <App></App>
-    </GoogleOAuthProvider> */}
+// <GoogleOAuthProvider clientId="486291190133-rfd0p9spon54i2b8ioj4hferrd2uj80l.apps.googleusercontent.com">
+// <App></App>
+// </GoogleOAuthProvider>

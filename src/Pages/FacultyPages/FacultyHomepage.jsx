@@ -2,9 +2,32 @@ import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Keyboard, Calendar, Clock, User } from "lucide-react";
 import FacultyHomepageComponent from "../../projectComponents/facultyComponents/FacultyHomepageComponent";
+import { getFacultyDetails, refreshTimetable } from "../../TeacherApi";
 
 function FacultyHomepage() {
   const [currentDateStr, setCurrentDateStr] = useState("");
+  const [details, setDetails] = useState(null);
+  const [timetable, setTimetable] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [detailsRes, timetableRes] = await Promise.all([
+          getFacultyDetails(),
+          refreshTimetable(),
+        ]);
+
+        setDetails(detailsRes.data.details);
+        setTimetable(timetableRes.data.timetable);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching faculty data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const today = new Date();
@@ -18,264 +41,6 @@ function FacultyHomepage() {
     setCurrentDateStr(formatted);
   }, []);
 
-  const details = {
-    name: "Dr.Sripranav",
-    department: "EEE",
-    position: "Assistant Professor",
-  };
-
-  const tt = {
-    message: "Timetable refreshed successfully",
-    timetable: {
-      classDetails: {
-        ELE2H22A: {
-          facultyEmail: "saipranav2310324@ssn.edu.in",
-          classCode: "ELE2H22A",
-          passoutYear: "2027",
-          credits: "4",
-          className: "IMAGE ANALYSIS",
-          facultyName: "Dr. Saipranav",
-          department: "CSE",
-          regNumbers: ["3122235001110", "3122235001087", "3122235001008"],
-          groupCode: "CSEELE2H22A2027",
-        },
-        CSE2704B: {
-          facultyEmail: "saipranav2310324@ssn.edu.in",
-          classCode: "CSE2704B",
-          passoutYear: "2027",
-          credits: "4",
-          className: "COA",
-          facultyName: "Dr. Saipranav",
-          department: "CSE",
-          regNumbers: [
-            "3122235001110",
-            "3122235001087",
-            "3122225001002",
-            "3122225001003",
-            "3122235001004",
-            "3122215001006",
-            "3122215001007",
-          ],
-          groupCode: "CSE2027B",
-        },
-        CSE2703B: {
-          facultyEmail: "saipranav2310324@ssn.edu.in",
-          classCode: "CSE2703B",
-          passoutYear: "2027",
-          credits: "4",
-          className: "COA",
-          facultyName: "Dr. Saipranav",
-          department: "CSE",
-          regNumbers: [
-            "3122235001110",
-            "3122235001087",
-            "3122225001002",
-            "3122225001003",
-            "3122235001004",
-            "3122215001006",
-            "3122215001007",
-          ],
-          groupCode: "CSE2027B",
-        },
-        CSE2702B: {
-          facultyEmail: "saipranav2310324@ssn.edu.in",
-          classCode: "CSE2702B",
-          passoutYear: "2027",
-          credits: "4",
-          className: "COA",
-          facultyName: "Dr. Saipranav",
-          department: "CSE",
-          regNumbers: [
-            "3122235001110",
-            "3122235001087",
-            "3122225001002",
-            "3122225001003",
-            "3122235001004",
-            "3122215001006",
-            "3122215001007",
-          ],
-          groupCode: "CSE2027B",
-        },
-        CSE2701B: {
-          facultyEmail: "saipranav2310324@ssn.edu.in",
-          classCode: "CSE2701B",
-          passoutYear: "2027",
-          credits: "4",
-          className: "COA",
-          facultyName: "Dr. Saipranav",
-          department: "CSE",
-          regNumbers: [
-            "3122235001110",
-            "3122235001087",
-            "3122225001002",
-            "3122225001003",
-            "3122235001004",
-            "3122215001006",
-            "3122215001007",
-          ],
-          groupCode: "CSE2027B",
-        },
-        CSE2705B: {
-          facultyEmail: "saipranav2310324@ssn.edu.in",
-          classCode: "CSE2705B",
-          passoutYear: "2027",
-          credits: "4",
-          className: "COA",
-          facultyName: "Dr. Saipranav",
-          department: "CSE",
-          regNumbers: [
-            "3122235001110",
-            "3122235001087",
-            "3122225001002",
-            "3122225001003",
-            "3122235001004",
-            "3122215001006",
-            "3122215001007",
-          ],
-          groupCode: "CSE2027B",
-        },
-      },
-      timetable: {
-        Monday: [
-          {
-            classCode: "CSE2701B",
-            startTime: "09:00",
-            durationMinutes: 50,
-          },
-          {
-            classCode: "CSE2702B",
-            startTime: "10:00",
-            durationMinutes: 50,
-          },
-          {
-            classCode: "CSE2703B",
-            startTime: "11:00",
-            durationMinutes: 50,
-          },
-          {
-            classCode: "CSE2704B",
-            startTime: "12:00",
-            durationMinutes: 50,
-          },
-          {
-            classCode: "ELE2H22A",
-            startTime: "14:00",
-            durationMinutes: 100,
-          },
-        ],
-        Thursday: [
-          {
-            classCode: "CSE2701B",
-            startTime: "12:00",
-            durationMinutes: 50,
-          },
-          {
-            classCode: "CSE2703B",
-            startTime: "09:00",
-            durationMinutes: 50,
-          },
-          {
-            classCode: "CSE2704B",
-            startTime: "10:00",
-            durationMinutes: 50,
-          },
-          {
-            classCode: "CSE2705B",
-            startTime: "11:00",
-            durationMinutes: 50,
-          },
-          {
-            classCode: "ELE2H22A",
-            startTime: "14:00",
-            durationMinutes: 50,
-          },
-        ],
-        Friday: [
-          {
-            classCode: "CSE2702B",
-            startTime: "09:00",
-            durationMinutes: 50,
-          },
-          {
-            classCode: "CSE2703B",
-            startTime: "10:00",
-            durationMinutes: 50,
-          },
-          {
-            classCode: "CSE2704B",
-            startTime: "11:00",
-            durationMinutes: 50,
-          },
-          {
-            classCode: "CSE2705B",
-            startTime: "12:00",
-            durationMinutes: 50,
-          },
-          {
-            classCode: "ELE2H22A",
-            startTime: "14:00",
-            durationMinutes: 100,
-          },
-        ],
-        Wednesday: [
-          {
-            classCode: "CSE2701B",
-            startTime: "11:00",
-            durationMinutes: 50,
-          },
-          {
-            classCode: "CSE2702B",
-            startTime: "12:00",
-            durationMinutes: 50,
-          },
-          {
-            classCode: "CSE2704B",
-            startTime: "09:00",
-            durationMinutes: 50,
-          },
-          {
-            classCode: "CSE2705B",
-            startTime: "10:00",
-            durationMinutes: 50,
-          },
-          {
-            classCode: "ELE2H22A",
-            startTime: "14:00",
-            durationMinutes: 100,
-          },
-        ],
-        Tuesday: [
-          {
-            classCode: "CSE2701B",
-            startTime: "10:00",
-            durationMinutes: 50,
-          },
-          {
-            classCode: "CSE2702B",
-            startTime: "11:00",
-            durationMinutes: 50,
-          },
-          {
-            classCode: "CSE2703B",
-            startTime: "12:00",
-            durationMinutes: 50,
-          },
-          {
-            classCode: "CSE2705B",
-            startTime: "09:00",
-            durationMinutes: 50,
-          },
-          {
-            classCode: "ELE2H22A",
-            startTime: "14:00",
-            durationMinutes: 50,
-          },
-        ],
-      },
-    },
-    status: "S",
-  };
-
   function getTodaySchedule(data) {
     const days = [
       "Sunday",
@@ -286,10 +51,10 @@ function FacultyHomepage() {
       "Friday",
       "Saturday",
     ];
-    // const today = days[new Date().getDay()];
-    const today = "Monday";
-    const timetableToday = data.timetable.timetable[today];
-    const classDetails = data.timetable.classDetails;
+    const today = days[new Date().getDay()];
+    // const today = "Monday";
+    const timetableToday = data.timetable[today];
+    const classDetails = data.classDetails;
 
     if (!timetableToday) return [];
 
@@ -303,6 +68,7 @@ function FacultyHomepage() {
       const minute = parseInt(minuteStr, 10);
 
       return {
+        classCode: entry.classCode, // <- include classCode here
         className: detail.className,
         start: entry.startTime,
         startNumeric: hour * 60 + minute,
@@ -313,10 +79,20 @@ function FacultyHomepage() {
     });
 
     result.sort((a, b) => a.startNumeric - b.startNumeric);
-    return result.map(({ startNumeric, ...rest }) => rest);
+    return result.map(({ startNumeric, ...rest }) => rest); // remove startNumeric from final return
   }
 
-  const todaySchedule = getTodaySchedule(tt);
+  const todaySchedule =
+    !isLoading && timetable && timetable.timetable && timetable.classDetails
+      ? getTodaySchedule(timetable)
+      : [];
+
+  if (isLoading)
+    return (
+      <>
+        <p></p>
+      </>
+    );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-4 lg:p-8">
