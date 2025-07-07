@@ -5,10 +5,10 @@ import FacultyHomepage from "./Pages/FacultyPages/FacultyHomepage";
 import SubjectsHandledPage from "./Pages/FacultyPages/SubjectsHandledPage";
 import FacultyTimetablePage from "./Pages/FacultyPages/FacultyTimetablePage";
 import FacultyCreateClassPage from "./Pages/FacultyPages/FacultyCreateClassPage";
-import FacultyLogin from "./Pages/FacultyPages/FacultyLogin";
 import MentorListPage from "./Pages/FacultyPages/MentorListPage";
 import DevsPage from "./Pages/DevsPage";
 import { useState } from "react";
+import TeacherLogin from "./Pages/FacultyPages/TeacherLogin";
 import {
   BrowserRouter as Router,
   Routes,
@@ -30,7 +30,7 @@ function TeacherApp() {
               isLoggedIn ? (
                 <Navigate to="/FacultyHomepage" />
               ) : (
-                <FacultyLogin setIsLoggedIn={setIsLoggedIn} />
+                <TeacherLogin setIsLoggedIn={setIsLoggedIn} />
               )
             }
           />
