@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import {
   Clock,
   NotebookText,
@@ -5,8 +6,12 @@ import {
   QrCode,
   Keyboard,
   BookOpen,
+  X,
+  Check,
+  UserCheck,
+  UserX,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import QRCode from "react-qr-code";
 
 function FacultyHomepageComponent({ c }) {
   const classdetails = c;
@@ -14,6 +19,181 @@ function FacultyHomepageComponent({ c }) {
   const endTime = new Date(`2000-01-01 ${classdetails.start}`);
   endTime.setMinutes(endTime.getMinutes() + classdetails.duration);
   const formattedEndTime = endTime.toTimeString().slice(0, 5);
+
+  const [showManualModal, setShowManualModal] = useState(false);
+  const [showCodePopup, setShowCodePopup] = useState(false);
+  const [generatedCode, setGeneratedCode] = useState("");
+  const [liveAttendance, setLiveAttendance] = useState([]);
+  const [liveVersion, setLiveVersion] = useState("");
+  const [pollingActive, setPollingActive] = useState(false);
+
+  const [qrCodes, setQrCodes] = useState([]);
+  const [currentQRIndex, setCurrentQRIndex] = useState(0);
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [qrAttendance, setQrAttendance] = useState([]);
+  const [qrVersion, setQrVersion] = useState("");
+  const [showSaveQRButton, setShowSaveQRButton] = useState(false);
+
+  const generateQRCode = async () => {
+    try {
+      const res = await fetch(
+        `http://localhost:8443/faculty/qr/generateQRCode?classCode=${classdetails.classCode}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: localStorage.getItem("facultyToken"),
+          },
+        }
+      );
+      const data = await res.json();
+      if (data.status === "S") {
+        setQrCodes(data.codes);
+        setCurrentQRIndex(0);
+        setQrVersion("");
+        setQrAttendance([]);
+        setShowQRModal(true);
+        document.documentElement.requestFullscreen(); // go fullscreen
+        startQRSequence(data.codes);
+        pollQrAttendance("");
+      }
+    } catch (err) {
+      console.error("QR Code generation error:", err);
+    }
+  };
+
+  const startQRSequence = (codes) => {
+    let index = 0;
+    const interval = setInterval(() => {
+      index += 1;
+      if (index >= codes.length) {
+        clearInterval(interval);
+      } else {
+        setCurrentQRIndex(index);
+      }
+    }, 8000); // rotate every 8 seconds
+
+    setTimeout(() => {
+      setShowSaveQRButton(true);
+    }, 30000); // show save after 30s
+  };
+
+  const pollQrAttendance = async (version) => {
+    try {
+      const res = await fetch(
+        `http://localhost:8443/faculty/liveAttendanceViewWithVersion?classCode=${classdetails.classCode}&lastVersion=${version}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: localStorage.getItem("facultyToken"),
+          },
+        }
+      );
+      const data = await res.json();
+      if (data.status === "S" && data.attendanceRecord) {
+        const updated = Object.entries(data.attendanceRecord).map(
+          ([id, name]) => ({ id, name })
+        );
+        setQrAttendance(updated);
+        const newVersion = data.version || version;
+        setQrVersion(newVersion);
+
+        setTimeout(() => pollQrAttendance(newVersion), 3000);
+      }
+    } catch (err) {
+      console.error("QR polling error:", err);
+    }
+  };
+
+  const confirmQRAttendance = async () => {
+    try {
+      await fetch(
+        `http://localhost:8443/faculty/qrpasscode/confirmAttendanceClose?classCode=${classdetails.classCode}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: localStorage.getItem("facultyToken"),
+          },
+        }
+      );
+      alert("QR Attendance saved.");
+      document.exitFullscreen();
+      setShowQRModal(false);
+      setShowSaveQRButton(false);
+    } catch (err) {
+      console.error("Error saving QR attendance:", err);
+    }
+  };
+
+  const generatePasscode = async () => {
+    try {
+      const res = await fetch(
+        `http://localhost:8443/faculty/passcode/generateCode?classCode=${classdetails.classCode}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: localStorage.getItem("facultyToken"),
+          },
+        }
+      );
+      const data = await res.json();
+      setGeneratedCode(data.codes);
+      setShowCodePopup(true);
+      setPollingActive(true);
+      setLiveVersion("");
+      pollLiveAttendance(""); // start polling
+    } catch (err) {
+      console.error("Error generating passcode:", err);
+    }
+  };
+
+  const pollLiveAttendance = async (version) => {
+    if (!pollingActive) return;
+
+    try {
+      const res = await fetch(
+        `http://localhost:8443/faculty/liveAttendanceViewWithVersion?classCode=${classdetails.classCode}&lastVersion=${version}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: localStorage.getItem("facultyToken"),
+          },
+        }
+      );
+      const data = await res.json();
+      if (data.status === "S" && data.attendanceRecord) {
+        const updated = Object.entries(data.attendanceRecord).map(
+          ([id, name]) => ({ id, name })
+        );
+        setLiveAttendance(updated);
+        setLiveVersion(data.version || version);
+      }
+
+      setTimeout(() => {
+        pollLiveAttendance(data.version || version);
+      }, 3000);
+    } catch (err) {
+      console.error("Polling error:", err);
+    }
+  };
+
+  const confirmAttendance = async () => {
+    try {
+      await fetch(
+        `http://localhost:8443/faculty/qrpasscode/confirmAttendanceClose?classCode=${classdetails.classCode}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: localStorage.getItem("facultyToken"),
+          },
+        }
+      );
+      alert("Attendance confirmed and closed.");
+      setPollingActive(false);
+      setShowCodePopup(false);
+    } catch (err) {
+      console.error("Error closing attendance:", err);
+    }
+  };
 
   return (
     <div className="bg-white px-4 md:px-6 py-3">
@@ -40,7 +220,6 @@ function FacultyHomepageComponent({ c }) {
                 </div>
                 <div className="flex items-center gap-1">
                   <UsersRound className="w-4 h-4" />
-
                   <span>{classdetails.section}</span>
                 </div>
                 <div className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">
@@ -67,16 +246,20 @@ function FacultyHomepageComponent({ c }) {
                 icon={<QrCode className="w-5 h-5" />}
                 label="Generate QR"
                 description="QR code attendance"
+                onClick={generateQRCode}
               />
+
               <ActionButton
                 icon={<Keyboard className="w-5 h-5" />}
                 label="Generate Code"
                 description="Attendance code"
+                onClick={generatePasscode}
               />
               <ActionButton
                 icon={<NotebookText className="w-5 h-5" />}
                 label="Manual Entry"
                 description="Mark manually"
+                onClick={() => setShowManualModal(true)}
               />
               <ActionButton
                 icon={<UsersRound className="w-5 h-5" />}
@@ -87,31 +270,141 @@ function FacultyHomepageComponent({ c }) {
             </div>
           </div>
 
-          {/* Status Bar */}
           <div className="pt-3 mt-3 border-t border-gray-200 text-xs text-gray-600 italic text-right">
             Last updated: {new Date().toLocaleTimeString()}
           </div>
         </div>
       </div>
+
+      {showManualModal && (
+        <ManualAttendanceModal
+          classCode={classdetails.classCode}
+          onClose={() => setShowManualModal(false)}
+        />
+      )}
+
+      {showCodePopup && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-10 backdrop-blur-sm bg-black/20">
+          <div className="w-[90%] md:w-[500px] bg-white border border-blue-300 rounded-2xl shadow-xl p-6">
+            <div className="text-center space-y-4">
+              <h2 className="text-lg font-bold text-blue-700">
+                Code Generated
+              </h2>
+              <p className="text-3xl font-mono tracking-widest bg-blue-50 py-2 px-4 rounded-lg border border-blue-200 inline-block">
+                {generatedCode}
+              </p>
+
+              <div className="text-left mt-6">
+                <h3 className="text-md font-semibold mb-2">
+                  Students Marked Present:
+                </h3>
+                <ul className="max-h-[200px] overflow-y-auto space-y-2">
+                  {liveAttendance.map((s) => (
+                    <li key={s.id} className="flex items-center gap-3">
+                      <UserCheck className="w-4 h-4 text-green-600" />
+                      <span>
+                        {s.name} ({s.id})
+                      </span>
+                    </li>
+                  ))}
+                  {liveAttendance.length === 0 && (
+                    <p className="text-sm text-gray-500">No responses yet.</p>
+                  )}
+                </ul>
+              </div>
+
+              <button
+                onClick={confirmAttendance}
+                className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+              >
+                Confirm & Save Attendance
+              </button>
+
+              <button
+                onClick={() => {
+                  setPollingActive(false);
+                  setShowCodePopup(false);
+                }}
+                className="w-full mt-2 text-sm text-red-500 hover:underline"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showQRModal && (
+        <div className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center text-white p-4">
+          <div className="text-center">
+            <h2 className="text-xl font-bold mb-6">
+              Scan QR to Mark Attendance
+            </h2>
+            <div className="bg-white p-6 rounded-xl">
+              <div className="bg-white p-4 rounded-lg">
+                <QRCode
+                  value={qrCodes[currentQRIndex] || ""}
+                  size={256}
+                  className="mx-auto"
+                  bgColor="#FFFFFF"
+                  fgColor="#000000"
+                  level="H"
+                />
+              </div>
+              <p className="text-black text-xl font-mono mt-4">
+                {qrCodes[currentQRIndex]}
+              </p>
+            </div>
+
+            <div className="mt-6 text-left max-h-[200px] overflow-y-auto w-full bg-white rounded-lg p-4 text-black">
+              <h3 className="text-lg font-semibold mb-2">
+                Students Marked Present:
+              </h3>
+              {qrAttendance.length === 0 ? (
+                <p className="text-gray-500 text-sm">No responses yet.</p>
+              ) : (
+                <ul className="space-y-2">
+                  {qrAttendance.map((s) => (
+                    <li key={s.id} className="flex items-center gap-3">
+                      <UserCheck className="w-4 h-4 text-green-600" />
+                      <span>
+                        {s.name} ({s.id})
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            {showSaveQRButton && (
+              <button
+                onClick={confirmQRAttendance}
+                className="mt-6 bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-xl text-white font-semibold text-lg"
+              >
+                Save Attendance
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-function ActionButton({ icon, label, description, isHighlighted = false }) {
+function ActionButton({
+  icon,
+  label,
+  description,
+  isHighlighted = false,
+  onClick,
+}) {
   return (
-    <Button
-      className={`
-          cursor-pointer 
-          flex flex-col items-center justify-center gap-2
-          rounded-xl border transition duration-200 ease-in-out
-          py-3 px-3 h-auto min-h-[80px] w-full
-          hover:scale-[1.02] hover:-translate-y-0.5
-          ${
-            isHighlighted
-              ? "bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-100"
-              : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"
-          }
-        `}
+    <button
+      onClick={onClick}
+      className={`cursor-pointer flex flex-col items-center justify-center gap-2 rounded-xl border transition duration-200 ease-in-out py-3 px-3 h-auto min-h-[80px] w-full hover:scale-[1.02] hover:-translate-y-0.5 ${
+        isHighlighted
+          ? "bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-100"
+          : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"
+      }`}
     >
       <div
         className={`p-2 rounded-md ${
@@ -130,7 +423,129 @@ function ActionButton({ icon, label, description, isHighlighted = false }) {
           {description}
         </p>
       </div>
-    </Button>
+    </button>
+  );
+}
+
+function ManualAttendanceModal({ classCode, onClose }) {
+  const [students, setStudents] = useState({});
+  const [attendance, setAttendance] = useState({});
+
+  useEffect(() => {
+    fetch(
+      `http://localhost:8443/faculty/getAllStudentDetails?classCode=${classCode}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `${localStorage.getItem("facultyToken")}`,
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        setStudents(data.details);
+        const initialStatus = {};
+        for (let id in data.details) {
+          initialStatus[id] = null;
+        }
+        setAttendance(initialStatus);
+      });
+  }, [classCode]);
+
+  const markAttendance = (id, status) => {
+    setAttendance((prev) => ({ ...prev, [id]: status }));
+  };
+
+  const handleSave = () => {
+    const present = [];
+    const absent = [];
+    for (let id in attendance) {
+      if (attendance[id] === "present") present.push(id);
+      else if (attendance[id] === "absent") absent.push(id);
+    }
+
+    fetch("http://localhost:8443/faculty/saveManualAttendance", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `${localStorage.getItem("facultyToken")}`,
+      },
+      body: JSON.stringify({ classCode, present, absent }),
+    }).then(() => {
+      alert("Attendance saved and closed!");
+      onClose();
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 backdrop-blur-sm bg-black/20 flex items-center justify-center z-50">
+      <div className="bg-white rounded-2xl p-6 w-[90%] md:w-[600px] max-h-[80vh] overflow-y-auto relative shadow-2xl border border-gray-200">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors duration-200 p-1 rounded-full hover:bg-gray-100"
+        >
+          <X className="w-5 h-5" />
+        </button>
+        <h2 className="text-xl font-bold mb-6 text-blue-700 flex items-center gap-2">
+          <NotebookText className="w-6 h-6" />
+          Manual Attendance
+        </h2>
+        <div className="space-y-4">
+          {Object.entries(students)
+            .sort(([id1], [id2]) => id1.localeCompare(id2))
+            .map(([id, name]) => (
+              <div
+                key={id}
+                className="flex justify-between items-center p-4 bg-gray-50 rounded-xl border border-gray-200 hover:bg-gray-100 transition-colors duration-200"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                    <span className="text-blue-600 font-semibold text-sm">
+                      {name.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-800">{name}</p>
+                    <p className="text-sm text-gray-500">{id}</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => markAttendance(id, "present")}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                      attendance[id] === "present"
+                        ? "bg-green-500 text-white shadow-md transform scale-105"
+                        : "bg-green-100 text-green-700 hover:bg-green-200 border border-green-300"
+                    }`}
+                  >
+                    <UserCheck className="w-4 h-4" />
+                    Present
+                  </button>
+                  <button
+                    onClick={() => markAttendance(id, "absent")}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                      attendance[id] === "absent"
+                        ? "bg-red-500 text-white shadow-md transform scale-105"
+                        : "bg-red-100 text-red-700 hover:bg-red-200 border border-red-300"
+                    }`}
+                  >
+                    <UserX className="w-4 h-4" />
+                    Absent
+                  </button>
+                </div>
+              </div>
+            ))}
+        </div>
+        <button
+          className="mt-6 w-full bg-blue-600 text-white hover:bg-blue-700 py-3 text-lg font-semibold rounded-xl transition-all duration-200 hover:shadow-lg flex items-center justify-center gap-2"
+          onClick={handleSave}
+        >
+          <Check className="w-5 h-5" />
+          Save Attendance
+        </button>
+      </div>
+    </div>
   );
 }
 
