@@ -16,6 +16,8 @@ import QRCode from "react-qr-code";
 function FacultyHomepageComponent({ c }) {
   const classdetails = c;
 
+  
+
   const endTime = new Date(`2000-01-01 ${classdetails.start}`);
   endTime.setMinutes(endTime.getMinutes() + classdetails.duration);
   const formattedEndTime = endTime.toTimeString().slice(0, 5);
@@ -33,6 +35,12 @@ function FacultyHomepageComponent({ c }) {
   const [qrAttendance, setQrAttendance] = useState([]);
   const [qrVersion, setQrVersion] = useState("");
   const [showSaveQRButton, setShowSaveQRButton] = useState(false);
+
+  useEffect(() => {
+    if (pollingActive) {
+      pollLiveAttendance("");
+    }
+  }, [pollingActive]);
 
   const generateQRCode = async () => {
     try {
@@ -70,11 +78,11 @@ function FacultyHomepageComponent({ c }) {
       } else {
         setCurrentQRIndex(index);
       }
-    }, 8000); // rotate every 8 seconds
+    }, 60000); // rotate every 8 seconds
 
     setTimeout(() => {
       setShowSaveQRButton(true);
-    }, 30000); // show save after 30s
+    }, 60000); // show save after 30s
   };
 
   const pollQrAttendance = async (version) => {
@@ -82,7 +90,7 @@ function FacultyHomepageComponent({ c }) {
       const res = await fetch(
         `http://localhost:8443/faculty/liveAttendanceViewWithVersion?classCode=${classdetails.classCode}&lastVersion=${version}`,
         {
-          method: "POST",
+          method: "GET",
           headers: {
             Authorization: localStorage.getItem("facultyToken"),
           },
@@ -138,9 +146,8 @@ function FacultyHomepageComponent({ c }) {
       const data = await res.json();
       setGeneratedCode(data.codes);
       setShowCodePopup(true);
-      setPollingActive(true);
       setLiveVersion("");
-      pollLiveAttendance(""); // start polling
+      setPollingActive(true); // this now safely triggers useEffect
     } catch (err) {
       console.error("Error generating passcode:", err);
     }
@@ -153,7 +160,7 @@ function FacultyHomepageComponent({ c }) {
       const res = await fetch(
         `http://localhost:8443/faculty/liveAttendanceViewWithVersion?classCode=${classdetails.classCode}&lastVersion=${version}`,
         {
-          method: "POST",
+          method: "GET",
           headers: {
             Authorization: localStorage.getItem("facultyToken"),
           },

@@ -90,7 +90,7 @@ function FacultyHomepage() {
   if (isLoading)
     return (
       <>
-        <p></p>
+        <p>Loading...</p>
       </>
     );
 
