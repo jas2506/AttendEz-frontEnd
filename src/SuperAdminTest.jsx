@@ -5,10 +5,12 @@ import CreateDeleteStudentPage from "./Pages/SuperAdminPages/CreateDeleteStudent
 import CreateLogicalGroupingPage from "./Pages/SuperAdminPages/CreateLogicalGroupingPage";
 import SuperAdminLoginPage from "./Pages/SuperAdminPages/SuperAdminLoginPage";
 import NavbarSuperAdmin from "./Pages/SuperAdminPages/NavBarSuperAdmin";
+import { Toaster } from "sonner";
 
 function SuperAdminTest() {
   return (
     <Router>
+      <Toaster position="top-center" richColors closeButton />
       <Routes>
         <Route path="/superadmin/login" element={<SuperAdminLoginPage />} />
         <Route path="/superadmin/manageteacher" element={<AddTeacherPage />} />

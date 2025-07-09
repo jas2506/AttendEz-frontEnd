@@ -1,285 +1,365 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Papa from "papaparse";
+import axios from "axios";
 import NavbarSuperAdmin from "./NavBarSuperAdmin";
-import ClassAdvisorPopup from "./ClassAdvisorPopup";
-
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
   SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
-} from "../../components/ui/select";
-import { Card, CardContent } from "../../components/ui/card";
-import { Label } from "../../components/ui/label";
-import { ToggleGroup, ToggleGroupItem } from "../../components/ui/toggle-group";
+} from "@/components/ui/select";
+import { Loader2 } from "lucide-react";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import CreateTimetablePopup from "./CreateTimetablePage";
 
-export default function ElectiveSectionPage() {
-  const [uploadedData, setUploadedData] = useState([]);
-  const [electiveOrSection, setElectiveOrSection] = useState("");
-  const [advisorName, setAdvisorName] = useState("");
+export default function CreateLogicalGroupPage() {
+  const [mode, setMode] = useState("add");
+  const [registerNumbers, setRegisterNumbers] = useState([]);
   const [advisorEmail, setAdvisorEmail] = useState("");
-  const [classType, setClassType] = useState("normal");
-  const [popupOpen, setPopupOpen] = useState(false);
-  const [advisorPopupOpen, setAdvisorPopupOpen] = useState(false);
+  const [advisors, setAdvisors] = useState([]);
+  const [degree, setDegree] = useState("B.E.");
+  const [section, setSection] = useState("A");
+  const [passout, setPassout] = useState("2027");
+  const [timetable, setTimetable] = useState({});
+  const [classCodes, setClassCodes] = useState([]);
+  const [groupings, setGroupings] = useState([]);
+  const [loggedIn, setIsLoggedIn] = useState(true);
+  const [groupType, setGroupType] = useState("Normal");
+  const [loading, setLoading] = useState(false);
 
-  const allTeachers = {
-    details: [
-      {
-        facultyClasses: ["CSE2702B"],
-        mentor: "False",
-        name: "Dr.Gautham",
-        class_advisor: "True",
-        class_advisor_list: {
-          CSE2027B: [
-            "3122235001110",
-            "3122235001087",
-            "3122235001052",
-            "3122235001059",
-          ],
-        },
-        position: "Asssociate Professor",
-        department: "CSE",
-        faculty_email: "murari2310237@ssn.edu.in",
-      },
-      {
-        facultyClasses: ["CSE2703B"],
-        mentor: "False",
-        name: "Dr.Srividya",
-        class_advisor: "False",
-        position: "Asssociate Professor",
-        department: "CSE",
-        faculty_email: "srividyagsreekumar@gmail.com",
-      },
-      {
-        facultyClasses: ["CSE2705B"],
-        mentor: "False",
-        name: "Dr.Sreekumar",
-        class_advisor: "False",
-        position: "Asssociate Professor",
-        department: "CSE",
-        faculty_email: "gauthamnarayan2310332@ssn.edu.in",
-      },
-      {
-        facultyClasses: ["CSE2704B"],
-        mentor: "False",
-        name: "Dr.Jagan",
-        class_advisor: "False",
-        position: "Assistant Professor",
-        department: "CSE",
-        faculty_email: "mukundhsreekumar@gmail.com",
-      },
-      {
-        facultyClasses: ["ELE2H22A"],
-        mentor: "False",
-        name: "Dr.Thenmozhi",
-        class_advisor: "False",
-        position: "Assistant Professor",
-        department: "CSE",
-        faculty_email: "murarisreekumar@gmail.com",
-      },
-      {
-        name: "Dr.Saipranav",
-        class_advisor: "True",
-        mentor: "True",
-        position: "Associate Professor",
-        department: "CSE",
-        faculty_email: "saipranv2310234@ssn.edu.in",
-      },
-    ],
-    message: "Faculty details retrieved succesfully!",
-    status: "S",
+  const currentYear = new Date().getFullYear();
+  const passoutOptions = Array.from({ length: 5 }, (_, i) =>
+    (currentYear + i).toString()
+  );
+
+  useEffect(() => {
+    const auth = localStorage.getItem("jwtToken");
+    setLoading(true);
+    axios
+      .get("http://localhost:8443/SuperAdmin/viewAllTeachers?department=CSE", {
+        headers: { Authorization: auth },
+        withCredentials: true,
+      })
+      .then((res) => {
+        const filtered = res.data.details.filter(
+          (t) => t.class_advisor === "True"
+        );
+        setAdvisors(filtered);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch advisors:", error);
+        setAdvisors([]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (mode === "delete") {
+      setLoading(true);
+      const auth = localStorage.getItem("jwtToken");
+      axios
+        .get("http://localhost:8443/SuperAdmin/viewAllGroupings", {
+          headers: { Authorization: auth },
+          withCredentials: true,
+        })
+        .then((res) => {
+          setGroupings(res.data.groups || []);
+        })
+        .catch((err) => {
+          console.error("Error fetching groupings:", err);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
+    }
+  }, [mode]);
+
+  const downloadRegisterSample = () => {
+    const sample = [
+      ["name", "Register Number"],
+      ["John Doe", "3122235001001"],
+    ];
+    const csv = sample.map((row) => row.join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute("download", "sample_register_numbers.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
-  const handleCSVUpload = (e) => {
+  const handleRegisterCSVUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
     Papa.parse(file, {
       header: true,
-      skipEmptyLines: true,
-      complete: function (results) {
-        setUploadedData(results.data);
+      complete: (result) => {
+        const headers = result.meta.fields;
+        if (
+          headers.length !== 2 ||
+          headers[0].trim() !== "name" ||
+          headers[1].trim() !== "Register Number"
+        ) {
+          alert(
+            "CSV format mismatch in Register Numbers CSV. Expected headers: name, Register Number."
+          );
+          return;
+        }
+        const nums = result.data
+          .map((row) => row["Register Number"])
+          .filter(Boolean)
+          .map((num) => num.trim().replace(/^"|"$/g, ""));
+        setRegisterNumbers(nums);
+      },
+      error: (error) => {
+        console.error("Register CSV parsing error:", error);
       },
     });
   };
 
-  const clearCSVUpload = () => {
-    setUploadedData([]);
+  const handleTimetableSave = (data) => {
+    setTimetable(data);
+    const codes = new Set();
+    Object.values(data).forEach((periods) => {
+      periods.forEach((p) => codes.add(p.classCode));
+    });
+    setClassCodes(Array.from(codes));
   };
 
-  const downloadSampleCSV = () => {
-    const sample = `Name,Register Number\nJohn Doe,12345\nJane Smith,67890`;
-    const blob = new Blob([sample], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "sample.csv";
-    link.click();
+  const handleSubmit = () => {
+    const auth = localStorage.getItem("jwtToken");
+
+    const normalizedDegree = degree.replace(/\./g, "").toUpperCase();
+
+    const payload = {
+      degree,
+      registernumbers: registerNumbers,
+      timetable,
+      "class-code": classCodes,
+      passout,
+      section:
+        groupType === "Normal" ? `${normalizedDegree}-${section}` : section,
+      advisorEmail,
+    };
+
+    if (groupType === "Elective") {
+      delete payload.advisorEmail;
+    }
+
+    axios
+      .post(
+        "http://localhost:8443/SuperAdmin/createOrEditLogicalGrouping",
+        payload,
+        {
+          headers: { Authorization: auth },
+          withCredentials: true,
+        }
+      )
+      .then((res) => alert("Submitted successfully"))
+      .catch((err) => {
+        alert("Submission failed");
+        console.log(err);
+      });
+  };
+
+  const handleDeleteGroup = async (groupCode) => {
+    console.log("Deleting group:", groupCode);
+    const token = localStorage.getItem("jwtToken");
+    if (!token) {
+      alert("No token found.");
+      return;
+    }
+
+    try {
+      const res = await axios.delete(
+        "http://localhost:8443/SuperAdmin/deleteGrouping",
+        {
+          headers: {
+            Authorization: token,
+            "Content-Type": "application/json",
+          },
+          data: { groupid: groupCode },
+          withCredentials: true,
+        }
+      );
+
+      if (res.data?.status === "S" || res.data?.status === "s") {
+        alert("Group deleted successfully");
+        setGroupings((prev) => prev.filter((g) => g.groupcode !== groupCode));
+      } else {
+        alert("Delete failed: " + (res.data?.message || "Unknown error"));
+      }
+    } catch (err) {
+      console.error("Error deleting group:", err);
+      alert("An error occurred during deletion.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-blue-50">
-      <NavbarSuperAdmin setIsLoggedIn={() => {}} />
+    <div className="bg-blue-50 min-h-screen">
+      {loading && (
+        <div className="fixed inset-0 z-50 bg-black/20 flex justify-center items-center">
+          <Loader2 className="animate-spin w-10 h-10 text-blue-600" />
+        </div>
+      )}
+      <NavbarSuperAdmin setIsLoggedIn={setIsLoggedIn} />
+      <div className="p-4">
+        <h2 className="text-2xl font-bold text-blue-800 mb-4 text-center">
+          Logical Grouping
+        </h2>
 
-      <div className="p-6 flex justify-center items-start">
-        <Card className="w-full max-w-4xl shadow-xl bg-white">
-          <CardContent className="p-6">
-            <h2 className="text-2xl font-bold mb-6 text-center text-blue-700">
-              Add or Remove
-            </h2>
+        <div className="flex justify-center mb-4">
+          <ToggleGroup
+            type="single"
+            value={mode}
+            onValueChange={(val) => val && setMode(val)}
+            className="bg-blue-100 p-1 rounded-lg"
+          >
+            <ToggleGroupItem
+              value="add"
+              className="px-4 py-2 data-[state=on]:bg-blue-600 data-[state=on]:text-white"
+            >
+              Add Group
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value="delete"
+              className="px-4 py-2 data-[state=on]:bg-blue-600 data-[state=on]:text-white"
+            >
+              Delete Group
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </div>
 
-            {/* 🔘 Toggle Group: Normal or Elective */}
-            <div className="flex justify-center mb-6">
-              <ToggleGroup
-                type="single"
-                value={classType}
-                onValueChange={(val) => {
-                  if (val) setClassType(val);
-                }}
-                className="bg-blue-100 rounded-lg"
-              >
-                <ToggleGroupItem
-                  value="normal"
-                  className="data-[state=on]:bg-blue-600 data-[state=on]:text-white px-4 py-2"
-                >
-                  Normal Class
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  value="elective"
-                  className="data-[state=on]:bg-blue-600 data-[state=on]:text-white px-4 py-2"
-                >
-                  Elective
-                </ToggleGroupItem>
-              </ToggleGroup>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-6 mb-6">
-              <div>
-                <Label>Department</Label>
-                <Input value="CSE" disabled className="bg-gray-100" />
-              </div>
-              <div>
-                <Label>Degree</Label>
-                <Select>
+        {mode === "add" && (
+          <Card className="bg-white shadow-md">
+            <CardContent className="space-y-4 py-6">
+              <div className="grid grid-cols-2 gap-4">
+                <Select value={degree} onValueChange={setDegree}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select degree" />
+                    <SelectValue placeholder="Select Degree" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="btech">B.Tech</SelectItem>
-                    <SelectItem value="mtech">M.Tech</SelectItem>
+                    <SelectItem value="B.E.">B.E.</SelectItem>
+                    <SelectItem value="B.Tech">B.Tech</SelectItem>
+                    <SelectItem value="M.Tech">M.Tech</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-              <div>
-                <Label>Year of Passout</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select year" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="2025">2025</SelectItem>
-                    <SelectItem value="2026">2026</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label>Section</Label>
+
                 <Input
-                  placeholder="Enter section"
-                  value={electiveOrSection}
-                  onChange={(e) => setElectiveOrSection(e.target.value)}
+                  placeholder="Section"
+                  value={section}
+                  onChange={(e) => setSection(e.target.value)}
                 />
+
+                <Select value={passout} onValueChange={setPassout}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Passout Year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {passoutOptions.map((year) => (
+                      <SelectItem key={year} value={year}>
+                        {year}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={groupType} onValueChange={setGroupType}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Group Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Normal">Normal</SelectItem>
+                    <SelectItem value="Elective">Elective</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
-                <Label>Upload CSV File</Label>
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <Input type="file" accept=".csv" onChange={handleCSVUpload} />
-                  <Button
-                    variant="outline"
-                    className="text-blue-700 border-blue-700"
-                    onClick={downloadSampleCSV}
-                  >
-                    Download Sample CSV
+                <label className="font-medium text-blue-700">
+                  Upload Register Numbers CSV
+                </label>
+                <div className="flex gap-4 mt-2 flex-wrap">
+                  <Input
+                    type="file"
+                    accept=".csv"
+                    onChange={handleRegisterCSVUpload}
+                  />
+                  <Button onClick={downloadRegisterSample} variant="secondary">
+                    Sample CSV
                   </Button>
-                  {uploadedData.length > 0 && (
-                    <Button
-                      variant="ghost"
-                      className="text-red-600"
-                      onClick={clearCSVUpload}
-                    >
-                      Clear Upload
-                    </Button>
-                  )}
                 </div>
               </div>
 
-              {classType === "normal" && (
-                <>
-                  <div className="md:col-span-2">
-                    <Label>Class Advisor</Label>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        placeholder="Advisor email"
-                        value={advisorEmail}
-                        disabled
-                        className="bg-gray-100"
-                      />
-                      <Button
-                        variant="outline"
-                        className="text-blue-700 border-blue-700 whitespace-nowrap"
-                        onClick={() => setAdvisorPopupOpen(true)}
-                      >
-                        Select
-                      </Button>
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-
-            {uploadedData.length > 0 && (
-              <div className="bg-blue-100 rounded-lg p-4 mb-6">
-                <h3 className="text-blue-800 font-semibold mb-2">
-                  Student List
-                </h3>
-                <ul className="list-disc list-inside text-sm text-blue-900">
-                  {uploadedData.map((entry, idx) => (
-                    <li key={"csv-" + idx}>
-                      {entry.Name} - {entry["Register Number"]}
-                    </li>
-                  ))}
-                </ul>
+              <div>
+                <label className="font-medium text-blue-700">Timetable</label>
+                <CreateTimetablePopup
+                  onSave={handleTimetableSave}
+                  advisorEmail={advisorEmail}
+                  setAdvisorEmail={setAdvisorEmail}
+                  groupType={groupType}
+                />
               </div>
-            )}
 
-            <div className="flex flex-wrap justify-center gap-4 mt-6">
               <Button
-                className="bg-blue-600 text-white px-6"
-                onClick={() => setPopupOpen(true)}
+                onClick={handleSubmit}
+                className="bg-blue-700 hover:bg-blue-800 text-white"
               >
-                Create Timetable
+                Submit Group
               </Button>
+            </CardContent>
+          </Card>
+        )}
 
-              <Button className="bg-blue-600 text-white px-6">Delete</Button>
-              <Button className="bg-blue-600 text-white px-6">Edit</Button>
-              <Button className="bg-blue-600 text-white px-6">Save</Button>
-            </div>
-          </CardContent>
-        </Card>
+        {mode === "delete" && (
+          <Card className="bg-white shadow-md">
+            <CardContent className="py-6">
+              <h3 className="text-xl font-semibold text-blue-800 mb-4">
+                Delete Logical Groupings
+              </h3>
+              <div className="overflow-auto border rounded-lg max-h-[500px]">
+                <table className="min-w-full text-sm text-left text-blue-900">
+                  <thead className="bg-blue-200 text-blue-700">
+                    <tr>
+                      <th className="px-4 py-2">Group Name</th>
+                      <th className="px-4 py-2">Group Code</th>
+                      <th className="px-4 py-2">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {groupings.map((group, idx) => (
+                      <tr key={idx} className="border-t border-blue-300">
+                        <td className="px-4 py-2">{group.section}</td>
+                        <td className="px-4 py-2">{group.groupcode}</td>
+                        <td className="px-4 py-2">
+                          <Button
+                            variant="destructive"
+                            onClick={() => handleDeleteGroup(group.groupcode)}
+                          >
+                            Delete
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
-      <CreateTimetablePopup open={popupOpen} setOpen={setPopupOpen} />
-      <ClassAdvisorPopup
-        open={advisorPopupOpen}
-        setOpen={setAdvisorPopupOpen}
-        teachers={allTeachers.details.filter((t) => t.department === "CSE")}
-        onSelect={(teacher) => {
-          setAdvisorName(teacher.name);
-          setAdvisorEmail(teacher.faculty_email);
-        }}
-      />
     </div>
   );
 }

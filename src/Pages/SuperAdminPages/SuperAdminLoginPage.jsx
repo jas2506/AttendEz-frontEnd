@@ -21,18 +21,22 @@ function SuperAdminLoginPage() {
   const handleLogin = async () => {
     setError("");
     try {
-      const res = await axios.post(
-        "http://localhost:8443/SuperAdmin/login",
-        {
-          email,
-          password,
-        },
-        {
-          withCredentials: true,
-        }
-      );
+      const res = await axios.post("http://localhost:8443/SuperAdmin/login", {
+        email,
+        password,
+      });
 
-      navigate("/superadmin/add-teacher");
+      const token = res.data.token;
+      console.log(token);
+      if (token && token.trim() !== "") {
+        localStorage.setItem("jwtToken", token);
+        console.log("jwt stored");
+        console.log(token);
+      } else {
+        setError("Token missing from server response");
+        return;
+      }
+      navigate("/superadmin/manageteacher");
     } catch (err) {
       console.error("Login failed:", err);
       setError("Invalid email or password");
