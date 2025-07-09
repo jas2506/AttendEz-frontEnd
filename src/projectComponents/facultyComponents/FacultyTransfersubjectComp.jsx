@@ -16,6 +16,7 @@ import {
   transferClass,
   dropClass,
 } from "../../TeacherApi";
+import LectureDetailsModal from "./FlipAttendanceComp"; // adjust path accordingly
 
 async function viewStudents(classcode) {
   try {
@@ -217,6 +218,10 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
   const [deleteResponseOpen, setDeleteResponseOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  //for the flip attendance part
+  const [selectedLecture, setSelectedLecture] = useState(null);
+  const [rawLectureDetails, setRawLectureDetails] = useState({});
+
   const handleDeleteClass = async () => {
     setIsDeleting(true);
     try {
@@ -251,14 +256,35 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
 
   useEffect(() => {
     async function fetchData() {
+      const response = await getLectureAttendanceByClassCode({
+        classcode: classdetails.classCode,
+      });
+      const details = response.data.details;
+
       const statsData = await calculateStatsForLecture(classdetails.classCode);
       const studentsData = await viewStudents(classdetails.classCode);
+
+      setRawLectureDetails(details);
       setStats(statsData);
       setStudents(studentsData);
     }
 
     fetchData();
   }, [classdetails.classCode]);
+
+  const refreshLectureStats = async () => {
+    const response = await getLectureAttendanceByClassCode({
+      classcode: classdetails.classCode,
+    });
+    const details = response.data.details;
+
+    const statsData = await calculateStatsForLecture(classdetails.classCode);
+    const studentsData = await viewStudents(classdetails.classCode);
+
+    setRawLectureDetails(details);
+    setStats(statsData);
+    setStudents(studentsData);
+  };
 
   // Add this function inside your FacultyTransfersubjectComp component
   const handleCloseResponseModal = () => {
@@ -685,9 +711,13 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
                         index % 2 === 0 ? "bg-white" : "bg-gray-50"
                       } hover:bg-gray-100 transition-colors`}
                     >
-                      <td className="px-6 py-4 font-medium text-green-700">
+                      <td
+                        className="px-6 py-4 font-medium text-green-700 cursor-pointer hover:underline"
+                        onClick={() => setSelectedLecture(s.name)}
+                      >
                         {s.name}
                       </td>
+
                       <td className="px-6 py-4 text-gray-600">{s.date}</td>
                       <td className="px-6 py-4 text-center font-medium text-lg">
                         {s.attended}
@@ -852,6 +882,18 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
           </div>
         </div>
       </FullScreenModal>
+      {selectedLecture && rawLectureDetails && (
+        <LectureDetailsModal
+          lectureKey={selectedLecture}
+          lectureData={rawLectureDetails[selectedLecture]}
+          studentMap={rawLectureDetails["student-details"].map}
+          classCode={classdetails.classCode}
+          onClose={() => {
+            setSelectedLecture(null);
+            refreshLectureStats(); // Reflects changes immediately
+          }}
+        />
+      )}
     </>
   );
 }
