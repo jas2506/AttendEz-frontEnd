@@ -47,6 +47,7 @@ function FacultyNavbar_j({ setIsLoggedIn }) {
         const detailsRes = await getFacultyDetails();
 
         setDetails(detailsRes.data.details);
+        localStorage.setItem("facDept", detailsRes.data.details.department);
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching faculty data:", error);

@@ -1,5 +1,6 @@
 import { User, GraduationCap, ChevronDown, Users, Clock } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getAllLogicalGroupings, createOrUpdateClass } from "../../TeacherApi";
 
 function FacultyCreateClassPage() {
   const [selectedGroupCode, setSelectedGroupCode] = useState("");
@@ -10,343 +11,37 @@ function FacultyCreateClassPage() {
   const [isClassDropdownOpen, setIsClassDropdownOpen] = useState(false);
   const [createdClass, setCreatedClass] = useState(null);
 
-  const logicalGroupings = {
-    message: "Logical groupings retrieved successfully!",
-    logical_groupings: [
-      {
-        registernumbers: [
-          "3122235001110",
-          "3122235001087",
-          "3122225001002",
-          "3122225001003",
-          "3122235001004",
-          "3122215001006",
-          "3122215001007",
-          "3122235001008",
-        ],
-        passout: "2029",
-        degree: "B.E.",
-        "class-code": [
-          "CSE2901B",
-          "CSE2902B",
-          "CSE2903B",
-          "CSE2904B",
-          "CSE2905B",
-        ],
-        section: "B",
-        _id: {
-          timestamp: 1750000592,
-          date: "2025-06-15T15:16:32.000+00:00",
-        },
-        department: "CSE",
-        groupcode: "CSE2029B",
-        timetable: {
-          Monday: [
-            {
-              classCode: "CSE2901B",
-              startTime: "09:00",
-              durationMinutes: 50,
-            },
-            {
-              classCode: "CSE2902B",
-              startTime: "10:00",
-              durationMinutes: 50,
-            },
-          ],
-          Tuesday: [
-            {
-              classCode: "CSE2903B",
-              startTime: "09:00",
-              durationMinutes: 50,
-            },
-            {
-              classCode: "CSE2904B",
-              startTime: "10:00",
-              durationMinutes: 50,
-            },
-          ],
-          Wednesday: [
-            {
-              classCode: "CSE2905B",
-              startTime: "09:00",
-              durationMinutes: 50,
-            },
-            {
-              classCode: "CSE2901B",
-              startTime: "10:00",
-              durationMinutes: 50,
-            },
-          ],
-          Thursday: [
-            {
-              classCode: "CSE2902B",
-              startTime: "09:00",
-              durationMinutes: 50,
-            },
-            {
-              classCode: "CSE2903B",
-              startTime: "10:00",
-              durationMinutes: 50,
-            },
-          ],
-          Friday: [
-            {
-              classCode: "CSE2904B",
-              startTime: "09:00",
-              durationMinutes: 50,
-            },
-            {
-              classCode: "CSE2905B",
-              startTime: "10:00",
-              durationMinutes: 50,
-            },
-          ],
-        },
-        advisorEmail: "murari2310237@ssn.edu.in",
-      },
-      {
-        registernumbers: ["3122235001008"],
-        passout: "2029",
-        degree: "B.E.",
-        "class-code": ["ELE2H11A"],
-        section: "A",
-        _id: {
-          timestamp: 1750000608,
-          date: "2025-06-15T15:16:48.000+00:00",
-        },
-        department: "CSE",
-        groupcode: "CSEELE2H11A2029",
-        timetable: {
-          Monday: [
-            {
-              classCode: "ELE2H11A",
-              startTime: "11:00",
-              durationMinutes: 50,
-            },
-          ],
-          Tuesday: [
-            {
-              classCode: "ELE2H11A",
-              startTime: "11:00",
-              durationMinutes: 100,
-            },
-          ],
-          Wednesday: [
-            {
-              classCode: "ELE2H11A",
-              startTime: "11:00",
-              durationMinutes: 50,
-            },
-          ],
-          Thursday: [
-            {
-              classCode: "ELE2H11A",
-              startTime: "11:00",
-              durationMinutes: 100,
-            },
-          ],
-          Friday: [
-            {
-              classCode: "ELE2H11A",
-              startTime: "11:00",
-              durationMinutes: 50,
-            },
-          ],
-        },
-      },
-      {
-        registernumbers: ["3122235001110", "3122235001087", "3122235001008"],
-        passout: "2027",
-        degree: "B.E.",
-        "class-code": ["ELE2H22A"],
-        section: "A",
-        _id: {
-          timestamp: 1750000569,
-          date: "2025-06-15T15:16:09.000+00:00",
-        },
-        department: "CSE",
-        groupcode: "CSEELE2H22A2027",
-        timetable: {
-          Monday: [
-            {
-              classCode: "ELE2H22A",
-              startTime: "14:00",
-              durationMinutes: 100,
-            },
-          ],
-          Tuesday: [
-            {
-              classCode: "ELE2H22A",
-              startTime: "14:00",
-              durationMinutes: 50,
-            },
-          ],
-          Wednesday: [
-            {
-              classCode: "ELE2H22A",
-              startTime: "14:00",
-              durationMinutes: 100,
-            },
-          ],
-          Thursday: [
-            {
-              classCode: "ELE2H22A",
-              startTime: "14:00",
-              durationMinutes: 50,
-            },
-          ],
-          Friday: [
-            {
-              classCode: "ELE2H22A",
-              startTime: "14:00",
-              durationMinutes: 100,
-            },
-          ],
-        },
-      },
-      {
-        registernumbers: [
-          "3122235001110",
-          "3122235001087",
-          "3122225001002",
-          "3122225001003",
-          "3122235001004",
-          "3122215001006",
-          "3122215001007",
-        ],
-        passout: "2027",
-        degree: "B.E.",
-        "class-code": [
-          "CSE2701B",
-          "CSE2702B",
-          "CSE2703B",
-          "CSE2704B",
-          "CSE2705B",
-        ],
-        section: "B",
-        _id: {
-          timestamp: 1750000484,
-          date: "2025-06-15T15:14:44.000+00:00",
-        },
-        department: "CSE",
-        groupcode: "CSE2027B",
-        timetable: {
-          Monday: [
-            {
-              classCode: "CSE2701B",
-              startTime: "09:00",
-              durationMinutes: 50,
-            },
-            {
-              classCode: "CSE2702B",
-              startTime: "10:00",
-              durationMinutes: 50,
-            },
-            {
-              classCode: "CSE2703B",
-              startTime: "11:00",
-              durationMinutes: 50,
-            },
-            {
-              classCode: "CSE2704B",
-              startTime: "12:00",
-              durationMinutes: 50,
-            },
-          ],
-          Tuesday: [
-            {
-              classCode: "CSE2705B",
-              startTime: "09:00",
-              durationMinutes: 50,
-            },
-            {
-              classCode: "CSE2701B",
-              startTime: "10:00",
-              durationMinutes: 50,
-            },
-            {
-              classCode: "CSE2702B",
-              startTime: "11:00",
-              durationMinutes: 50,
-            },
-            {
-              classCode: "CSE2703B",
-              startTime: "12:00",
-              durationMinutes: 50,
-            },
-          ],
-          Wednesday: [
-            {
-              classCode: "CSE2704B",
-              startTime: "09:00",
-              durationMinutes: 50,
-            },
-            {
-              classCode: "CSE2705B",
-              startTime: "10:00",
-              durationMinutes: 50,
-            },
-            {
-              classCode: "CSE2701B",
-              startTime: "11:00",
-              durationMinutes: 50,
-            },
-            {
-              classCode: "CSE2702B",
-              startTime: "12:00",
-              durationMinutes: 50,
-            },
-          ],
-          Thursday: [
-            {
-              classCode: "CSE2703B",
-              startTime: "09:00",
-              durationMinutes: 50,
-            },
-            {
-              classCode: "CSE2704B",
-              startTime: "10:00",
-              durationMinutes: 50,
-            },
-            {
-              classCode: "CSE2705B",
-              startTime: "11:00",
-              durationMinutes: 50,
-            },
-            {
-              classCode: "CSE2701B",
-              startTime: "12:00",
-              durationMinutes: 50,
-            },
-          ],
-          Friday: [
-            {
-              classCode: "CSE2702B",
-              startTime: "09:00",
-              durationMinutes: 50,
-            },
-            {
-              classCode: "CSE2703B",
-              startTime: "10:00",
-              durationMinutes: 50,
-            },
-            {
-              classCode: "CSE2704B",
-              startTime: "11:00",
-              durationMinutes: 50,
-            },
-            {
-              classCode: "CSE2705B",
-              startTime: "12:00",
-              durationMinutes: 50,
-            },
-          ],
-        },
-        advisorEmail: "saipranav2310324@ssn.edu.in",
-      },
-    ],
-    status: "S",
-  };
+  const [logicalGroupings, setLogicalGroupings] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("success");
+
+  useEffect(() => {
+    const department = localStorage.getItem("facDept"); // get from localStorage
+
+    async function fetchGroupings() {
+      try {
+        const response = await getAllLogicalGroupings(department);
+        if (response.data) {
+          setLogicalGroupings(response.data); // assuming API returns array
+        }
+      } catch (error) {
+        console.error("Failed to fetch logical groupings:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (department) {
+      fetchGroupings();
+    } else {
+      console.warn("No department found in localStorage");
+      setLoading(false);
+    }
+  }, []);
+
+  if (loading) return <p>Loading...</p>;
 
   const formatGroupCodeLabel = (groupcode) => {
     if (groupcode.includes("ELE")) {
@@ -420,7 +115,7 @@ function FacultyCreateClassPage() {
     return schedule;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selectedGroupCode || !selectedClassCode || !className || !credits) {
       alert(
         "Please fill in all fields and select both group code and class code."
@@ -435,9 +130,26 @@ function FacultyCreateClassPage() {
       credits: credits,
     };
 
-    console.log("Creating class:", JSON.stringify(classData, null, 2));
-    setCreatedClass(classData);
-    alert("Class created successfully!");
+    try {
+      const response = await createOrUpdateClass(classData);
+      if (response.status === 200) {
+        setCreatedClass(classData);
+        setToastMessage("Class created successfully!");
+        setToastType("success");
+      } else {
+        throw new Error("Unexpected response");
+      }
+    } catch (error) {
+      console.error("Failed to create class:", error);
+      const errorMessage =
+        error.response?.data?.message ||
+        "Something went wrong. Please try again.";
+      setToastMessage(errorMessage);
+      setToastType("error");
+    }
+
+    // Auto hide after 3 seconds
+    setTimeout(() => setToastMessage(""), 3000);
   };
 
   const resetForm = () => {
@@ -450,6 +162,16 @@ function FacultyCreateClassPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 md:p-10">
+      {toastMessage && (
+        <div
+          className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 px-4 py-2 rounded-md text-white shadow-md transition-all ${
+            toastType === "success" ? "bg-green-600" : "bg-red-600"
+          }`}
+        >
+          {toastMessage}
+        </div>
+      )}
+
       <div className="max-w-4xl mx-auto">
         <div className="bg-white border border-gray-200 shadow-lg rounded-2xl overflow-visible mb-6">
           <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 rounded-tl-2xl rounded-tr-2xl">
