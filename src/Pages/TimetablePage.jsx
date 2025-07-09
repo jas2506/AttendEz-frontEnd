@@ -1,116 +1,36 @@
 import React from "react";
+import { fetchTimetable } from "../Api";
+import { useState, useEffect } from "react";
 
 function TimetablePage() {
-  const timetableData = {
-    classDetails: {
-      ELE2H22A: {
-        facultyEmail: "saipranav2310324@ssn.edu.in",
-        classCode: "ELE2H22A",
-        passoutYear: "2027",
-        credits: "4",
-        className: "IMAGE ANALYSIS",
-        facultyName: "Dr. Saipranav",
-        department: "CSE",
-        groupCode: "CSEELE2H22A2027",
-      },
-      CSE2704B: {
-        facultyEmail: "saipranav2310324@ssn.edu.in",
-        classCode: "CSE2704B",
-        passoutYear: "2027",
-        credits: "4",
-        className: "COA",
-        facultyName: "Dr. Saipranav",
-        department: "CSE",
-        groupCode: "CSE2027B",
-      },
-      CSE2703B: {
-        facultyEmail: "saipranav2310324@ssn.edu.in",
-        classCode: "CSE2703B",
-        passoutYear: "2027",
-        credits: "4",
-        className: "COA",
-        facultyName: "Dr. Saipranav",
-        department: "CSE",
-        groupCode: "CSE2027B",
-      },
-      CSE2702B: {
-        facultyEmail: "saipranav2310324@ssn.edu.in",
-        classCode: "CSE2702B",
-        passoutYear: "2027",
-        credits: "4",
-        className: "COA",
-        facultyName: "Dr. Saipranav",
-        department: "CSE",
-        groupCode: "CSE2027B",
-      },
-      CSE2701B: {
-        facultyEmail: "saipranav2310324@ssn.edu.in",
-        classCode: "CSE2701B",
-        passoutYear: "2027",
-        credits: "4",
-        className: "COA",
-        facultyName: "Dr. Saipranav",
-        department: "CSE",
-        groupCode: "CSE2027B",
-      },
-      CSE2705B: {
-        facultyEmail: "saipranav2310324@ssn.edu.in",
-        classCode: "CSE2705B",
-        passoutYear: "2027",
-        credits: "4",
-        className: "COA",
-        facultyName: "Dr. Saipranav",
-        department: "CSE",
-        groupCode: "CSE2027B",
-      },
-    },
-    timetable: {
-      Monday: [
-        { classCode: "CSE2701B", startTime: "09:00", durationMinutes: 50 },
-        { classCode: "CSE2702B", startTime: "10:00", durationMinutes: 50 },
-        { classCode: "CSE2703B", startTime: "11:00", durationMinutes: 50 },
-        { classCode: "CSE2704B", startTime: "12:00", durationMinutes: 50 },
-        { classCode: "ELE2H22A", startTime: "14:00", durationMinutes: 100 },
-      ],
-      Tuesday: [
-        { classCode: "CSE2705B", startTime: "09:00", durationMinutes: 50 },
-        { classCode: "CSE2701B", startTime: "10:00", durationMinutes: 50 },
-        { classCode: "CSE2702B", startTime: "11:00", durationMinutes: 50 },
-        { classCode: "CSE2703B", startTime: "12:00", durationMinutes: 50 },
-        { classCode: "ELE2H22A", startTime: "14:00", durationMinutes: 50 },
-      ],
-      Wednesday: [
-        { classCode: "CSE2704B", startTime: "09:00", durationMinutes: 50 },
-        { classCode: "CSE2705B", startTime: "10:00", durationMinutes: 50 },
-        { classCode: "CSE2701B", startTime: "11:00", durationMinutes: 50 },
-        { classCode: "CSE2702B", startTime: "12:00", durationMinutes: 50 },
-        { classCode: "ELE2H22A", startTime: "14:00", durationMinutes: 100 },
-      ],
-      Thursday: [
-        { classCode: "CSE2703B", startTime: "09:00", durationMinutes: 50 },
-        { classCode: "CSE2704B", startTime: "10:00", durationMinutes: 50 },
-        { classCode: "CSE2705B", startTime: "11:00", durationMinutes: 50 },
-        { classCode: "CSE2701B", startTime: "12:00", durationMinutes: 50 },
-        { classCode: "ELE2H22A", startTime: "14:00", durationMinutes: 50 },
-      ],
-      Friday: [
-        { classCode: "CSE2702B", startTime: "09:00", durationMinutes: 50 },
-        { classCode: "CSE2703B", startTime: "10:00", durationMinutes: 50 },
-        { classCode: "CSE2704B", startTime: "11:00", durationMinutes: 50 },
-        { classCode: "CSE2705B", startTime: "12:00", durationMinutes: 50 },
-        { classCode: "ELE2H22A", startTime: "14:00", durationMinutes: 100 },
-      ],
-    },
-  };
+  const [timetableData, setTimetableData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const t = (await fetchTimetable()).timetable;
+        setTimetableData(t);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  if (loading) return <p>Loading...</p>;
+
+  
 
   return (
     <div className="max-w-7xl mx-auto px-4">
       <div className="bg-white p-6 rounded-xl flex flex-col items-center justify-center text-center">
         <div>
           <p className="text-2xl font-bold text-blue-700">Timetable</p>
-          <p className="text-sm text-gray-600 mt-1">
-            Weekly Class Schedule
-          </p>
+          <p className="text-sm text-gray-600 mt-1">Weekly Class Schedule</p>
         </div>
       </div>
       <LandscapeTimetable timetable={timetableData} />
@@ -156,10 +76,10 @@ function LandscapeTimetable({ timetable }) {
           </tr>
         </thead>
         <tbody>
-          {allSlots.map((slotTime,index) => (
+          {allSlots.map((slotTime, index) => (
             <tr key={slotTime} className="even:bg-gray-50">
               <td className="border px-4 py-2 font-medium text-blue-700">
-                {index+1}
+                {index + 1}
               </td>
               {days.map((day) => {
                 const cls =
