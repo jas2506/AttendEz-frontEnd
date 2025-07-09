@@ -9,636 +9,117 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import {
+  getLectureAttendanceByClassCode,
+  getStudentAttendanceByClassCode,
+  transferClass,
+  dropClass,
+} from "../../TeacherApi";
 
-function viewStudents(classcode) {
-  const sample = {
-    details: {
-      3122235001110: {
-        name: "SaipranavM",
-        attendance: {
-          ELE2H22A: {
-            "lecture.1": {
-              date: 20250616,
-              time: 222843,
-              present: 0,
-            },
-            "lecture.2": {
-              date: 20250616,
-              time: 224223,
-              present: 1,
-            },
-            "lecture.3": {
-              date: 20250616,
-              time: 224313,
-              present: 1,
-            },
-            "lecture.4": {
-              date: 20250616,
-              time: 234617,
-              present: 1,
-            },
-            "lecture.5": {
-              date: 20250616,
-              time: 234729,
-              present: 1,
-            },
-            "lecture.6": {
-              date: 20250617,
-              time: 151,
-              present: 1,
-            },
-            "lecture.7": {
-              date: 20250617,
-              time: 646,
-              present: 0,
-            },
-            "lecture.8": {
-              date: 20250617,
-              time: 1212,
-              present: 1,
-            },
-            "lecture.9": {
-              date: 20250617,
-              time: 1415,
-              present: 1,
-            },
-            "lecture.10": {
-              date: 20250617,
-              time: 2318,
-              present: 1,
-            },
-            "lecture.11": {
-              date: 20250617,
-              time: 1401,
-              present: 0,
-            },
-            "lecture.12": {
-              date: 20250617,
-              time: 1402,
-              present: 1,
-            },
-            "lecture.13": {
-              date: 20250617,
-              time: 1409,
-              present: 0,
-            },
-            "lecture.14": {
-              date: 20250617,
-              time: 1410,
-              present: 0,
-            },
-            "lecture.15": {
-              date: 20250617,
-              time: 1410,
-              present: 0,
-            },
-            "lecture.16": {
-              date: 20250617,
-              time: 1416,
-              present: 0,
-            },
-            "lecture.17": {
-              date: 20250617,
-              time: 1417,
-              present: 1,
-            },
-          },
-        },
-      },
-      3122235001087: {
-        name: "Murari Sreekumar",
-        attendance: {
-          ELE2H22A: {
-            "lecture.1": {
-              date: 20250616,
-              time: 222843,
-              present: 0,
-            },
-            "lecture.2": {
-              date: 20250616,
-              time: 224223,
-              present: 0,
-            },
-            "lecture.3": {
-              date: 20250616,
-              time: 224313,
-              present: 0,
-            },
-            "lecture.4": {
-              date: 20250616,
-              time: 234617,
-              present: 1,
-            },
-            "lecture.5": {
-              date: 20250616,
-              time: 234729,
-              present: 0,
-            },
-            "lecture.6": {
-              date: 20250617,
-              time: 151,
-              present: 0,
-            },
-            "lecture.7": {
-              date: 20250617,
-              time: 646,
-              present: 0,
-            },
-            "lecture.8": {
-              date: 20250617,
-              time: 1212,
-              present: 0,
-            },
-            "lecture.9": {
-              date: 20250617,
-              time: 1415,
-              present: 0,
-            },
-            "lecture.10": {
-              date: 20250617,
-              time: 2318,
-              present: 0,
-            },
-            "lecture.11": {
-              date: 20250617,
-              time: 1401,
-              present: 0,
-            },
-            "lecture.12": {
-              date: 20250617,
-              time: 1402,
-              present: 0,
-            },
-            "lecture.13": {
-              date: 20250617,
-              time: 1409,
-              present: 0,
-            },
-            "lecture.14": {
-              date: 20250617,
-              time: 1410,
-              present: 0,
-            },
-            "lecture.15": {
-              date: 20250617,
-              time: 1410,
-              present: 1,
-            },
-            "lecture.16": {
-              date: 20250617,
-              time: 1416,
-              present: 1,
-            },
-            "lecture.17": {
-              date: 20250617,
-              time: 1417,
-              present: 0,
-            },
-          },
-        },
-      },
-      3122235001008: {
-        name: "Student Five",
-        attendance: {
-          ELE2H22A: {
-            "lecture.1": {
-              date: 20250616,
-              time: 222843,
-              present: null,
-            },
-            "lecture.2": {
-              date: 20250616,
-              time: 224223,
-              present: null,
-            },
-            "lecture.3": {
-              date: 20250616,
-              time: 224313,
-              present: null,
-            },
-            "lecture.4": {
-              date: 20250616,
-              time: 234617,
-              present: null,
-            },
-            "lecture.5": {
-              date: 20250616,
-              time: 234729,
-              present: null,
-            },
-            "lecture.6": {
-              date: 20250617,
-              time: 151,
-              present: null,
-            },
-            "lecture.7": {
-              date: 20250617,
-              time: 646,
-              present: null,
-            },
-            "lecture.8": {
-              date: 20250617,
-              time: 1212,
-              present: null,
-            },
-            "lecture.9": {
-              date: 20250617,
-              time: 1415,
-              present: null,
-            },
-            "lecture.10": {
-              date: 20250617,
-              time: 2318,
-              present: null,
-            },
-            "lecture.11": {
-              date: 20250617,
-              time: 1401,
-              present: 0,
-            },
-            "lecture.12": {
-              date: 20250617,
-              time: 1402,
-              present: 0,
-            },
-            "lecture.13": {
-              date: 20250617,
-              time: 1409,
-              present: 0,
-            },
-            "lecture.14": {
-              date: 20250617,
-              time: 1410,
-              present: 0,
-            },
-            "lecture.15": {
-              date: 20250617,
-              time: 1410,
-              present: 0,
-            },
-            "lecture.16": {
-              date: 20250617,
-              time: 1416,
-              present: 0,
-            },
-            "lecture.17": {
-              date: 20250617,
-              time: 1417,
-              present: 0,
-            },
-          },
-        },
-      },
-      3122235001004: {
-        name: "Student Four",
-        attendance: {
-          ELE2H22A: {
-            "lecture.1": {
-              date: 20250616,
-              time: 222843,
-              present: null,
-            },
-            "lecture.2": {
-              date: 20250616,
-              time: 224223,
-              present: null,
-            },
-            "lecture.3": {
-              date: 20250616,
-              time: 224313,
-              present: null,
-            },
-            "lecture.4": {
-              date: 20250616,
-              time: 234617,
-              present: null,
-            },
-            "lecture.5": {
-              date: 20250616,
-              time: 234729,
-              present: null,
-            },
-            "lecture.6": {
-              date: 20250617,
-              time: 151,
-              present: null,
-            },
-            "lecture.7": {
-              date: 20250617,
-              time: 646,
-              present: null,
-            },
-            "lecture.8": {
-              date: 20250617,
-              time: 1212,
-              present: null,
-            },
-            "lecture.9": {
-              date: 20250617,
-              time: 1415,
-              present: null,
-            },
-            "lecture.10": {
-              date: 20250617,
-              time: 2318,
-              present: null,
-            },
-            "lecture.11": {
-              date: 20250617,
-              time: 1401,
-              present: 0,
-            },
-            "lecture.12": {
-              date: 20250617,
-              time: 1402,
-              present: 0,
-            },
-            "lecture.13": {
-              date: 20250617,
-              time: 1409,
-              present: 0,
-            },
-            "lecture.14": {
-              date: 20250617,
-              time: 1410,
-              present: 0,
-            },
-            "lecture.15": {
-              date: 20250617,
-              time: 1410,
-              present: 0,
-            },
-            "lecture.16": {
-              date: 20250617,
-              time: 1416,
-              present: 0,
-            },
-            "lecture.17": {
-              date: 20250617,
-              time: 1417,
-              present: 0,
-            },
-          },
-        },
-      },
-    },
-    message: "successfully retrieved student attendance by class code",
-    status: "S",
-  };
+async function viewStudents(classcode) {
+  try {
+    // Step 1: Get the attendance data from API
+    const response = await getStudentAttendanceByClassCode({ classcode });
+    const sample = response.data;
 
-  // Process student data
-  const students = [];
-  for (const [studentId, studentData] of Object.entries(sample.details)) {
-    const attendanceData =
-      studentData.attendance[classcode] || studentData.attendance["ELE2H22A"];
-    if (!attendanceData) continue;
+    // Step 2: Process student data
+    const students = [];
+    for (const [studentId, studentData] of Object.entries(sample.details)) {
+      const attendanceData = studentData.attendance[classcode];
+      if (!attendanceData) continue;
 
-    const lecturesAttended = [];
-    let totalLectures = 0;
-    let attendedCount = 0;
+      const lecturesAttended = [];
+      let totalLectures = 0;
+      let attendedCount = 0;
 
-    for (const [lectureKey, lectureData] of Object.entries(attendanceData)) {
-      if (!lectureKey.startsWith("lecture.")) continue;
+      for (const [lectureKey, lectureData] of Object.entries(attendanceData)) {
+        if (!lectureKey.startsWith("lecture.")) continue;
 
-      totalLectures++;
-      if (lectureData.present === 1) {
-        attendedCount++;
-        lecturesAttended.push(lectureKey);
+        totalLectures++;
+        if (lectureData.present === 1) {
+          attendedCount++;
+          lecturesAttended.push(lectureKey);
+        }
       }
+
+      const attendancePercentage =
+        totalLectures > 0
+          ? ((attendedCount / totalLectures) * 100).toFixed(1)
+          : 0;
+
+      students.push({
+        id: studentId,
+        name: studentData.name,
+        lecturesAttended,
+        attendancePercentage,
+        totalLectures,
+        attendedCount,
+      });
     }
 
-    const attendancePercentage =
-      totalLectures > 0
-        ? ((attendedCount / totalLectures) * 100).toFixed(1)
-        : 0;
-
-    students.push({
-      id: studentId,
-      name: studentData.name,
-      lecturesAttended,
-      attendancePercentage,
-      totalLectures,
-      attendedCount,
-    });
+    return students;
+  } catch (error) {
+    console.error("Failed to fetch student attendance:", error);
+    return [];
   }
-
-  return students;
 }
 
-function calculateStatsForLecture(classCode) {
-  const sampleapidata = {
-    details: {
-      "lecture.17": {
-        date: 20250617,
-        time: 1417,
-        attendance: {
-          3122235001110: 1,
-          3122235001087: 0,
-          3122235001008: 0,
-          3122235001004: 0,
-        },
-      },
-      "lecture.15": {
-        date: 20250617,
-        time: 1410,
-        attendance: {
-          3122235001110: 0,
-          3122235001087: 1,
-          3122235001008: 0,
-          3122235001004: 0,
-        },
-      },
-      "lecture.16": {
-        date: 20250617,
-        time: 1416,
-        attendance: {
-          3122235001110: 0,
-          3122235001087: 1,
-          3122235001008: 0,
-          3122235001004: 0,
-        },
-      },
-      "lecture.13": {
-        date: 20250617,
-        time: 1409,
-        attendance: {
-          3122235001110: 0,
-          3122235001087: 0,
-          3122235001008: 0,
-          3122235001004: 0,
-        },
-      },
-      "lecture.14": {
-        date: 20250617,
-        time: 1410,
-        attendance: {
-          3122235001110: 0,
-          3122235001087: 0,
-          3122235001008: 0,
-          3122235001004: 0,
-        },
-      },
-      "lecture.11": {
-        date: 20250617,
-        time: 1401,
-        attendance: {
-          3122235001110: 0,
-          3122235001087: 0,
-          3122235001008: 0,
-          3122235001004: 0,
-        },
-      },
-      "lecture.12": {
-        date: 20250617,
-        time: 1402,
-        attendance: {
-          3122235001110: 1,
-          3122235001087: 0,
-          3122235001008: 0,
-          3122235001004: 0,
-        },
-      },
-      "lecture.6": {
-        date: 20250617,
-        time: 151,
-        attendance: {
-          3122235001110: 1,
-          3122235001087: 0,
-          3122235001008: 0,
-        },
-      },
-      "lecture.7": {
-        date: 20250617,
-        time: 646,
-        attendance: {
-          3122235001110: 0,
-          3122235001087: 0,
-          3122235001008: 0,
-        },
-      },
-      "lecture.10": {
-        date: 20250617,
-        time: 2318,
-        attendance: {
-          3122235001110: 1,
-          3122235001087: 0,
-          3122235001008: 0,
-        },
-      },
-      "lecture.4": {
-        date: 20250616,
-        time: 234617,
-        attendance: {
-          3122235001110: 1,
-          3122235001087: 1,
-          3122235001008: 0,
-        },
-      },
-      "lecture.5": {
-        date: 20250616,
-        time: 234729,
-        attendance: {
-          3122235001110: 1,
-          3122235001087: 0,
-          3122235001008: 0,
-        },
-      },
-      "lecture.2": {
-        date: 20250616,
-        time: 224223,
-        attendance: {
-          3122235001110: 1,
-          3122235001087: 0,
-          3122235001008: 0,
-        },
-      },
-      "lecture.3": {
-        date: 20250616,
-        time: 224313,
-        attendance: {
-          3122235001110: 1,
-          3122235001087: 0,
-          3122235001008: 0,
-        },
-      },
-      "lecture.1": {
-        date: 20250616,
-        time: 222843,
-        attendance: {
-          3122235001110: 0,
-          3122235001087: 0,
-          3122235001008: 0,
-        },
-      },
-      "lecture.8": {
-        date: 20250617,
-        time: 1212,
-        attendance: {
-          3122235001110: 1,
-          3122235001087: 0,
-          3122235001008: 0,
-        },
-      },
-      "student-details": {
-        map: {
-          3122235001110: "SaipranavM",
-          3122235001087: "Murari Sreekumar",
-          3122235001008: "Student Five",
-          3122235001004: "Student Five",
-        },
-      },
-      "lecture.9": {
-        date: 20250617,
-        time: 1415,
-        attendance: {
-          3122235001110: 1,
-          3122235001087: 0,
-          3122235001008: 0,
-        },
-      },
-    },
-    message: "attendance details retrieved successfully",
-    status: "S",
-  };
-
-  const lectures = [];
-  const totalStudents = Object.keys(
-    Object.values(sampleapidata.details)[0]?.attendance || {}
-  ).length;
-
-  for (const [key, lecture] of Object.entries(sampleapidata.details)) {
-    if (!key.startsWith("lecture.")) continue;
-    const attended = Object.values(lecture.attendance).filter(
-      (v) => v === 1
-    ).length;
-    const percent = ((attended / totalStudents) * 100).toFixed(1);
-
-    // Format date nicely
-    const dateStr = lecture.date.toString();
-    const formattedDate = `${dateStr.slice(6, 8)}/${dateStr.slice(
-      4,
-      6
-    )}/${dateStr.slice(0, 4)}`;
-
-    // Format time nicely
-    const timeStr = lecture.time.toString().padStart(6, "0");
-    const formattedTime = `${timeStr.slice(0, 2)}:${timeStr.slice(
-      2,
-      4
-    )}:${timeStr.slice(4, 6)}`;
-
-    lectures.push({
-      name: key,
-      date: formattedDate,
-      time: formattedTime,
-      attended,
-      total: totalStudents,
-      percent,
+async function calculateStatsForLecture(classCode) {
+  try {
+    // Step 1: Fetch lecture attendance data from API
+    const response = await getLectureAttendanceByClassCode({
+      classcode: classCode,
     });
-  }
+    const sampleapidata = response.data;
 
-  return lectures;
+    const lectures = [];
+
+    // Step 2: Extract total student count (based on any lecture's attendance)
+    const firstLecture = Object.values(sampleapidata.details)[0];
+    const totalStudents = Object.keys(firstLecture?.attendance || {}).length;
+
+    // Step 3: Collect and format each lecture entry
+    for (const [key, lecture] of Object.entries(sampleapidata.details)) {
+      if (!key.startsWith("lecture.")) continue;
+
+      const attended = Object.values(lecture.attendance).filter(
+        (v) => v === 1
+      ).length;
+      const percent = ((attended / totalStudents) * 100).toFixed(1);
+
+      const dateStr = lecture.date.toString();
+      const formattedDate = `${dateStr.slice(6, 8)}/${dateStr.slice(
+        4,
+        6
+      )}/${dateStr.slice(0, 4)}`;
+
+      const timeStr = lecture.time.toString().padStart(6, "0");
+      const formattedTime = `${timeStr.slice(0, 2)}:${timeStr.slice(
+        2,
+        4
+      )}:${timeStr.slice(4, 6)}`;
+
+      lectures.push({
+        name: key,
+        date: formattedDate,
+        time: formattedTime,
+        attended,
+        total: totalStudents,
+        percent,
+        lectureNumber: parseInt(key.split(".")[1]), // for sorting
+      });
+    }
+
+    // Step 4: Sort lectures by lecture number
+    lectures.sort((a, b) => a.lectureNumber - b.lectureNumber);
+
+    // Step 5: Return final lecture stats without the internal lectureNumber
+    return lectures.map(({ lectureNumber, ...rest }) => rest);
+  } catch (error) {
+    console.error("Failed to fetch lecture stats:", error);
+    return [];
+  }
 }
 
 // Custom Modal Component
@@ -691,19 +172,185 @@ function FullScreenModal({ isOpen, onClose, children }) {
   );
 }
 
-function FacultyTransfersubjectComp({ c }) {
-  const classdetails = c || {
-    className: "Advanced Mathematics",
-    classCode: "ELE2H22A",
-    section: "A",
-    year: "2024-25",
-  };
+// Small Popup Modal Component
+function SmallModal({ isOpen, onClose, children }) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop with blur */}
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      {/* Modal Content */}
+      <div className="relative w-full max-w-md mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden">
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 z-10 p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+        >
+          <X className="w-5 h-5 text-gray-600" />
+        </button>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
+  const classdetails = c;
 
   const [lectureStatsOpen, setLectureStatsOpen] = useState(false);
   const [studentsOpen, setStudentsOpen] = useState(false);
+  const [transferModalOpen, setTransferModalOpen] = useState(false);
+  const [responseModalOpen, setResponseModalOpen] = useState(false);
 
-  const stats = calculateStatsForLecture(classdetails.classCode);
-  const students = viewStudents(classdetails.classCode);
+  const [stats, setStats] = useState([]);
+  const [students, setStudents] = useState([]);
+  const [newFacEmail, setNewFacEmail] = useState("");
+  const [transferResponse, setTransferResponse] = useState(null);
+  const [isTransferring, setIsTransferring] = useState(false);
+
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteResponse, setDeleteResponse] = useState(null);
+  const [deleteResponseOpen, setDeleteResponseOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeleteClass = async () => {
+    setIsDeleting(true);
+    try {
+      const response = await dropClass({ classCode: classdetails.classCode });
+
+      let result;
+      if (response.status === 200 && response.data?.status === "S") {
+        result = response.data;
+      } else {
+        result = {
+          status: "E",
+          message: response.data?.message || "Failed to drop class.",
+        };
+      }
+
+      setDeleteResponse(result);
+    } catch (error) {
+      console.error("Drop class error:", error);
+      setDeleteResponse({
+        status: "E",
+        message:
+          error.response?.data?.message ||
+          error.message ||
+          "An error occurred.",
+      });
+    } finally {
+      setIsDeleting(false);
+      setDeleteConfirmOpen(false);
+      setDeleteResponseOpen(true);
+    }
+  };
+
+  useEffect(() => {
+    async function fetchData() {
+      const statsData = await calculateStatsForLecture(classdetails.classCode);
+      const studentsData = await viewStudents(classdetails.classCode);
+      setStats(statsData);
+      setStudents(studentsData);
+    }
+
+    fetchData();
+  }, [classdetails.classCode]);
+
+  // Add this function inside your FacultyTransfersubjectComp component
+  const handleCloseResponseModal = () => {
+    setResponseModalOpen(false);
+
+    // If the transfer was successful, refresh the page after closing the modal
+    if (transferResponse?.status === "S" && onTransferSuccess) {
+      onTransferSuccess();
+    }
+  };
+
+  // Updated handleTransfer function that accepts onTransferSuccess prop
+  const handleTransfer = async () => {
+    if (!newFacEmail.trim()) {
+      alert("Please enter a valid email address");
+      return;
+    }
+
+    setIsTransferring(true);
+
+    try {
+      const response = await transferClass({
+        classCode: classdetails.classCode,
+        newFacEmail: newFacEmail.trim(),
+      });
+
+      // Check if the response is successful
+      // Handle different response formats
+      let transferResult;
+
+      if (response.status === 200 || response.status === "200") {
+        // If HTTP status is 200, consider it successful
+        transferResult = {
+          status: "S",
+          message:
+            response.data?.message ||
+            response.message ||
+            "The subject has been transferred successfully to the new faculty member.",
+        };
+      } else if (response.status === "S") {
+        // If the response has status "S", it's successful
+        transferResult = response;
+      } else if (response.data && response.data.status === "S") {
+        // If the response data has status "S", it's successful
+        transferResult = response.data;
+      } else {
+        // Otherwise, treat as error
+        transferResult = {
+          status: "E",
+          message:
+            response.data?.message ||
+            response.message ||
+            "Failed to transfer class. Please try again.",
+        };
+      }
+
+      setTransferResponse(transferResult);
+      setTransferModalOpen(false);
+      setResponseModalOpen(true);
+      setNewFacEmail("");
+
+      // Don't refresh immediately - let the user see the success modal first
+    } catch (error) {
+      console.error("Transfer failed:", error);
+
+      // Check if it's actually a successful response wrapped in an error
+      if (error.response && error.response.status === 200) {
+        const successResult = {
+          status: "S",
+          message:
+            error.response.data?.message ||
+            "The subject has been transferred successfully to the new faculty member.",
+        };
+        setTransferResponse(successResult);
+
+        // Don't refresh immediately - let the user see the success modal first
+      } else {
+        setTransferResponse({
+          status: "E",
+          message:
+            error.response?.data?.message ||
+            error.message ||
+            "Failed to transfer class. Please try again.",
+        });
+      }
+
+      setTransferModalOpen(false);
+      setResponseModalOpen(true);
+    } finally {
+      setIsTransferring(false);
+    }
+  };
 
   const totalLectures = stats.length;
   const avgAttendance = totalLectures
@@ -756,18 +403,206 @@ function FacultyTransfersubjectComp({ c }) {
               View Students
             </Button>
 
-            <Button className="cursor-pointer flex items-center gap-2 text-sm text-blue-700 border-blue-200 bg-blue-50 hover:bg-blue-100">
+            <Button
+              onClick={() => setTransferModalOpen(true)}
+              className="cursor-pointer flex items-center gap-2 text-sm text-blue-700 border-blue-200 bg-blue-50 hover:bg-blue-100"
+            >
               <Users className="w-4 h-4" />
               Transfer to another Faculty
             </Button>
 
-            <Button className="cursor-pointer flex items-center gap-2 text-sm text-red-600 border-red-200 bg-red-50 hover:bg-red-100">
+            <Button
+              onClick={() => setDeleteConfirmOpen(true)}
+              className="cursor-pointer flex items-center gap-2 text-sm text-red-600 border-red-200 bg-red-50 hover:bg-red-100"
+            >
               <Trash2 className="w-4 h-4" />
               Delete
             </Button>
           </div>
         </div>
       </div>
+
+      <SmallModal
+        isOpen={deleteConfirmOpen}
+        onClose={() => setDeleteConfirmOpen(false)}
+      >
+        <div className="p-6 space-y-4 text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Trash2 className="w-8 h-8 text-red-600" />
+          </div>
+          <h3 className="text-xl font-bold text-red-800 mb-2">
+            Confirm Deletion
+          </h3>
+          <p className="text-gray-600 text-sm">
+            Are you sure you want to delete this class? This action cannot be
+            undone.
+          </p>
+
+          <div className="flex gap-3 pt-4">
+            <Button
+              onClick={() => setDeleteConfirmOpen(false)}
+              className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200"
+              disabled={isDeleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleDeleteClass}
+              className="flex-1 bg-red-600 text-white hover:bg-red-700"
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </Button>
+          </div>
+        </div>
+      </SmallModal>
+
+      <SmallModal
+        isOpen={deleteResponseOpen}
+        onClose={() => setDeleteResponseOpen(false)}
+      >
+        <div className="p-6 space-y-4 text-center">
+          {deleteResponse?.status === "S" ? (
+            <>
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <UserCheck className="w-8 h-8 text-green-600" />
+              </div>
+              <h3 className="text-xl font-bold text-green-800 mb-2">
+                Class Deleted!
+              </h3>
+              <p className="text-green-700 text-sm">{deleteResponse.message}</p>
+            </>
+          ) : (
+            <>
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <X className="w-8 h-8 text-red-600" />
+              </div>
+              <h3 className="text-xl font-bold text-red-800 mb-2">
+                Deletion Failed
+              </h3>
+              <p className="text-red-700 text-sm">
+                {deleteResponse?.message ||
+                  "An error occurred while deleting the class."}
+              </p>
+            </>
+          )}
+          <div className="pt-4">
+            <Button
+              onClick={() => {
+                setDeleteResponseOpen(false);
+                if (deleteResponse?.status === "S" && onTransferSuccess) {
+                  onTransferSuccess(); // reuse the same callback to refresh list
+                }
+              }}
+              className="w-full bg-gray-600 text-white hover:bg-gray-700"
+            >
+              Close
+            </Button>
+          </div>
+        </div>
+      </SmallModal>
+
+      {/* Transfer Modal */}
+      <SmallModal
+        isOpen={transferModalOpen}
+        onClose={() => setTransferModalOpen(false)}
+      >
+        <div className="p-6 space-y-4">
+          <div className="text-center">
+            <Users className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-gray-800 mb-2">
+              Transfer Class to Another Faculty
+            </h3>
+            <p className="text-gray-600 text-sm mb-4">
+              Enter the email address of the faculty member you want to transfer
+              this class to.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                New Faculty Email
+              </label>
+              <input
+                type="email"
+                value={newFacEmail}
+                onChange={(e) => setNewFacEmail(e.target.value)}
+                placeholder="Enter faculty email address"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                disabled={isTransferring}
+              />
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <Button
+                onClick={() => setTransferModalOpen(false)}
+                className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200"
+                disabled={isTransferring}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleTransfer}
+                className="flex-1 bg-blue-600 text-white hover:bg-blue-700"
+                disabled={isTransferring || !newFacEmail.trim()}
+              >
+                {isTransferring ? "Transferring..." : "Transfer"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </SmallModal>
+
+      {/* Response Modal */}
+      <SmallModal isOpen={responseModalOpen} onClose={handleCloseResponseModal}>
+        <div className="p-6 space-y-4">
+          <div className="text-center">
+            {transferResponse ? (
+              transferResponse.status === "S" ? (
+                <>
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <UserCheck className="w-8 h-8 text-green-600" />
+                  </div>
+                  <h3 className="text-xl font-bold text-green-800 mb-2">
+                    Transfer Successful!
+                  </h3>
+                  <p className="text-green-700 text-sm">
+                    {transferResponse.message ||
+                      "The subject has been transferred successfully to the new faculty member."}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <X className="w-8 h-8 text-red-600" />
+                  </div>
+                  <h3 className="text-xl font-bold text-red-800 mb-2">
+                    Transfer Failed
+                  </h3>
+                  <p className="text-red-700 text-sm">
+                    {transferResponse.message ||
+                      "There was an error transferring the subject. Please try again or contact support."}
+                  </p>
+                </>
+              )
+            ) : (
+              <div className="text-center text-gray-600 text-sm">
+                Processing response...
+              </div>
+            )}
+          </div>
+
+          <div className="pt-4">
+            <Button
+              onClick={handleCloseResponseModal}
+              className="w-full bg-gray-600 text-white hover:bg-gray-700"
+            >
+              Close
+            </Button>
+          </div>
+        </div>
+      </SmallModal>
 
       {/* Lecture Stats Modal */}
       <FullScreenModal

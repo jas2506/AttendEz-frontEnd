@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   User,
   Contact,
@@ -8,96 +8,9 @@ import {
   ArrowLeft,
   GraduationCap,
 } from "lucide-react";
+import { getFacultyDetails,getMentorListAttendance } from "../../TeacherApi";
 
-// Sample API data
-const apiValue = {
-  details: {
-    3122235001110: {
-      name: "Saipranav M",
-      attendance: {
-        ELE2H22A: {
-          "lecture.1": { date: 20250616, time: 222843, present: 1 },
-          "lecture.2": { date: 20250616, time: 224223, present: 0 },
-          "lecture.3": { date: 20250616, time: 224313, present: 1 },
-          "lecture.4": { date: 20250616, time: 234617, present: 1 },
-          "lecture.5": { date: 20250616, time: 234729, present: 1 },
-          "lecture.6": { date: 20250617, time: 151, present: 1 },
-          "lecture.7": { date: 20250617, time: 646, present: 0 },
-          "lecture.8": { date: 20250617, time: 1212, present: 1 },
-          "lecture.9": { date: 20250617, time: 1415, present: 1 },
-          "lecture.10": { date: 20250617, time: 2318, present: 1 },
-          "lecture.11": { date: 20250617, time: 1401, present: 0 },
-          "lecture.12": { date: 20250617, time: 1402, present: 1 },
-          "lecture.13": { date: 20250617, time: 1409, present: 0 },
-          "lecture.14": { date: 20250617, time: 1410, present: 0 },
-          "lecture.15": { date: 20250617, time: 1410, present: 0 },
-          "lecture.16": { date: 20250617, time: 1416, present: 0 },
-          "lecture.17": { date: 20250617, time: 1417, present: 1 },
-          "lecture.18": { date: 20250618, time: 1839, present: 1 },
-        },
-        CSE2701B: {
-          "lecture.1": { date: 20250617, time: 34, present: 1 },
-          "lecture.2": { date: 20250617, time: 36, present: 1 },
-          "lecture.3": { date: 20250617, time: 1110, present: 1 },
-          "lecture.4": { date: 20250617, time: 1111, present: 1 },
-          "lecture.5": { date: 20250617, time: 1112, present: 1 },
-          "lecture.6": { date: 20250617, time: 1256, present: 1 },
-          "lecture.7": { date: 20250617, time: 1300, present: 1 },
-          "lecture.8": { date: 20250617, time: 1304, present: 1 },
-          "lecture.9": { date: 20250618, time: 1904, present: 1 },
-        },
-      },
-    },
-    3122235001087: {
-      name: "Murari Sreekumar",
-      attendance: {
-        ELE2H22A: {
-          "lecture.1": { date: 20250616, time: 222843, present: 0 },
-          "lecture.2": { date: 20250616, time: 224223, present: 0 },
-          "lecture.3": { date: 20250616, time: 224313, present: 0 },
-          "lecture.4": { date: 20250616, time: 234617, present: 1 },
-          "lecture.5": { date: 20250616, time: 234729, present: 0 },
-          "lecture.6": { date: 20250617, time: 151, present: 0 },
-          "lecture.7": { date: 20250617, time: 646, present: 0 },
-          "lecture.8": { date: 20250617, time: 1212, present: 0 },
-          "lecture.9": { date: 20250617, time: 1415, present: 0 },
-          "lecture.10": { date: 20250617, time: 2318, present: 0 },
-          "lecture.11": { date: 20250617, time: 1401, present: 0 },
-          "lecture.12": { date: 20250617, time: 1402, present: 0 },
-          "lecture.13": { date: 20250617, time: 1409, present: 0 },
-          "lecture.14": { date: 20250617, time: 1410, present: 0 },
-          "lecture.15": { date: 20250617, time: 1410, present: 1 },
-          "lecture.16": { date: 20250617, time: 1416, present: 1 },
-          "lecture.17": { date: 20250617, time: 1417, present: 0 },
-          "lecture.18": { date: 20250618, time: 1839, present: 1 },
-        },
-        CSE2701B: {
-          "lecture.1": { date: 20250617, time: 34, present: 0 },
-          "lecture.2": { date: 20250617, time: 36, present: 0 },
-          "lecture.3": { date: 20250617, time: 1110, present: 0 },
-          "lecture.4": { date: 20250617, time: 1111, present: 0 },
-          "lecture.5": { date: 20250617, time: 1112, present: 0 },
-          "lecture.6": { date: 20250617, time: 1256, present: 1 },
-          "lecture.7": { date: 20250617, time: 1300, present: 1 },
-          "lecture.8": { date: 20250617, time: 1304, present: 0 },
-          "lecture.9": { date: 20250618, time: 1904, present: 1 },
-        },
-      },
-    },
-  },
-  message: "Mentees attendance retrieved successfully",
-  status: "S",
-};
 
-const facultyDetails = {
-  _id: "68579753a03a9f34b7ab7691",
-  department: "EEE",
-  faculty_email: "sripranv@gmail.com",
-  position: "Assistant Professor",
-  name: "Dr. Sripranav",
-  mentor: true,
-  class_advisor: true,
-};
 
 // Utility function to calculate student summaries
 function getStudentSummaries(apiData) {
@@ -338,7 +251,41 @@ function StudentCard({ student, apiValue, onViewDetails }) {
 
 // Main Component
 function MentorListPage() {
-  const studentSummaries = getStudentSummaries(apiValue);
+  const [facultyDetails, setFacultyDetails] = useState(null);
+  const [mentorList, setMentorList] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        // Fetch both APIs in parallel
+        const [facultyRes, mentorRes] = await Promise.all([
+          getFacultyDetails(),
+          getMentorListAttendance(),
+        ]);
+
+        setFacultyDetails(facultyRes.data);
+        setMentorList(mentorRes.data);
+      } catch (err) {
+        setError("Failed to fetch data");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
+  if (!mentorList) return <p>No mentor data found.</p>;
+
+  // Safe to call after null check
+  const studentSummaries = getStudentSummaries(mentorList);
+
 
   // Calculate overall statistics
   const totalStudents = studentSummaries.length;
@@ -359,23 +306,21 @@ function MentorListPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* Header */}
-          <div className="bg-white border border-gray-200 shadow-lg rounded-2xl overflow-hidden mb-6">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
-              <div className="flex items-center gap-4">
-                <div className="bg-white/10 p-3 rounded-xl">
-                  <span className="text-2xl text-white">
-                    <Presentation></Presentation>
-                  </span>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-white">Mentor View</p>
-                  <p className="text-blue-100 text-sm mt-1">List of Mentees</p>
-                </div>
+        <div className="bg-white border border-gray-200 shadow-lg rounded-2xl overflow-hidden mb-6">
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
+            <div className="flex items-center gap-4">
+              <div className="bg-white/10 p-3 rounded-xl">
+                <span className="text-2xl text-white">
+                  <Presentation></Presentation>
+                </span>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">Mentor View</p>
+                <p className="text-blue-100 text-sm mt-1">List of Mentees</p>
               </div>
             </div>
           </div>
-
-          
+        </div>
 
         {/* Student Cards */}
         <div className="space-y-4">
@@ -384,7 +329,7 @@ function MentorListPage() {
               <StudentCard
                 key={student.regNo}
                 student={student}
-                apiValue={apiValue}
+                apiValue={mentorList}
                 onViewDetails={() =>
                   console.log("Viewing details for:", student.regNo)
                 }

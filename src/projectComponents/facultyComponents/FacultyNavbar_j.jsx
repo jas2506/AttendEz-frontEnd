@@ -20,21 +20,43 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { getFacultyDetails } from "../../TeacherApi";
+import { useState,useEffect } from "react";
 
 function FacultyNavbar_j({ setIsLoggedIn }) {
   const location = useLocation();
 
-  const details = {
-    _id: {
-      $oid: "68579753a03a9f34b7ab7691",
-    },
-    department: "EEE",
-    faculty_email: "sripranv@gmail.com",
-    position: "Assistant Professor",
-    name: "Dr.Sripranav",
-    mentor: "True",
-    class_advisor: "True",
-  };
+  // const details = {
+  //   _id: {
+  //     $oid: "68579753a03a9f34b7ab7691",
+  //   },
+  //   department: "EEE",
+  //   faculty_email: "sripranv@gmail.com",
+  //   position: "Assistant Professor",
+  //   name: "Dr.Sripranav",
+  //   mentor: "True",
+  //   class_advisor: "True",
+  // };
+
+  const [details, setDetails] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const detailsRes = await getFacultyDetails();
+
+        setDetails(detailsRes.data.details);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching faculty data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (isLoading) return <p>Loading...</p>;
 
   return (
     <>
@@ -86,7 +108,7 @@ function FacultyNavbar_j({ setIsLoggedIn }) {
                 <NavItem
                   icon={<Users className="w-4 h-4" />}
                   label="Class Advisor View"
-                  path="#"
+                  path="/ClassAdvisorView"
                   isActive={false}
                 />
                 <NavItem
@@ -141,7 +163,7 @@ function FacultyNavbar_j({ setIsLoggedIn }) {
           <NavItem
             icon={<User className="w-4 h-4" />}
             label="Class Advisor View"
-            path="#"
+            path="/ClassAdvisorView"
             isActive={false}
           />
 

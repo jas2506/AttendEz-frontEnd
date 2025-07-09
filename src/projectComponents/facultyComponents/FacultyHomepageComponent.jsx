@@ -16,8 +16,6 @@ import QRCode from "react-qr-code";
 function FacultyHomepageComponent({ c }) {
   const classdetails = c;
 
-  
-
   const endTime = new Date(`2000-01-01 ${classdetails.start}`);
   endTime.setMinutes(endTime.getMinutes() + classdetails.duration);
   const formattedEndTime = endTime.toTimeString().slice(0, 5);
@@ -82,7 +80,7 @@ function FacultyHomepageComponent({ c }) {
 
     setTimeout(() => {
       setShowSaveQRButton(true);
-    }, 60000); // show save after 30s
+    }, 15000); // show save after 30s
   };
 
   const pollQrAttendance = async (version) => {
@@ -343,52 +341,78 @@ function FacultyHomepageComponent({ c }) {
 
       {showQRModal && (
         <div className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center text-white p-4">
-          <div className="text-center">
-            <h2 className="text-xl font-bold mb-6">
-              Scan QR to Mark Attendance
-            </h2>
-            <div className="bg-white p-6 rounded-xl">
-              <div className="bg-white p-4 rounded-lg">
-                <QRCode
-                  value={qrCodes[currentQRIndex] || ""}
-                  size={256}
-                  className="mx-auto"
-                  bgColor="#FFFFFF"
-                  fgColor="#000000"
-                  level="H"
-                />
+          <div className="w-full max-w-6xl h-[80vh] flex flex-col">
+            {/* Header */}
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold">Scan QR to Mark Attendance</h2>
+            </div>
+            {/* Main Content - Side by Side */}
+            <div className="flex-1 flex gap-6 min-h-0">
+              {/* Left Side - QR Code (Bigger and Centered) */}
+              <div className="flex-1 flex items-center justify-center">
+                <div className="flex flex-col items-center justify-center bg-white px-4 rounded-xl">
+                  <QRCode
+                    value={qrCodes[currentQRIndex] || ""}
+                    size={Math.min(
+                      400, // Increased max size
+                      window.innerWidth * 0.6, // Takes up 60% of screen width
+                      window.innerHeight * 0.75 // Up to 75% of screen height
+                    )}
+                    className="mb-6 mt-6"
+                    bgColor="white"
+                    fgColor="#000000"
+                    level="H"
+                  />
+                  <p className="text-white text-2xl mb-4 font-mono font-bold break-all text-center max-w-[90%]">
+                    {qrCodes[currentQRIndex]}
+                  </p>
+                </div>
               </div>
-              <p className="text-black text-xl font-mono mt-4">
-                {qrCodes[currentQRIndex]}
-              </p>
-            </div>
 
-            <div className="mt-6 text-left max-h-[200px] overflow-y-auto w-full bg-white rounded-lg p-4 text-black">
-              <h3 className="text-lg font-semibold mb-2">
-                Students Marked Present:
-              </h3>
-              {qrAttendance.length === 0 ? (
-                <p className="text-gray-500 text-sm">No responses yet.</p>
-              ) : (
-                <ul className="space-y-2">
-                  {qrAttendance.map((s) => (
-                    <li key={s.id} className="flex items-center gap-3">
-                      <UserCheck className="w-4 h-4 text-green-600" />
-                      <span>
-                        {s.name} ({s.id})
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              )}
+              {/* Right Side - Students List */}
+              <div className="w-80 bg-white rounded-xl p-6 flex flex-col">
+                <h3 className="text-xl font-semibold mb-4 text-black">
+                  Students Marked Present:
+                </h3>
+
+                <div className="flex-1 overflow-y-auto">
+                  {qrAttendance.length === 0 ? (
+                    <p className="text-gray-500 text-center py-8">
+                      No responses yet.
+                    </p>
+                  ) : (
+                    <ul className="space-y-3">
+                      {qrAttendance.map((s) => (
+                        <li
+                          key={s.id}
+                          className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                        >
+                          <UserCheck className="w-5 h-5 text-green-600 flex-shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <span className="text-black font-medium block truncate">
+                              {s.name}
+                            </span>
+                            <span className="text-gray-600 text-sm">
+                              ({s.id})
+                            </span>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
             </div>
+            {/* Footer Button */}
             {showSaveQRButton && (
-              <button
-                onClick={confirmQRAttendance}
-                className="mt-6 bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-xl text-white font-semibold text-lg"
-              >
-                Save Attendance
-              </button>
+              <div className="mt-6 text-center">
+                <button
+                  onClick={confirmQRAttendance}
+                  className="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-xl text-white font-semibold text-lg transition-colors"
+                >
+                  Save Attendance
+                </button>
+              </div>
             )}
           </div>
         </div>

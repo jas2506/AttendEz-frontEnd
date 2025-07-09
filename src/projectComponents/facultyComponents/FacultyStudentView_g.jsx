@@ -1,13 +1,26 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Contact,User } from "lucide-react";
+import { Contact, User } from "lucide-react";
 
-function FacultyStudentView_g({ name, details, percentage, onViewDetails, apiValue }) {
+function FacultyStudentView_g({
+  name,
+  details,
+  percentage,
+  onViewDetails,
+  apiValue,
+}) {
   const [showDetails, setShowDetails] = useState(false);
 
   // Function to get detailed attendance data for a specific student
   function getStudentDetailedData(regNumber, apiData) {
-    const student = apiData.details[regNumber];
+    let student = null;
+
+    // Loop over class keys and their student arrays
+    for (const students of Object.values(apiData.details)) {
+      student = students.find((s) => s.registernumber === regNumber);
+      if (student) break;
+    }
+
     if (!student) return null;
 
     const courses = [];
@@ -35,20 +48,22 @@ function FacultyStudentView_g({ name, details, percentage, onViewDetails, apiVal
       name: student.name,
       registerNumber: regNumber,
       digitalId: regNumber,
-      department: "CSE", // You can make this dynamic if needed
-      year: "III", // You can make this dynamic if needed
+      department: "CSE", // Optional
+      year: "III", // Optional
       courses,
       totalAttended,
       totalClasses,
     };
   }
 
-  const numericPercentage = parseFloat(percentage.replace('%', ''));
+  const numericPercentage = parseFloat(percentage.replace("%", ""));
   let badgeColor = "bg-green-400";
   if (numericPercentage < 70) badgeColor = "bg-red-500";
   else if (numericPercentage < 75) badgeColor = "bg-orange-400";
 
-  const studentDetailedData = showDetails ? getStudentDetailedData(details, apiValue) : null;
+  const studentDetailedData = showDetails
+    ? getStudentDetailedData(details, apiValue)
+    : null;
 
   return (
     <div className="bg-white border  rounded-2xl shadow-md p-6">
@@ -61,7 +76,6 @@ function FacultyStudentView_g({ name, details, percentage, onViewDetails, apiVal
             </span>
           </div>
 
-          
           <div className="flex items-center justify-end space-x-4 w-1/3">
             <div
               className={`${badgeColor} text-white font-bold text-md px-4 py-2 rounded-full text-center w-[100px]`}
@@ -91,18 +105,22 @@ function FacultyStudentView_g({ name, details, percentage, onViewDetails, apiVal
                 className="w-16 h-16 rounded-full border border-gray-300"
               />
               <div>
-                <h2 className="text-2xl font-bold">{studentDetailedData?.name}</h2>
+                <h2 className="text-2xl font-bold">
+                  {studentDetailedData?.name}
+                </h2>
                 <p className="text-blue-700 font-semibold">
                   Department:{" "}
-                  <span className="text-black">{studentDetailedData?.department}</span>
+                  <span className="text-black">
+                    {studentDetailedData?.department}
+                  </span>
                 </p>
                 <p className="text-blue-700 font-semibold">
-                  Year: <span className="text-black">{studentDetailedData?.year}</span>
+                  Year:{" "}
+                  <span className="text-black">
+                    {studentDetailedData?.year}
+                  </span>
                 </p>
-                <p className="text-blue-700 font-semibold">
-                  Digital ID:{" "}
-                  <span className="text-black">{studentDetailedData?.digitalId}</span>
-                </p>
+            
                 <p className="text-blue-700 font-semibold">
                   Register Number:{" "}
                   <span className="text-black">
@@ -125,14 +143,13 @@ function FacultyStudentView_g({ name, details, percentage, onViewDetails, apiVal
             <tbody>
               {studentDetailedData?.courses.map((course, idx) => {
                 const percent = (
-                  (course.attended / course.total) * 100
+                  (course.attended / course.total) *
+                  100
                 ).toFixed(1);
                 return (
                   <tr key={idx} className="border-t">
                     <td className="p-2">{course.name}</td>
-                    <td className="p-2 font-semibold">
-                      {course.attended}
-                    </td>
+                    <td className="p-2 font-semibold">{course.attended}</td>
                     <td className="p-2">{course.total}</td>
                     <td className="p-2 font-semibold">{percent} %</td>
                   </tr>
@@ -149,10 +166,7 @@ function FacultyStudentView_g({ name, details, percentage, onViewDetails, apiVal
           </div>
 
           <div className="text-right">
-            <Button
-              onClick={() => setShowDetails(false)}
-              variant="outline"
-            >
+            <Button onClick={() => setShowDetails(false)} variant="outline">
               Back
             </Button>
           </div>
