@@ -1,10 +1,39 @@
 import GPAcalccurrent from "../projectComponents/GPAcalccurrent";
 import { useState, useEffect } from "react";
+import { fetchTimetable } from "../Api";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+
+function extractUniqueClasses(timetable) {
+  const seen = new Set();
+  const result = [];
+
+  const allDays = timetable.timetable;
+
+  for (const day in allDays) {
+    for (const session of allDays[day]) {
+      const classCode = session.classCode;
+
+      if (!seen.has(classCode)) {
+        seen.add(classCode);
+
+        const classDetail = timetable.classDetails[classCode];
+        if (classDetail) {
+          result.push({
+            classCode,
+            className: classDetail.className,
+            credits: Number(classDetail.credits), // ensure numeric
+          });
+        }
+      }
+    }
+  }
+
+  return result;
+}
 
 function CurrentGPAPage() {
   const [grades, setGrades] = useState({});
@@ -14,237 +43,229 @@ function CurrentGPAPage() {
     setGrades((prev) => ({ ...prev, [subject]: g }));
   }
 
-  function extractUniqueClasses(timetable) {
-    const seen = new Set();
-    const result = [];
+  const [timetableData, setTimetableData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-    const allDays = timetable.timetable;
-
-    for (const day in allDays) {
-      for (const session of allDays[day]) {
-        const classCode = session.classCode;
-
-        if (!seen.has(classCode)) {
-          seen.add(classCode);
-
-          const classDetail = timetable.classDetails[classCode];
-          if (classDetail) {
-            result.push({
-              classCode,
-              className: classDetail.className,
-              credits: Number(classDetail.credits), // ensure numeric
-            });
-          }
-        }
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const t = (await fetchTimetable()).timetable;
+        setTimetableData(t);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
       }
     }
 
-    return result;
-  }
+    fetchData();
+  }, []);
 
-  const timetable = {
-    classDetails: {
-      ELE2H22A: {
-        facultyEmail: "saipranav2310324@ssn.edu.in",
-        classCode: "ELE2H22A",
-        passoutYear: "2027",
-        credits: "4",
-        className: "IMAGE ANALYSIS",
-        facultyName: "Dr. Saipranav",
-        department: "CSE",
-        groupCode: "CSEELE2H22A2027",
-      },
-      CSE2704B: {
-        facultyEmail: "saipranav2310324@ssn.edu.in",
-        classCode: "CSE2704B",
-        passoutYear: "2027",
-        credits: "4",
-        className: "COA",
-        facultyName: "Dr. Saipranav",
-        department: "CSE",
-        groupCode: "CSE2027B",
-      },
-      CSE2703B: {
-        facultyEmail: "saipranav2310324@ssn.edu.in",
-        classCode: "CSE2703B",
-        passoutYear: "2027",
-        credits: "4",
-        className: "COA",
-        facultyName: "Dr. Saipranav",
-        department: "CSE",
-        groupCode: "CSE2027B",
-      },
-      CSE2702B: {
-        facultyEmail: "saipranav2310324@ssn.edu.in",
-        classCode: "CSE2702B",
-        passoutYear: "2027",
-        credits: "4",
-        className: "COA",
-        facultyName: "Dr. Saipranav",
-        department: "CSE",
-        groupCode: "CSE2027B",
-      },
-      CSE2701B: {
-        facultyEmail: "saipranav2310324@ssn.edu.in",
-        classCode: "CSE2701B",
-        passoutYear: "2027",
-        credits: "4",
-        className: "COA",
-        facultyName: "Dr. Saipranav",
-        department: "CSE",
-        groupCode: "CSE2027B",
-      },
-      CSE2705B: {
-        facultyEmail: "saipranav2310324@ssn.edu.in",
-        classCode: "CSE2705B",
-        passoutYear: "2027",
-        credits: "4",
-        className: "COA",
-        facultyName: "Dr. Saipranav",
-        department: "CSE",
-        groupCode: "CSE2027B",
-      },
-    },
-    timetable: {
-      Monday: [
-        {
-          classCode: "CSE2701B",
-          startTime: "09:00",
-          durationMinutes: 50,
-        },
-        {
-          classCode: "CSE2702B",
-          startTime: "10:00",
-          durationMinutes: 50,
-        },
-        {
-          classCode: "CSE2703B",
-          startTime: "11:00",
-          durationMinutes: 50,
-        },
-        {
-          classCode: "CSE2704B",
-          startTime: "12:00",
-          durationMinutes: 50,
-        },
-        {
-          classCode: "ELE2H22A",
-          startTime: "14:00",
-          durationMinutes: 100,
-        },
-      ],
-      Thursday: [
-        {
-          classCode: "CSE2701B",
-          startTime: "12:00",
-          durationMinutes: 50,
-        },
-        {
-          classCode: "CSE2703B",
-          startTime: "09:00",
-          durationMinutes: 50,
-        },
-        {
-          classCode: "CSE2704B",
-          startTime: "10:00",
-          durationMinutes: 50,
-        },
-        {
-          classCode: "CSE2705B",
-          startTime: "11:00",
-          durationMinutes: 50,
-        },
-        {
-          classCode: "ELE2H22A",
-          startTime: "14:00",
-          durationMinutes: 50,
-        },
-      ],
-      Friday: [
-        {
-          classCode: "CSE2702B",
-          startTime: "09:00",
-          durationMinutes: 50,
-        },
-        {
-          classCode: "CSE2703B",
-          startTime: "10:00",
-          durationMinutes: 50,
-        },
-        {
-          classCode: "CSE2704B",
-          startTime: "11:00",
-          durationMinutes: 50,
-        },
-        {
-          classCode: "CSE2705B",
-          startTime: "12:00",
-          durationMinutes: 50,
-        },
-        {
-          classCode: "ELE2H22A",
-          startTime: "14:00",
-          durationMinutes: 100,
-        },
-      ],
-      Wednesday: [
-        {
-          classCode: "CSE2701B",
-          startTime: "11:00",
-          durationMinutes: 50,
-        },
-        {
-          classCode: "CSE2702B",
-          startTime: "12:00",
-          durationMinutes: 50,
-        },
-        {
-          classCode: "CSE2704B",
-          startTime: "09:00",
-          durationMinutes: 50,
-        },
-        {
-          classCode: "CSE2705B",
-          startTime: "10:00",
-          durationMinutes: 50,
-        },
-        {
-          classCode: "ELE2H22A",
-          startTime: "14:00",
-          durationMinutes: 100,
-        },
-      ],
-      Tuesday: [
-        {
-          classCode: "CSE2701B",
-          startTime: "10:00",
-          durationMinutes: 50,
-        },
-        {
-          classCode: "CSE2702B",
-          startTime: "11:00",
-          durationMinutes: 50,
-        },
-        {
-          classCode: "CSE2703B",
-          startTime: "12:00",
-          durationMinutes: 50,
-        },
-        {
-          classCode: "CSE2705B",
-          startTime: "09:00",
-          durationMinutes: 50,
-        },
-        {
-          classCode: "ELE2H22A",
-          startTime: "14:00",
-          durationMinutes: 50,
-        },
-      ],
-    },
-  };
+  if (loading) return <p>Loading...</p>;
 
-  const classes = extractUniqueClasses(timetable);
+  // const timetable = {
+  //   classDetails: {
+  //     ELE2H22A: {
+  //       facultyEmail: "saipranav2310324@ssn.edu.in",
+  //       classCode: "ELE2H22A",
+  //       passoutYear: "2027",
+  //       credits: "4",
+  //       className: "IMAGE ANALYSIS",
+  //       facultyName: "Dr. Saipranav",
+  //       department: "CSE",
+  //       groupCode: "CSEELE2H22A2027",
+  //     },
+  //     CSE2704B: {
+  //       facultyEmail: "saipranav2310324@ssn.edu.in",
+  //       classCode: "CSE2704B",
+  //       passoutYear: "2027",
+  //       credits: "4",
+  //       className: "COA",
+  //       facultyName: "Dr. Saipranav",
+  //       department: "CSE",
+  //       groupCode: "CSE2027B",
+  //     },
+  //     CSE2703B: {
+  //       facultyEmail: "saipranav2310324@ssn.edu.in",
+  //       classCode: "CSE2703B",
+  //       passoutYear: "2027",
+  //       credits: "4",
+  //       className: "COA",
+  //       facultyName: "Dr. Saipranav",
+  //       department: "CSE",
+  //       groupCode: "CSE2027B",
+  //     },
+  //     CSE2702B: {
+  //       facultyEmail: "saipranav2310324@ssn.edu.in",
+  //       classCode: "CSE2702B",
+  //       passoutYear: "2027",
+  //       credits: "4",
+  //       className: "COA",
+  //       facultyName: "Dr. Saipranav",
+  //       department: "CSE",
+  //       groupCode: "CSE2027B",
+  //     },
+  //     CSE2701B: {
+  //       facultyEmail: "saipranav2310324@ssn.edu.in",
+  //       classCode: "CSE2701B",
+  //       passoutYear: "2027",
+  //       credits: "4",
+  //       className: "COA",
+  //       facultyName: "Dr. Saipranav",
+  //       department: "CSE",
+  //       groupCode: "CSE2027B",
+  //     },
+  //     CSE2705B: {
+  //       facultyEmail: "saipranav2310324@ssn.edu.in",
+  //       classCode: "CSE2705B",
+  //       passoutYear: "2027",
+  //       credits: "4",
+  //       className: "COA",
+  //       facultyName: "Dr. Saipranav",
+  //       department: "CSE",
+  //       groupCode: "CSE2027B",
+  //     },
+  //   },
+  //   timetable: {
+  //     Monday: [
+  //       {
+  //         classCode: "CSE2701B",
+  //         startTime: "09:00",
+  //         durationMinutes: 50,
+  //       },
+  //       {
+  //         classCode: "CSE2702B",
+  //         startTime: "10:00",
+  //         durationMinutes: 50,
+  //       },
+  //       {
+  //         classCode: "CSE2703B",
+  //         startTime: "11:00",
+  //         durationMinutes: 50,
+  //       },
+  //       {
+  //         classCode: "CSE2704B",
+  //         startTime: "12:00",
+  //         durationMinutes: 50,
+  //       },
+  //       {
+  //         classCode: "ELE2H22A",
+  //         startTime: "14:00",
+  //         durationMinutes: 100,
+  //       },
+  //     ],
+  //     Thursday: [
+  //       {
+  //         classCode: "CSE2701B",
+  //         startTime: "12:00",
+  //         durationMinutes: 50,
+  //       },
+  //       {
+  //         classCode: "CSE2703B",
+  //         startTime: "09:00",
+  //         durationMinutes: 50,
+  //       },
+  //       {
+  //         classCode: "CSE2704B",
+  //         startTime: "10:00",
+  //         durationMinutes: 50,
+  //       },
+  //       {
+  //         classCode: "CSE2705B",
+  //         startTime: "11:00",
+  //         durationMinutes: 50,
+  //       },
+  //       {
+  //         classCode: "ELE2H22A",
+  //         startTime: "14:00",
+  //         durationMinutes: 50,
+  //       },
+  //     ],
+  //     Friday: [
+  //       {
+  //         classCode: "CSE2702B",
+  //         startTime: "09:00",
+  //         durationMinutes: 50,
+  //       },
+  //       {
+  //         classCode: "CSE2703B",
+  //         startTime: "10:00",
+  //         durationMinutes: 50,
+  //       },
+  //       {
+  //         classCode: "CSE2704B",
+  //         startTime: "11:00",
+  //         durationMinutes: 50,
+  //       },
+  //       {
+  //         classCode: "CSE2705B",
+  //         startTime: "12:00",
+  //         durationMinutes: 50,
+  //       },
+  //       {
+  //         classCode: "ELE2H22A",
+  //         startTime: "14:00",
+  //         durationMinutes: 100,
+  //       },
+  //     ],
+  //     Wednesday: [
+  //       {
+  //         classCode: "CSE2701B",
+  //         startTime: "11:00",
+  //         durationMinutes: 50,
+  //       },
+  //       {
+  //         classCode: "CSE2702B",
+  //         startTime: "12:00",
+  //         durationMinutes: 50,
+  //       },
+  //       {
+  //         classCode: "CSE2704B",
+  //         startTime: "09:00",
+  //         durationMinutes: 50,
+  //       },
+  //       {
+  //         classCode: "CSE2705B",
+  //         startTime: "10:00",
+  //         durationMinutes: 50,
+  //       },
+  //       {
+  //         classCode: "ELE2H22A",
+  //         startTime: "14:00",
+  //         durationMinutes: 100,
+  //       },
+  //     ],
+  //     Tuesday: [
+  //       {
+  //         classCode: "CSE2701B",
+  //         startTime: "10:00",
+  //         durationMinutes: 50,
+  //       },
+  //       {
+  //         classCode: "CSE2702B",
+  //         startTime: "11:00",
+  //         durationMinutes: 50,
+  //       },
+  //       {
+  //         classCode: "CSE2703B",
+  //         startTime: "12:00",
+  //         durationMinutes: 50,
+  //       },
+  //       {
+  //         classCode: "CSE2705B",
+  //         startTime: "09:00",
+  //         durationMinutes: 50,
+  //       },
+  //       {
+  //         classCode: "ELE2H22A",
+  //         startTime: "14:00",
+  //         durationMinutes: 50,
+  //       },
+  //     ],
+  //   },
+  // };
+
+  const classes = extractUniqueClasses(timetableData);
 
   function gpacalc(grades, classes) {
     const gradeToPoint = {
