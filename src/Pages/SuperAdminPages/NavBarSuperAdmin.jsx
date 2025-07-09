@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from "react-router-dom"; // ✅ Added useNavigate
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, UserCircle, LogOut, Users, BookUser, Group } from "lucide-react";
 import {
   Sheet,
@@ -18,7 +18,7 @@ import {
 
 function NavbarSuperAdmin({ setIsLoggedIn }) {
   const location = useLocation();
-  const navigate = useNavigate(); // ✅ Initialize navigate
+  const navigate = useNavigate();
 
   const details = {
     email: "saipranav2310324@ssn.edu.in",
@@ -45,10 +45,10 @@ function NavbarSuperAdmin({ setIsLoggedIn }) {
             </SheetHeader>
             <div className="flex flex-col gap-4 items-start mt-4">
               <NavLinkItem
-                to="/superadmin/add-teacher"
+                to="/superadmin/manageteacher"
                 icon={<Users className="w-4 h-4" />}
-                label="Add Teacher"
-                current={location.pathname === "/superadmin/add-teacher"}
+                label="Manage Teacher"
+                current={location.pathname === "/superadmin/manageteacher"}
               />
               <NavLinkItem
                 to="/superadmin/students"
@@ -70,10 +70,10 @@ function NavbarSuperAdmin({ setIsLoggedIn }) {
       {/* Desktop View */}
       <div className="hidden md:flex gap-4 text-white items-center">
         <NavLinkItem
-          to="/superadmin/add-teacher"
+          to="/superadmin/manageteacher"
           icon={<Users className="w-4 h-4" />}
-          label="Add Teacher"
-          current={location.pathname === "/superadmin/add-teacher"}
+          label="Manage Teacher"
+          current={location.pathname === "/superadmin/manageteacher"}
         />
         <NavLinkItem
           to="/superadmin/students"

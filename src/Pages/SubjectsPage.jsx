@@ -85,7 +85,6 @@ function SubjectsPage() {
     async function fetchData() {
       try {
         const [attendanceData, timetableData] = await Promise.all([
-          
           fetchAttendance(),
           fetchTimetable(),
         ]);
@@ -133,7 +132,6 @@ function SubjectsPage() {
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white">
       <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-        {/* Header */}
         <div className="bg-blue-50 px-6 py-4 border-b border-gray-200">
           <h2 className="text-2xl font-semibold text-gray-800">Attendance</h2>
           <p className="text-gray-600 text-sm mt-1">Course Wise Attendance</p>
@@ -155,6 +153,9 @@ function SubjectsPage() {
                 </th>
                 <th className="px-6 py-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">
                   Attendance %
+                </th>
+                <th className="px-6 py-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                  Calendar
                 </th>
               </tr>
             </thead>
@@ -202,6 +203,14 @@ function SubjectsPage() {
                         {percentage}%
                       </span>
                     </td>
+                    <td className="px-6 py-4 text-center">
+                      <button
+                        onClick={() => handleViewCalendar(subject.classCode)}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-full text-xs"
+                      >
+                        View Calendar
+                      </button>
+                    </td>
                   </tr>
                 );
               })}
@@ -234,6 +243,30 @@ function SubjectsPage() {
           </div>
         </div>
       </div>
+
+      {/* Calendar Dialog */}
+      <Dialog open={showCalendar} onOpenChange={setShowCalendar}>
+        <DialogContent className="w-fit max-w-[90vw]">
+          <DialogHeader>
+            <DialogTitle>Attendance Calendar</DialogTitle>
+            <DialogDescription>
+              Shows days attended, absent, and partially attended.
+            </DialogDescription>
+          </DialogHeader>
+
+          <DetailedCalendar
+            present={calendarData.present}
+            absent={calendarData.absent}
+            multiple={calendarData.partial}
+          />
+
+          <DialogClose asChild>
+            <button className="mt-4 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+              Close
+            </button>
+          </DialogClose>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
