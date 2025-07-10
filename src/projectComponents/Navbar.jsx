@@ -54,25 +54,25 @@ function Navbar({ setIsLoggedIn }) {
               <SheetTitle>Menu</SheetTitle>
             </SheetHeader>
             <div className="flex flex-col gap-4 items-start mt-4">
-              <Link to="/Home">
+              <Link to="/student/home">
                 <NavItem
                   icon={<Home className="w-4 h-4" />}
                   label="Home"
-                  active={location.pathname === "/Home"}
+                  active={location.pathname === "/student/home"}
                 />
               </Link>
-              <Link to="/Subjects">
+              <Link to="/student/subjects">
                 <NavItem
                   icon={<Notebook className="w-4 h-4" />}
                   label="Subjects"
-                  active={location.pathname === "/Subjects"}
+                  active={location.pathname === "/student/subjects"}
                 />
               </Link>
-              <Link to="/Timetable">
+              <Link to="/student/timetable">
                 <NavItem
                   icon={<CalendarSearch className="w-4 h-4" />}
                   label="Timetable"
-                  active={location.pathname === "/Timetable"}
+                  active={location.pathname === "/student/timetable"}
                 />
               </Link>
               <Link to="#">
@@ -82,18 +82,18 @@ function Navbar({ setIsLoggedIn }) {
                   active={false}
                 />
               </Link>
-              <Link to="/GPAcalculator">
+              <Link to="/student/gpa">
                 <NavItem
                   icon={<Calculator className="w-4 h-4" />}
                   label="GPA Calculator"
-                  active={location.pathname === "/GPAcalculator"}
+                  active={location.pathname === "/student/gpa"}
                 />
               </Link>
-              <Link to="/CustomGPAcalculator">
+              <Link to="/student/custom-gpa">
                 <NavItem
                   icon={<Calculator className="w-4 h-4" />}
                   label="Custom GPA Calculator"
-                  active={location.pathname === "/CustomGPAcalculator"}
+                  active={location.pathname === "/student/custom-gpa"}
                 />
               </Link>
               <Link to="#">
@@ -110,25 +110,25 @@ function Navbar({ setIsLoggedIn }) {
 
       {/* Desktop View */}
       <div className="hidden md:flex gap-4 text-white items-center">
-        <Link to="/Home">
+        <Link to="/student/home">
           <NavItem
             icon={<Home className="w-4 h-4" />}
             label="Home"
-            active={location.pathname === "/Home"}
+            active={location.pathname === "/student/home"}
           />
         </Link>
-        <Link to="/Subjects">
+        <Link to="/student/subjects">
           <NavItem
             icon={<Notebook className="w-4 h-4" />}
             label="Subjects"
-            active={location.pathname === "/Subjects"}
+            active={location.pathname === "/student/subjects"}
           />
         </Link>
-        <Link to="/Timetable">
+        <Link to="/student/timetable">
           <NavItem
             icon={<CalendarSearch className="w-4 h-4" />}
             label="Timetable"
-            active={location.pathname === "/Timetable"}
+            active={location.pathname === "/student/timetable"}
           />
         </Link>
         <Link to="#">
@@ -138,18 +138,18 @@ function Navbar({ setIsLoggedIn }) {
             active={false}
           />
         </Link>
-        <Link to="/GPAcalculator">
+        <Link to="/student/gpa">
           <NavItem
             icon={<Calculator className="w-4 h-4" />}
             label="GPA Calculator"
-            active={location.pathname === "/GPAcalculator"}
+            active={location.pathname === "/student/gpa"}
           />
         </Link>
-        <Link to="/CustomGPAcalculator">
+        <Link to="/student/custom-gpa">
           <NavItem
             icon={<Calculator className="w-4 h-4" />}
             label="Custom GPA Calculator"
-            active={location.pathname === "/CustomGPAcalculator"}
+            active={location.pathname === "/student/custom-gpa"}
           />
         </Link>
         <Link to="#">

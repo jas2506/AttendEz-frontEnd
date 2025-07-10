@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Papa from "papaparse";
 import axios from "axios";
-import NavbarSuperAdmin from "./NavBarSuperAdmin";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -221,7 +220,6 @@ export default function CreateDeleteStudentPage() {
           <Loader2 className="animate-spin w-10 h-10 text-blue-600" />
         </div>
       )}
-      <NavbarSuperAdmin setIsLoggedIn={() => {}} />
 
       <div className="p-6 flex justify-center items-start">
         <Card className="w-full max-w-5xl shadow-xl bg-white">

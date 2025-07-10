@@ -5,7 +5,6 @@ import axios from "axios";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-
 function StudentLoginPage({ setIsLoggedIn }) {
   const navigate = useNavigate();
 
@@ -24,7 +23,7 @@ function StudentLoginPage({ setIsLoggedIn }) {
       localStorage.setItem("hmacpasscode", hmacpasscode);
 
       setIsLoggedIn(true);
-      navigate("/Home");
+      navigate("/student/home");
     } catch (err) {
       console.error("Login failed jas:", err);
     }

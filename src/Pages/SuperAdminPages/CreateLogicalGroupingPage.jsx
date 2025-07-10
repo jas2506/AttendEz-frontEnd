@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Papa from "papaparse";
 import axios from "axios";
-import NavbarSuperAdmin from "./NavBarSuperAdmin";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -217,7 +216,6 @@ export default function CreateLogicalGroupPage() {
           <Loader2 className="animate-spin w-10 h-10 text-blue-600" />
         </div>
       )}
-      <NavbarSuperAdmin setIsLoggedIn={setIsLoggedIn} />
       <div className="p-4">
         <h2 className="text-2xl font-bold text-blue-800 mb-4 text-center">
           Logical Grouping

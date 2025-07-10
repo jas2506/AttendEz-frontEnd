@@ -252,7 +252,6 @@ function AddTeacherForm() {
         </div>
       )}
 
-      <NavbarSuperAdmin setIsLoggedIn={() => {}} />
 
       <div className="max-w-4xl mx-auto p-8 mt-6 bg-white/90 rounded-2xl shadow-lg backdrop-blur-sm border border-blue-200 space-y-6 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-blue-100">
         <h2 className="text-3xl font-bold text-blue-700 text-center">

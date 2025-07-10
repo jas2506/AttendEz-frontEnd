@@ -27,8 +27,8 @@ function NavbarSuperAdmin({ setIsLoggedIn }) {
   };
 
   const handleLogout = () => {
-    setIsLoggedIn(false); // Clear login state
-    navigate("/superadmin/login"); // ✅ Redirect to login page
+    setIsLoggedIn(false);
+    navigate("/superadmin/login");
   };
 
   return (
@@ -45,10 +45,10 @@ function NavbarSuperAdmin({ setIsLoggedIn }) {
             </SheetHeader>
             <div className="flex flex-col gap-4 items-start mt-4">
               <NavLinkItem
-                to="/superadmin/manageteacher"
+                to="/superadmin/manage-teacher"
                 icon={<Users className="w-4 h-4" />}
                 label="Manage Teacher"
-                current={location.pathname === "/superadmin/manageteacher"}
+                current={location.pathname === "/superadmin/manage-teacher"}
               />
               <NavLinkItem
                 to="/superadmin/students"
@@ -70,10 +70,10 @@ function NavbarSuperAdmin({ setIsLoggedIn }) {
       {/* Desktop View */}
       <div className="hidden md:flex gap-4 text-white items-center">
         <NavLinkItem
-          to="/superadmin/manageteacher"
+          to="/superadmin/manage-teacher"
           icon={<Users className="w-4 h-4" />}
           label="Manage Teacher"
-          current={location.pathname === "/superadmin/manageteacher"}
+          current={location.pathname === "/superadmin/manage-teacher"}
         />
         <NavLinkItem
           to="/superadmin/students"

@@ -14,8 +14,7 @@ import { Button } from "../../components/ui/button";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-
-function SuperAdminLoginPage() {
+function SuperAdminLoginPage({ setIsLoggedIn }) {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,16 +29,13 @@ function SuperAdminLoginPage() {
       });
 
       const token = res.data.token;
-      console.log(token);
       if (token && token.trim() !== "") {
         localStorage.setItem("jwtToken", token);
-        console.log("jwt stored");
-        console.log(token);
+        setIsLoggedIn(true); // ✅ VERY IMPORTANT
+        navigate("/superadmin/manage-teacher");
       } else {
         setError("Token missing from server response");
-        return;
       }
-      navigate("/superadmin/manageteacher");
     } catch (err) {
       console.error("Login failed:", err);
       setError("Invalid email or password");
