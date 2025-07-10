@@ -8,13 +8,13 @@ import VerifyOtp from "./Pages/FacultyPages/VerifyOtp.jsx";
 import TeacherLogin from "./Pages/FacultyPages/TeacherLogin.jsx";
 
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import LandingPage from "./LandingPage.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <TeacherApp></TeacherApp>
+    <LandingPage></LandingPage>
   </StrictMode>
 );
-
 
 // const cId = import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_ID;
 

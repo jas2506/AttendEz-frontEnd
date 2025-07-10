@@ -12,6 +12,9 @@ import {
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+
 function SuperAdminLoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -21,7 +24,7 @@ function SuperAdminLoginPage() {
   const handleLogin = async () => {
     setError("");
     try {
-      const res = await axios.post("${backendUrl}/SuperAdmin/login", {
+      const res = await axios.post(`${backendUrl}/SuperAdmin/login`, {
         email,
         password,
       });

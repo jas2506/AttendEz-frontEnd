@@ -16,6 +16,9 @@ import { Loader2 } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import CreateTimetablePopup from "./CreateTimetablePage";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+
 export default function CreateLogicalGroupPage() {
   const [mode, setMode] = useState("add");
   const [registerNumbers, setRegisterNumbers] = useState([]);

@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+
 function StudentLoginPage({ setIsLoggedIn }) {
   const navigate = useNavigate();
 
@@ -10,7 +13,7 @@ function StudentLoginPage({ setIsLoggedIn }) {
     try {
       const idToken = credentialResponse.credential;
       console.log(idToken);
-
+      //hello
       const res = await axios.post(`${backendUrl}/student/googleAuth`, {
         idToken,
       });

@@ -19,6 +19,9 @@ import { toast } from "sonner";
 import { RefreshCcw } from "lucide-react";
 import { Loader2 } from "lucide-react";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+
 export default function CreateDeleteStudentPage() {
   const [mode, setMode] = useState("add");
   const [uploadedData, setUploadedData] = useState([]);

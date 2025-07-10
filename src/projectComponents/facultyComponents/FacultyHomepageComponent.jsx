@@ -13,6 +13,9 @@ import {
 } from "lucide-react";
 import QRCode from "react-qr-code";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+
 function FacultyHomepageComponent({ c }) {
   const classdetails = c;
 

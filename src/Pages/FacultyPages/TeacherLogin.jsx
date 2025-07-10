@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 const TeacherLogin = ({ setIsLoggedIn }) => {
   const navigate = useNavigate();
 
@@ -69,7 +71,7 @@ const TeacherLogin = ({ setIsLoggedIn }) => {
       setSuccess("Login successful!");
       localStorage.setItem("facultyToken", response.token);
       setToken(response.token);
-      
+
       console.log("Login successful:", response);
       setIsLoggedIn(true);
       navigate("/FacultyHomepage");

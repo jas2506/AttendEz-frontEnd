@@ -26,18 +26,6 @@ import { useState,useEffect } from "react";
 function FacultyNavbar_j({ setIsLoggedIn }) {
   const location = useLocation();
 
-  // const details = {
-  //   _id: {
-  //     $oid: "68579753a03a9f34b7ab7691",
-  //   },
-  //   department: "EEE",
-  //   faculty_email: "sripranv@gmail.com",
-  //   position: "Assistant Professor",
-  //   name: "Dr.Sripranav",
-  //   mentor: "True",
-  //   class_advisor: "True",
-  // };
-
   const [details, setDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
