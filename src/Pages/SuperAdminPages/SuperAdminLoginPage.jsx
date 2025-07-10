@@ -21,7 +21,7 @@ function SuperAdminLoginPage() {
   const handleLogin = async () => {
     setError("");
     try {
-      const res = await axios.post("http://localhost:8443/SuperAdmin/login", {
+      const res = await axios.post("${backendUrl}/SuperAdmin/login", {
         email,
         password,
       });

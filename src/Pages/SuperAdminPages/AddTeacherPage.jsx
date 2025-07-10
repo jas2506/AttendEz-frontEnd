@@ -10,6 +10,8 @@ import { RefreshCcw } from "lucide-react";
 import DetailedCalendar from "../../projectComponents/DetailedCalendar";
 import SubjectsPage from "../SubjectsPage";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 function AddTeacherForm() {
   const [csvError, setCsvError] = useState("");
   const [uploadedTeachers, setUploadedTeachers] = useState([]);
@@ -34,7 +36,7 @@ function AddTeacherForm() {
     try {
       setLoading(true);
       const response = await axios.get(
-        "http://localhost:8443/SuperAdmin/viewAllTeachers",
+        `${backendUrl}/SuperAdmin/viewAllTeachers`,
         {
           params: { department: "CSE" },
           headers: { Authorization: token, "Content-Type": "application/json" },
@@ -100,7 +102,7 @@ function AddTeacherForm() {
               try {
                 setLoading(true);
                 const response = await axios.delete(
-                  "http://localhost:8443/SuperAdmin/deleteTeacher",
+                  `${backendUrl}/SuperAdmin/deleteTeacher`,
                   {
                     headers: { Authorization: token },
                     withCredentials: true,
@@ -154,7 +156,7 @@ function AddTeacherForm() {
     try {
       setLoading(true);
       const response = await axios.post(
-        "http://localhost:8443/SuperAdmin/addOrUpdateTeacher",
+        `${backendUrl}/SuperAdmin/addOrUpdateTeacher`,
         {
           email: teacher.email,
           name: teacher.name,

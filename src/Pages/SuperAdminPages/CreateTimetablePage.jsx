@@ -25,7 +25,7 @@ export default function CreateTimetablePopup({
   useEffect(() => {
     const token = localStorage.getItem("jwtToken");
     axios
-      .get("http://localhost:8443/SuperAdmin/viewAllTeachers?department=CSE", {
+      .get(`${backendUrl}/SuperAdmin/viewAllTeachers?department=CSE`, {
         headers: { Authorization: token },
         withCredentials: true,
       })

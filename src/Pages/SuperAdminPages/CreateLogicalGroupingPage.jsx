@@ -40,7 +40,7 @@ export default function CreateLogicalGroupPage() {
     const auth = localStorage.getItem("jwtToken");
     setLoading(true);
     axios
-      .get("http://localhost:8443/SuperAdmin/viewAllTeachers?department=CSE", {
+      .get(`${backendUrl}/SuperAdmin/viewAllTeachers?department=CSE`, {
         headers: { Authorization: auth },
         withCredentials: true,
       })
@@ -64,7 +64,7 @@ export default function CreateLogicalGroupPage() {
       setLoading(true);
       const auth = localStorage.getItem("jwtToken");
       axios
-        .get("http://localhost:8443/SuperAdmin/viewAllGroupings", {
+        .get(`${backendUrl}/SuperAdmin/viewAllGroupings`, {
           headers: { Authorization: auth },
           withCredentials: true,
         })
@@ -158,7 +158,7 @@ export default function CreateLogicalGroupPage() {
 
     axios
       .post(
-        "http://localhost:8443/SuperAdmin/createOrEditLogicalGrouping",
+        `${backendUrl}/SuperAdmin/createOrEditLogicalGrouping`,
         payload,
         {
           headers: { Authorization: auth },
@@ -182,7 +182,7 @@ export default function CreateLogicalGroupPage() {
 
     try {
       const res = await axios.delete(
-        "http://localhost:8443/SuperAdmin/deleteGrouping",
+        `${backendUrl}/SuperAdmin/deleteGrouping`,
         {
           headers: {
             Authorization: token,

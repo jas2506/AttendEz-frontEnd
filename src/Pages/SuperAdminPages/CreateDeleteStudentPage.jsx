@@ -31,7 +31,7 @@ export default function CreateDeleteStudentPage() {
       setLoading(true);
       const token = localStorage.getItem("jwtToken");
       const response = await axios.post(
-        "http://localhost:8443/SuperAdmin/viewAllStudents",
+        `${backendUrl}/SuperAdmin/viewAllStudents`,
         { depts: ["CSE"] },
         {
           headers: {
@@ -113,7 +113,7 @@ export default function CreateDeleteStudentPage() {
     try {
       setLoading(true);
       const response = await axios.delete(
-        "http://localhost:8443/SuperAdmin/deleteStudents",
+        `${backendUrl}/SuperAdmin/deleteStudents`,
         {
           headers: {
             Authorization: token,
@@ -182,7 +182,7 @@ export default function CreateDeleteStudentPage() {
     try {
       setLoading(true);
       const response = await axios.post(
-        "http://localhost:8443/SuperAdmin/addStudents",
+        `${backendUrl}/SuperAdmin/addStudents`,
         selected,
         {
           headers: {

@@ -43,7 +43,7 @@ function FacultyHomepageComponent({ c }) {
   const generateQRCode = async () => {
     try {
       const res = await fetch(
-        `http://localhost:8443/faculty/qr/generateQRCode?classCode=${classdetails.classCode}`,
+        `${backendUrl}/faculty/qr/generateQRCode?classCode=${classdetails.classCode}`,
         {
           method: "POST",
           headers: {
@@ -86,7 +86,7 @@ function FacultyHomepageComponent({ c }) {
   const pollQrAttendance = async (version) => {
     try {
       const res = await fetch(
-        `http://localhost:8443/faculty/liveAttendanceViewWithVersion?classCode=${classdetails.classCode}&lastVersion=${version}`,
+        `${backendUrl}/faculty/liveAttendanceViewWithVersion?classCode=${classdetails.classCode}&lastVersion=${version}`,
         {
           method: "GET",
           headers: {
@@ -113,7 +113,7 @@ function FacultyHomepageComponent({ c }) {
   const confirmQRAttendance = async () => {
     try {
       await fetch(
-        `http://localhost:8443/faculty/qrpasscode/confirmAttendanceClose?classCode=${classdetails.classCode}`,
+        `${backendUrl}/faculty/qrpasscode/confirmAttendanceClose?classCode=${classdetails.classCode}`,
         {
           method: "POST",
           headers: {
@@ -133,7 +133,7 @@ function FacultyHomepageComponent({ c }) {
   const generatePasscode = async () => {
     try {
       const res = await fetch(
-        `http://localhost:8443/faculty/passcode/generateCode?classCode=${classdetails.classCode}`,
+        `${backendUrl}/faculty/passcode/generateCode?classCode=${classdetails.classCode}`,
         {
           method: "POST",
           headers: {
@@ -156,7 +156,7 @@ function FacultyHomepageComponent({ c }) {
 
     try {
       const res = await fetch(
-        `http://localhost:8443/faculty/liveAttendanceViewWithVersion?classCode=${classdetails.classCode}&lastVersion=${version}`,
+        `${backendUrl}/faculty/liveAttendanceViewWithVersion?classCode=${classdetails.classCode}&lastVersion=${version}`,
         {
           method: "GET",
           headers: {
@@ -184,7 +184,7 @@ function FacultyHomepageComponent({ c }) {
   const confirmAttendance = async () => {
     try {
       await fetch(
-        `http://localhost:8443/faculty/qrpasscode/confirmAttendanceClose?classCode=${classdetails.classCode}`,
+        `${backendUrl}/faculty/qrpasscode/confirmAttendanceClose?classCode=${classdetails.classCode}`,
         {
           method: "POST",
           headers: {
@@ -464,7 +464,7 @@ function ManualAttendanceModal({ classCode, onClose }) {
 
   useEffect(() => {
     fetch(
-      `http://localhost:8443/faculty/getAllStudentDetails?classCode=${classCode}`,
+      `${backendUrl}/faculty/getAllStudentDetails?classCode=${classCode}`,
       {
         method: "POST",
         headers: {
@@ -496,7 +496,7 @@ function ManualAttendanceModal({ classCode, onClose }) {
       else if (attendance[id] === "absent") absent.push(id);
     }
 
-    fetch("http://localhost:8443/faculty/saveManualAttendance", {
+    fetch(`${backendUrl}/faculty/saveManualAttendance`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

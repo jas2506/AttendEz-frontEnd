@@ -1,8 +1,10 @@
 import axios from "axios";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 // Create a reusable axios instance
 const api = axios.create({
-  baseURL: "http://localhost:8443/student",
+  baseURL: `${backendUrl}/student`,
 });
 
 // Add JWT to every request automatically
@@ -47,4 +49,3 @@ export async function sendPasscode(passcode) {
 
   return res.data;
 }
-

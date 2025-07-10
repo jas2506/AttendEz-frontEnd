@@ -38,7 +38,7 @@ const TeacherLogin = ({ setIsLoggedIn }) => {
   };
 
   const apiCall = async (endpoint, body) => {
-    const response = await fetch(`http://localhost:8443/faculty${endpoint}`, {
+    const response = await fetch(`${backendUrl}/faculty${endpoint}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
