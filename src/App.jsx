@@ -34,7 +34,7 @@ import SuperAdminLoginPage from "./Pages/SuperAdminPages/SuperAdminLoginPage";
 import AddTeacherPage from "./Pages/SuperAdminPages/AddTeacherPage";
 import CreateDeleteStudentPage from "./Pages/SuperAdminPages/CreateDeleteStudentPage";
 import CreateLogicalGroupingPage from "./Pages/SuperAdminPages/CreateLogicalGroupingPage";
-import NavbarSuperAdmin from "./pages/SuperAdminPages/NavBarSuperAdmin";
+import NavBarSuperAdmin from "./pages/SuperAdminPages/NavBarSuperAdmin";
 const cId = import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_ID;
 
 function AppRoutes({
@@ -58,7 +58,7 @@ function AppRoutes({
         <FacultyNavbar_j setIsLoggedIn={setTeacherLoggedIn} />
       )}
       {path.startsWith("/superadmin") && superAdminLoggedIn && (
-        <NavbarSuperAdmin setIsLoggedIn={setSuperAdminLoggedIn} />
+        <NavBarSuperAdmin setIsLoggedIn={setSuperAdminLoggedIn} />
       )}
 
       <Routes>

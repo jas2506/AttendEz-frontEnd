@@ -133,4 +133,4 @@ function NavLinkItem({ to, icon, label, current }) {
   );
 }
 
-export default NavbarSuperAdmin;
+export default NavBarSuperAdmin;
