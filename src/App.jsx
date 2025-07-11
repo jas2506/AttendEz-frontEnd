@@ -34,7 +34,7 @@ import SuperAdminLoginPage from "./Pages/SuperAdminPages/SuperAdminLoginPage";
 import AddTeacherPage from "./Pages/SuperAdminPages/AddTeacherPage";
 import CreateDeleteStudentPage from "./Pages/SuperAdminPages/CreateDeleteStudentPage";
 import CreateLogicalGroupingPage from "./Pages/SuperAdminPages/CreateLogicalGroupingPage";
-import NavBarSuperAdmin from "./pages/SuperAdminPages/NavBarSuperAdmin";
+import NavBarSuperAdmin from "./Pages/SuperAdminPages/NavBarSuperAdmin";
 const cId = import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_ID;
 
 function AppRoutes({
