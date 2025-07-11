@@ -8,9 +8,7 @@ import {
   ArrowLeft,
   GraduationCap,
 } from "lucide-react";
-import { getFacultyDetails,getMentorListAttendance } from "../../TeacherApi";
-
-
+import { getFacultyDetails, getMentorListAttendance } from "../../TeacherApi";
 
 // Utility function to calculate student summaries
 function getStudentSummaries(apiData) {
@@ -280,12 +278,33 @@ function MentorListPage() {
     fetchData();
   }, []);
   if (loading) return <p>Loading...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="bg-white border border-gray-200 rounded-2xl shadow-xl p-8 max-w-md w-full text-center space-y-4">
+          <div className="bg-red-100 text-red-600 w-20 h-20 flex items-center justify-center rounded-full mx-auto shadow-inner">
+            <GraduationCap className="w-10 h-10" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-800">Not a Mentor</h2>
+          <p className="text-gray-600">
+            It looks like you are not assigned as a mentor, or there are no
+            mentees under your guidance.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-lg shadow hover:bg-blue-700 transition"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (!mentorList) return <p>No mentor data found.</p>;
 
   // Safe to call after null check
   const studentSummaries = getStudentSummaries(mentorList);
-
 
   // Calculate overall statistics
   const totalStudents = studentSummaries.length;
