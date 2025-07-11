@@ -41,7 +41,7 @@ export default function LandingPage() {
               Welcome to AttendEz
             </h2>
             <p className="text-lg text-slate-700 leading-relaxed">
-              An attendance management system designed by CSE 3rd year
+              An attendance management system designed by students, for
               students. Streamline your educational workflows with our intuitive
               platform.
             </p>
@@ -53,6 +53,7 @@ export default function LandingPage() {
               <CheckCircle size={18} className="text-green-500" />
               <span>Real-time attendance tracking</span>
             </div>
+            
             <div className="flex items-center gap-3 text-slate-700">
               <CheckCircle size={18} className="text-green-500" />
               <span>On duty approval system</span>
@@ -60,6 +61,10 @@ export default function LandingPage() {
             <div className="flex items-center gap-3 text-slate-700">
               <CheckCircle size={18} className="text-green-500" />
               <span>Collaborative platform for all users</span>
+            </div>
+            <div className="flex items-center gap-3 text-slate-700">
+              <CheckCircle size={18} className="text-green-500" />
+              <span>Faster attendance using time-synced QR codes or one-time passcodes.</span>
             </div>
           </div>
         </div>
