@@ -16,7 +16,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 
-function NavbarSuperAdmin({ setIsLoggedIn }) {
+function NavBarSuperAdmin({ setIsLoggedIn }) {
   const location = useLocation();
   const navigate = useNavigate();
 
