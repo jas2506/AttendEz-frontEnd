@@ -11,12 +11,11 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { Loader2 } from "lucide-react";
+import { Loader2, Trash2, Eye, Users } from 'lucide-react';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import CreateTimetablePopup from "./CreateTimetablePage";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
 
 export default function CreateLogicalGroupPage() {
   const [mode, setMode] = useState("add");
@@ -32,33 +31,34 @@ export default function CreateLogicalGroupPage() {
   const [loggedIn, setIsLoggedIn] = useState(true);
   const [groupType, setGroupType] = useState("Normal");
   const [loading, setLoading] = useState(false);
+  const [manualRegNo, setManualRegNo] = useState("");
 
   const currentYear = new Date().getFullYear();
   const passoutOptions = Array.from({ length: 5 }, (_, i) =>
-    (currentYear + i).toString()
+      (currentYear + i).toString()
   );
 
   useEffect(() => {
     const auth = localStorage.getItem("jwtToken");
     setLoading(true);
     axios
-      .get(`${backendUrl}/SuperAdmin/viewAllTeachers?department=CSE`, {
-        headers: { Authorization: auth },
-        withCredentials: true,
-      })
-      .then((res) => {
-        const filtered = res.data.details.filter(
-          (t) => t.class_advisor === "True"
-        );
-        setAdvisors(filtered);
-      })
-      .catch((error) => {
-        console.error("Failed to fetch advisors:", error);
-        setAdvisors([]);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+        .get(`${backendUrl}/SuperAdmin/viewAllTeachers?department=CSE`, {
+          headers: { Authorization: auth },
+          withCredentials: true,
+        })
+        .then((res) => {
+          const filtered = res.data.details.filter(
+              (t) => t.class_advisor === "True"
+          );
+          setAdvisors(filtered);
+        })
+        .catch((error) => {
+          console.error("Failed to fetch advisors:", error);
+          setAdvisors([]);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
   }, []);
 
   useEffect(() => {
@@ -66,19 +66,19 @@ export default function CreateLogicalGroupPage() {
       setLoading(true);
       const auth = localStorage.getItem("jwtToken");
       axios
-        .get(`${backendUrl}/SuperAdmin/viewAllGroupings`, {
-          headers: { Authorization: auth },
-          withCredentials: true,
-        })
-        .then((res) => {
-          setGroupings(res.data.groups || []);
-        })
-        .catch((err) => {
-          console.error("Error fetching groupings:", err);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+          .get(`${backendUrl}/SuperAdmin/viewAllGroupings`, {
+            headers: { Authorization: auth },
+            withCredentials: true,
+          })
+          .then((res) => {
+            setGroupings(res.data.groups || []);
+          })
+          .catch((err) => {
+            console.error("Error fetching groupings:", err);
+          })
+          .finally(() => {
+            setLoading(false);
+          });
     } else {
       setLoading(false);
     }
@@ -102,25 +102,24 @@ export default function CreateLogicalGroupPage() {
   const handleRegisterCSVUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     Papa.parse(file, {
       header: true,
       complete: (result) => {
         const headers = result.meta.fields;
         if (
-          headers.length !== 2 ||
-          headers[0].trim() !== "name" ||
-          headers[1].trim() !== "Register Number"
+            headers.length !== 2 ||
+            headers[0].trim() !== "name" ||
+            headers[1].trim() !== "Register Number"
         ) {
           alert(
-            "CSV format mismatch in Register Numbers CSV. Expected headers: name, Register Number."
+              "CSV format mismatch in Register Numbers CSV. Expected headers: name, Register Number."
           );
           return;
         }
         const nums = result.data
-          .map((row) => row["Register Number"])
-          .filter(Boolean)
-          .map((num) => num.trim().replace(/^"|"$/g, ""));
+            .map((row) => row["Register Number"])
+            .filter(Boolean)
+            .map((num) => num.trim().replace(/^"|"$/g, ""));
         setRegisterNumbers(nums);
       },
       error: (error) => {
@@ -140,9 +139,7 @@ export default function CreateLogicalGroupPage() {
 
   const handleSubmit = () => {
     const auth = localStorage.getItem("jwtToken");
-
     const normalizedDegree = degree.replace(/\./g, "").toUpperCase();
-
     const payload = {
       degree,
       registernumbers: registerNumbers,
@@ -150,7 +147,7 @@ export default function CreateLogicalGroupPage() {
       "class-code": classCodes,
       passout,
       section:
-        groupType === "Normal" ? `${normalizedDegree}-${section}` : section,
+          groupType === "Normal" ? `${normalizedDegree}-${section}` : section,
       advisorEmail,
     };
 
@@ -159,19 +156,15 @@ export default function CreateLogicalGroupPage() {
     }
 
     axios
-      .post(
-        `${backendUrl}/SuperAdmin/createOrEditLogicalGrouping`,
-        payload,
-        {
+        .post(`${backendUrl}/SuperAdmin/createOrEditLogicalGrouping`, payload, {
           headers: { Authorization: auth },
           withCredentials: true,
-        }
-      )
-      .then((res) => alert("Submitted successfully"))
-      .catch((err) => {
-        alert("Submission failed");
-        console.log(err);
-      });
+        })
+        .then((res) => alert("Submitted successfully"))
+        .catch((err) => {
+          alert("Submission failed");
+          console.log(err);
+        });
   };
 
   const handleDeleteGroup = async (groupCode) => {
@@ -181,20 +174,18 @@ export default function CreateLogicalGroupPage() {
       alert("No token found.");
       return;
     }
-
     try {
       const res = await axios.delete(
-        `${backendUrl}/SuperAdmin/deleteGrouping`,
-        {
-          headers: {
-            Authorization: token,
-            "Content-Type": "application/json",
-          },
-          data: { groupid: groupCode },
-          withCredentials: true,
-        }
+          `${backendUrl}/SuperAdmin/deleteGrouping`,
+          {
+            headers: {
+              Authorization: token,
+              "Content-Type": "application/json",
+            },
+            data: { groupid: groupCode },
+            withCredentials: true,
+          }
       );
-
       if (res.data?.status === "S" || res.data?.status === "s") {
         alert("Group deleted successfully");
         setGroupings((prev) => prev.filter((g) => g.groupcode !== groupCode));
@@ -210,157 +201,231 @@ export default function CreateLogicalGroupPage() {
   };
 
   return (
-    <div className="bg-blue-50 min-h-screen">
-      {loading && (
-        <div className="fixed inset-0 z-50 bg-black/20 flex justify-center items-center">
-          <Loader2 className="animate-spin w-10 h-10 text-blue-600" />
-        </div>
-      )}
-      <div className="p-4">
-        <h2 className="text-2xl font-bold text-blue-800 mb-4 text-center">
-          Logical Grouping
-        </h2>
-
-        <div className="flex justify-center mb-4">
-          <ToggleGroup
-            type="single"
-            value={mode}
-            onValueChange={(val) => val && setMode(val)}
-            className="bg-blue-100 p-1 rounded-lg"
-          >
-            <ToggleGroupItem
-              value="add"
-              className="px-4 py-2 data-[state=on]:bg-blue-600 data-[state=on]:text-white"
+      <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
+        {loading && (
+            <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex justify-center items-center">
+              <div className="bg-white rounded-xl p-6 shadow-2xl flex items-center gap-4">
+                <Loader2 className="animate-spin w-8 h-8 text-blue-600" />
+                <span className="text-gray-700 font-medium">Loading...</span>
+              </div>
+            </div>
+        )}
+        <div className="p-6">
+          <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mb-6 text-center">
+            Logical Grouping Management
+          </h2>
+          <div className="flex justify-center mb-6">
+            <ToggleGroup
+                type="single"
+                value={mode}
+                onValueChange={(val) => val && setMode(val)}
+                className="bg-white/80 backdrop-blur-sm p-1 rounded-xl shadow-lg border border-white/20"
             >
-              Add Group
-            </ToggleGroupItem>
-            <ToggleGroupItem
-              value="delete"
-              className="px-4 py-2 data-[state=on]:bg-blue-600 data-[state=on]:text-white"
-            >
-              Delete Group
-            </ToggleGroupItem>
-          </ToggleGroup>
-        </div>
-
-        {mode === "add" && (
-          <Card className="bg-white shadow-md">
-            <CardContent className="space-y-4 py-6">
-              <div className="grid grid-cols-2 gap-4">
-                <Select value={degree} onValueChange={setDegree}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Degree" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="B.E.">B.E.</SelectItem>
-                    <SelectItem value="B.Tech">B.Tech</SelectItem>
-                    <SelectItem value="M.Tech">M.Tech</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Input
-                  placeholder="Section"
-                  value={section}
-                  onChange={(e) => setSection(e.target.value)}
-                />
-
-                <Select value={passout} onValueChange={setPassout}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Passout Year" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {passoutOptions.map((year) => (
-                      <SelectItem key={year} value={year}>
-                        {year}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <Select value={groupType} onValueChange={setGroupType}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Group Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Normal">Normal</SelectItem>
-                    <SelectItem value="Elective">Elective</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="font-medium text-blue-700">
-                  Upload Register Numbers CSV
-                </label>
-                <div className="flex gap-4 mt-2 flex-wrap">
-                  <Input
-                    type="file"
-                    accept=".csv"
-                    onChange={handleRegisterCSVUpload}
-                  />
-                  <Button onClick={downloadRegisterSample} variant="secondary">
-                    Sample CSV
-                  </Button>
-                </div>
-              </div>
-
-              <div>
-                <label className="font-medium text-blue-700">Timetable</label>
-                <CreateTimetablePopup
-                  onSave={handleTimetableSave}
-                  advisorEmail={advisorEmail}
-                  setAdvisorEmail={setAdvisorEmail}
-                  groupType={groupType}
-                />
-              </div>
-
-              <Button
-                onClick={handleSubmit}
-                className="bg-blue-700 hover:bg-blue-800 text-white"
+              <ToggleGroupItem
+                  value="add"
+                  className="px-6 py-3 rounded-lg font-medium transition-all duration-200 data-[state=on]:bg-gradient-to-r data-[state=on]:from-blue-500 data-[state=on]:to-blue-600 data-[state=on]:text-white data-[state=on]:shadow-lg hover:bg-blue-50"
               >
-                Submit Group
-              </Button>
-            </CardContent>
-          </Card>
-        )}
+                <Users className="w-4 h-4 mr-2" />
+                Add Group
+              </ToggleGroupItem>
+              <ToggleGroupItem
+                  value="delete"
+                  className="px-6 py-3 rounded-lg font-medium transition-all duration-200 data-[state=on]:bg-gradient-to-r data-[state=on]:from-purple-500 data-[state=on]:to-purple-600 data-[state=on]:text-white data-[state=on]:shadow-lg hover:bg-purple-50"
+              >
+                <Eye className="w-4 h-4 mr-2" />
+                View Groups
+              </ToggleGroupItem>
+            </ToggleGroup>
+          </div>
 
-        {mode === "delete" && (
-          <Card className="bg-white shadow-md">
-            <CardContent className="py-6">
-              <h3 className="text-xl font-semibold text-blue-800 mb-4">
-                Delete Logical Groupings
-              </h3>
-              <div className="overflow-auto border rounded-lg max-h-[500px]">
-                <table className="min-w-full text-sm text-left text-blue-900">
-                  <thead className="bg-blue-200 text-blue-700">
-                    <tr>
-                      <th className="px-4 py-2">Group Name</th>
-                      <th className="px-4 py-2">Group Code</th>
-                      <th className="px-4 py-2">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {groupings.map((group, idx) => (
-                      <tr key={idx} className="border-t border-blue-300">
-                        <td className="px-4 py-2">{group.section}</td>
-                        <td className="px-4 py-2">{group.groupcode}</td>
-                        <td className="px-4 py-2">
-                          <Button
-                            variant="destructive"
-                            onClick={() => handleDeleteGroup(group.groupcode)}
-                          >
-                            Delete
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+          {mode === "add" && (
+              <Card className="bg-white/90 backdrop-blur-sm shadow-xl border-0 rounded-2xl">
+                <CardContent className="space-y-6 py-8 px-8">
+                  <div className="grid grid-cols-2 gap-6">
+                    <Select value={degree} onValueChange={setDegree}>
+                      <SelectTrigger className="h-12 rounded-xl border-2 border-blue-100 focus:border-blue-400 transition-colors">
+                        <SelectValue placeholder="Select Degree" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="B.E.">B.E.</SelectItem>
+                        <SelectItem value="B.Tech">B.Tech</SelectItem>
+                        <SelectItem value="M.Tech">M.Tech</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Input
+                        placeholder="Section"
+                        value={section}
+                        onChange={(e) => setSection(e.target.value)}
+                        className="h-12 rounded-xl border-2 border-blue-100 focus:border-blue-400 transition-colors"
+                    />
+                    <Select value={passout} onValueChange={setPassout}>
+                      <SelectTrigger className="h-12 rounded-xl border-2 border-blue-100 focus:border-blue-400 transition-colors">
+                        <SelectValue placeholder="Select Passout Year" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {passoutOptions.map((year) => (
+                            <SelectItem key={year} value={year}>
+                              {year}
+                            </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Select value={groupType} onValueChange={setGroupType}>
+                      <SelectTrigger className="h-12 rounded-xl border-2 border-blue-100 focus:border-blue-400 transition-colors">
+                        <SelectValue placeholder="Group Type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Normal">Normal</SelectItem>
+                        <SelectItem value="Elective">Elective</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <label className="font-semibold text-blue-700 text-lg mb-3 block">
+                      Enter Register Numbers (comma-separated)
+                    </label>
+                    <div className="flex items-center gap-4 mt-2 flex-wrap">
+                      <Input
+                          type="text"
+                          placeholder="Enter e.g. 3122235001001,3122235001002"
+                          value={manualRegNo}
+                          onChange={(e) => setManualRegNo(e.target.value)}
+                          className="flex-1 h-12 rounded-xl border-2 border-blue-100 focus:border-blue-400 transition-colors"
+                      />
+                      <Button
+                          onClick={() => {
+                            const numbers = manualRegNo
+                                .split(",")
+                                .map((num) => num.trim())
+                                .filter(
+                                    (num) => num !== "" && !registerNumbers.includes(num)
+                                );
+                            if (numbers.length > 0) {
+                              setRegisterNumbers((prev) => [...prev, ...numbers]);
+                              setManualRegNo("");
+                            }
+                          }}
+                          className="h-12 px-6 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg"
+                      >
+                        Add Numbers
+                      </Button>
+                    </div>
+                    {registerNumbers.length > 0 && (
+                        <div className="mt-4 max-h-32 overflow-auto border-2 border-blue-100 rounded-xl p-4 text-sm bg-gradient-to-r from-blue-50 to-indigo-50">
+                          <div className="font-medium text-blue-700 mb-2">
+                            Added Register Numbers ({registerNumbers.length}):
+                          </div>
+                          <div className="grid grid-cols-3 gap-2">
+                            {registerNumbers.map((num, idx) => (
+                                <div key={idx} className="bg-white/70 rounded-lg px-3 py-1 text-blue-800 font-mono text-xs">
+                                  {num}
+                                </div>
+                            ))}
+                          </div>
+                        </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="font-semibold text-blue-700 text-lg mb-3 block">Timetable</label>
+                    <CreateTimetablePopup
+                        onSave={handleTimetableSave}
+                        advisorEmail={advisorEmail}
+                        setAdvisorEmail={setAdvisorEmail}
+                        groupType={groupType}
+                    />
+                  </div>
+
+                  <Button
+                      onClick={handleSubmit}
+                      className="w-full h-14 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold text-lg shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
+                  >
+                    Submit Group
+                  </Button>
+                </CardContent>
+              </Card>
+          )}
+
+          {mode === "delete" && (
+              <Card className="bg-white/95 backdrop-blur-sm shadow-2xl border-0 rounded-2xl overflow-hidden">
+                <CardContent className="py-8 px-8">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl">
+                      <Eye className="w-6 h-6 text-white" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
+                      Manage Logical Groupings
+                    </h3>
+                  </div>
+
+                  {groupings.length === 0 ? (
+                      <div className="text-center py-12">
+                        <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
+                          <Users className="w-12 h-12 text-gray-400" />
+                        </div>
+                        <p className="text-gray-500 text-lg">No logical groupings found</p>
+                      </div>
+                  ) : (
+                      <div className="overflow-hidden border-2 border-purple-100 rounded-2xl shadow-lg">
+                        <div className="overflow-auto max-h-[500px]">
+                          <table className="min-w-full">
+                            <thead className="bg-gradient-to-r from-purple-500 to-pink-500 text-white sticky top-0">
+                            <tr>
+                              <th className="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">
+                                Group Name
+                              </th>
+                              <th className="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">
+                                Group Code
+                              </th>
+                              <th className="px-6 py-4 text-center font-semibold text-sm uppercase tracking-wider">
+                                Action
+                              </th>
+                            </tr>
+                            </thead>
+                            <tbody className="divide-y divide-purple-100">
+                            {groupings.map((group, idx) => (
+                                <tr
+                                    key={idx}
+                                    className="hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition-all duration-200"
+                                >
+                                  <td className="px-6 py-4">
+                                    <div className="flex items-center gap-3">
+                                      <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-lg flex items-center justify-center">
+                                        <Users className="w-5 h-5 text-white" />
+                                      </div>
+                                      <div>
+                                        <div className="font-semibold text-gray-900">{group.section}</div>
+                                        <div className="text-sm text-gray-500">Logical Group</div>
+                                      </div>
+                                    </div>
+                                  </td>
+                                  <td className="px-6 py-4">
+                              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800 font-mono">
+                                {group.groupcode}
+                              </span>
+                                  </td>
+                                  <td className="px-6 py-4 text-center">
+                                    <Button
+                                        variant="destructive"
+                                        onClick={() => handleDeleteGroup(group.groupcode)}
+                                        className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-2 rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105"
+                                    >
+                                      <Trash2 className="w-4 h-4 mr-2" />
+                                      Delete
+                                    </Button>
+                                  </td>
+                                </tr>
+                            ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                  )}
+                </CardContent>
+              </Card>
+          )}
+        </div>
       </div>
-    </div>
   );
 }

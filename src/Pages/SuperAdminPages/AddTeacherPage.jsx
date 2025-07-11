@@ -251,7 +251,6 @@ function AddTeacherForm() {
         </div>
       )}
 
-
       <div className="max-w-4xl mx-auto p-8 mt-6 bg-white/90 rounded-2xl shadow-lg backdrop-blur-sm border border-blue-200 space-y-6 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-blue-100">
         <h2 className="text-3xl font-bold text-blue-700 text-center">
           Manage Teachers
@@ -296,13 +295,17 @@ function AddTeacherForm() {
                 placeholder="Faculty Email"
                 className="p-3 border border-blue-300 rounded-md"
               />
-              <input
+              <select
                 name="isMentor"
                 value={formData.isMentor}
                 onChange={handleChange}
-                placeholder="Is Mentor (true/false)"
                 className="p-3 border border-blue-300 rounded-md"
-              />
+              >
+                <option value="">Select Mentor Status</option>
+                <option value="true">True</option>
+                <option value="false">False</option>
+              </select>
+
               <input
                 name="position"
                 value={formData.position}
@@ -336,7 +339,7 @@ function AddTeacherForm() {
 
             {uploadSuccess && (
               <p className="text-green-600 font-semibold">
-                CSV uploaded and parsed successfully!
+                CSV uploaded and saved successfully!
               </p>
             )}
             {csvError && (
@@ -434,7 +437,7 @@ function AddTeacherForm() {
                 </tbody>
               </table>
             </div>
-            <SubjectsPage />
+            {/*<SubjectsPage />*/}
           </div>
         )}
       </div>

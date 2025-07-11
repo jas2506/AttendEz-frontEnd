@@ -290,12 +290,12 @@ function MentorListPage() {
             It looks like you are not assigned as a mentor, or there are no
             mentees under your guidance.
           </p>
-          <button
+          {/* <button
             onClick={() => window.location.reload()}
             className="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-lg shadow hover:bg-blue-700 transition"
           >
             Try Again
-          </button>
+          </button> */}
         </div>
       </div>
     );
