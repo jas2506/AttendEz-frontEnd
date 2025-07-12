@@ -184,65 +184,6 @@ function AddTeacherForm() {
     }
   };
 
-  const downloadSampleCSV = () => {
-    const sample = [
-      expectedHeaders,
-      ["John Doe", "john@abc.com", "true", "Assistant Professor"],
-    ];
-    const csv = sample.map((row) => row.join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.setAttribute("download", "sample_faculty.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  const handleUploadCSV = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const parseCSV = (file) =>
-      new Promise((resolve, reject) => {
-        Papa.parse(file, {
-          header: true,
-          skipEmptyLines: true,
-          complete: resolve,
-          error: reject,
-        });
-      });
-
-    try {
-      const results = await parseCSV(file);
-      const fileHeaders = results.meta.fields;
-      const headersMatch =
-        fileHeaders.length === expectedHeaders.length &&
-        fileHeaders.every((h, i) => h.trim() === expectedHeaders[i]);
-      if (!headersMatch) {
-        setCsvError("CSV format is incorrect. Please use the sample format.");
-        setUploadedTeachers([]);
-        setUploadSuccess(false);
-        return;
-      }
-
-      setCsvError("");
-      setUploadSuccess(true);
-      setAdded(false);
-
-      const validTeachers = [];
-      for (const teacher of results.data) {
-        const success = await sendTeacherToBackend(teacher);
-        if (success) validTeachers.push(teacher);
-      }
-      setUploadedTeachers(validTeachers);
-    } catch (err) {
-      setCsvError("Failed to parse CSV.");
-      setUploadSuccess(false);
-      setUploadedTeachers([]);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-blue-50">
       {loading && (
@@ -319,22 +260,6 @@ function AddTeacherForm() {
               <Button onClick={handleAdd} className="bg-blue-600 text-white">
                 Add
               </Button>
-
-              <div className="space-x-3">
-                <Button variant="secondary" onClick={downloadSampleCSV}>
-                  Sample CSV
-                </Button>
-
-                <label className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md cursor-pointer">
-                  Upload CSV
-                  <input
-                    type="file"
-                    accept=".csv"
-                    onChange={handleUploadCSV}
-                    className="hidden"
-                  />
-                </label>
-              </div>
             </div>
 
             {uploadSuccess && (
