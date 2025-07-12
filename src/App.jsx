@@ -143,7 +143,9 @@ function AppRoutes({
 }
 
 function App() {
-  const [studentLoggedIn, setStudentLoggedIn] = useState(false);
+  const [studentLoggedIn, setStudentLoggedIn] = useState(
+    localStorage.getItem("studentLoggedIn") === "true"
+  );
   const [teacherLoggedIn, setTeacherLoggedIn] = useState(false);
   const [superAdminLoggedIn, setSuperAdminLoggedIn] = useState(false);
 
