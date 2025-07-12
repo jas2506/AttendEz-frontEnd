@@ -7,8 +7,11 @@ import {
   Clock,
   ArrowLeft,
   GraduationCap,
+  Plus,
+  Save,
+  X,
 } from "lucide-react";
-import { getFacultyDetails, getMentorListAttendance } from "../../TeacherApi";
+import { getFacultyDetails, getMentorListAttendance, updateMenteeListAndReturnDetails } from "../../TeacherApi";
 
 // Utility function to calculate student summaries
 function getStudentSummaries(apiData) {
@@ -247,38 +250,176 @@ function StudentCard({ student, apiValue, onViewDetails }) {
   );
 }
 
+// Add Mentee Form Component
+function AddMenteeForm({ onSubmit, onCancel, isLoading }) {
+  const [menteeList, setMenteeList] = useState("");
+  const [resetList, setResetList] = useState(false);
+
+  const handleSubmit = () => {
+    if (!menteeList.trim()) {
+      alert("Please enter at least one register number");
+      return;
+    }
+
+    const menteeArray = menteeList
+      .split(",")
+      .map(reg => reg.trim())
+      .filter(reg => reg.length > 0);
+
+    if (menteeArray.length === 0) {
+      alert("Please enter valid register numbers");
+      return;
+    }
+
+    onSubmit({
+      mentee_list: menteeArray,
+      reset: resetList ? "True" : "False"
+    });
+  };
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-2xl shadow-xl p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-bold text-gray-800">Add Mentees</h2>
+        <button
+          onClick={onCancel}
+          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          <X className="w-5 h-5 text-gray-500" />
+        </button>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Register Numbers (comma separated)
+          </label>
+          <textarea
+            value={menteeList}
+            onChange={(e) => setMenteeList(e.target.value)}
+            placeholder="e.g., 3122235001001, 3122235001002, 3122235001003"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            rows="3"
+            disabled={isLoading}
+          />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="resetList"
+            checked={resetList}
+            onChange={(e) => setResetList(e.target.checked)}
+            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            disabled={isLoading}
+          />
+          <label htmlFor="resetList" className="text-sm text-gray-700">
+            Reset existing list (if unchecked, will append to existing list)
+          </label>
+        </div>
+
+        <div className="flex gap-3 pt-4">
+          <button
+            onClick={handleSubmit}
+            disabled={isLoading}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Save className="w-4 h-4" />
+            {isLoading ? "Updating..." : "Update Mentee List"}
+          </button>
+          <button
+            onClick={onCancel}
+            disabled={isLoading}
+            className="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Main Component
 function MentorListPage() {
   const [facultyDetails, setFacultyDetails] = useState(null);
   const [mentorList, setMentorList] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [status, setStatus] = useState("");
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      setStatus("");
+
+      // Fetch both APIs in parallel
+      const [facultyRes, mentorRes] = await Promise.all([
+        getFacultyDetails(),
+        getMentorListAttendance(),
+      ]);
+
+      setFacultyDetails(facultyRes.data);
+      
+      // Check the status of mentor response
+      if (mentorRes.data.status === "NM") {
+        setStatus("NM");
+        setError(mentorRes.data.message);
+      } else if (mentorRes.data.status === "MLNT") {
+        setStatus("MLNT");
+        setError(mentorRes.data.message);
+      } else {
+        setMentorList(mentorRes.data);
+      }
+    } catch (err) {
+      setError("Failed to fetch data");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateMenteeList = async (data) => {
+    try {
+      setIsUpdating(true);
+      const response = await updateMenteeListAndReturnDetails(data);
+      
+      if (response.data.status === "S") {
+        alert("Mentee list updated successfully!");
+        setShowAddForm(false);
+        // Refresh the data
+        await fetchData();
+      } else {
+        alert("Failed to update mentee list: " + (response.data.message || "Unknown error"));
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error updating mentee list: " + (err.response?.data?.message || err.message));
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-
-        // Fetch both APIs in parallel
-        const [facultyRes, mentorRes] = await Promise.all([
-          getFacultyDetails(),
-          getMentorListAttendance(),
-        ]);
-
-        setFacultyDetails(facultyRes.data);
-        setMentorList(mentorRes.data);
-      } catch (err) {
-        setError("Failed to fetch data");
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, []);
-  if (loading) return <p>Loading...</p>;
-  if (error) {
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="text-lg mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Handle "Not a Mentor" case
+  if (status === "NM") {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
         <div className="bg-white border border-gray-200 rounded-2xl shadow-xl p-8 max-w-md w-full text-center space-y-4">
@@ -290,36 +431,71 @@ function MentorListPage() {
             It looks like you are not assigned as a mentor, or there are no
             mentees under your guidance.
           </p>
-          {/* <button
-            onClick={() => window.location.reload()}
-            className="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-lg shadow hover:bg-blue-700 transition"
-          >
-            Try Again
-          </button> */}
         </div>
       </div>
     );
   }
 
-  if (!mentorList) return <p>No mentor data found.</p>;
+  // Handle "No Mentees Added" case
+  if (status === "MLNT") {
+    return (
+      <div className="min-h-screen bg-gray-50 px-4 py-6">
+        <div className="max-w-4xl mx-auto">
+          {/* Header */}
+          <div className="bg-white border border-gray-200 shadow-lg rounded-2xl overflow-hidden mb-6">
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
+              <div className="flex items-center gap-4">
+                <div className="bg-white/10 p-3 rounded-xl">
+                  <Presentation className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-white">Mentor View</p>
+                  <p className="text-blue-100 text-sm mt-1">Manage Your Mentees</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* No mentees message with add form */}
+          {!showAddForm ? (
+            <div className="bg-white border border-gray-200 rounded-2xl shadow-xl p-8 text-center space-y-4">
+              <div className="bg-yellow-100 text-yellow-600 w-20 h-20 flex items-center justify-center rounded-full mx-auto shadow-inner">
+                <User className="w-10 h-10" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-800">No Mentees Added</h2>
+              <p className="text-gray-600">
+                You haven't added any mentees yet. Click the button below to add your first mentees.
+              </p>
+              <button
+                onClick={() => setShowAddForm(true)}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg shadow hover:bg-blue-700 transition-colors"
+              >
+                <Plus className="w-5 h-5" />
+                Add Mentees
+              </button>
+            </div>
+          ) : (
+            <AddMenteeForm
+              onSubmit={handleUpdateMenteeList}
+              onCancel={() => setShowAddForm(false)}
+              isLoading={isUpdating}
+            />
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  if (!mentorList) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-lg text-gray-600">No mentor data found.</p>
+      </div>
+    );
+  }
 
   // Safe to call after null check
   const studentSummaries = getStudentSummaries(mentorList);
-
-  // Calculate overall statistics
-  const totalStudents = studentSummaries.length;
-  const averageAttendance =
-    totalStudents > 0
-      ? (
-          studentSummaries.reduce(
-            (sum, student) => sum + student.percentage,
-            0
-          ) / totalStudents
-        ).toFixed(1)
-      : 0;
-  const studentsAbove75 = studentSummaries.filter(
-    (student) => student.percentage >= 75
-  ).length;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -327,19 +503,39 @@ function MentorListPage() {
         {/* Header */}
         <div className="bg-white border border-gray-200 shadow-lg rounded-2xl overflow-hidden mb-6">
           <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
-            <div className="flex items-center gap-4">
-              <div className="bg-white/10 p-3 rounded-xl">
-                <span className="text-2xl text-white">
-                  <Presentation></Presentation>
-                </span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="bg-white/10 p-3 rounded-xl">
+                  <Presentation className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-white">Mentor View</p>
+                  <p className="text-blue-100 text-sm mt-1">
+                    {studentSummaries.length} Mentee{studentSummaries.length !== 1 ? 's' : ''}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-2xl font-bold text-white">Mentor View</p>
-                <p className="text-blue-100 text-sm mt-1">List of Mentees</p>
-              </div>
+              <button
+                onClick={() => setShowAddForm(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white font-medium rounded-lg transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                Add More Mentees
+              </button>
             </div>
           </div>
         </div>
+
+        {/* Add Mentee Form */}
+        {showAddForm && (
+          <div className="mb-6">
+            <AddMenteeForm
+              onSubmit={handleUpdateMenteeList}
+              onCancel={() => setShowAddForm(false)}
+              isLoading={isUpdating}
+            />
+          </div>
+        )}
 
         {/* Student Cards */}
         <div className="space-y-4">
