@@ -52,7 +52,6 @@ function FacultyHomepage() {
       "Saturday",
     ];
     const today = days[new Date().getDay()];
-    // const today = "Monday";
     const timetableToday = data.timetable[today];
     const classDetails = data.classDetails;
 

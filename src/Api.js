@@ -32,20 +32,45 @@ export async function fetchTimetable() {
   const res = await api.get("/refreshTimetable");
   return res.data;
 }
-
 export async function sendPasscode(passcode) {
-  const digest = localStorage.getItem("hmacpasscode");
+  const keyString = localStorage.getItem("hmacpasscode");
+  if (!keyString) throw new Error("Missing HMAC key");
+
+  const encoder = new TextEncoder();
+  const keyBytes = encoder.encode(keyString);     // Same as .getBytes(StandardCharsets.UTF_8)
+  const messageBytes = encoder.encode(passcode);  // Same
+
+  // Import key
+  const cryptoKey = await crypto.subtle.importKey(
+      "raw",
+      keyBytes,
+      { name: "HMAC", hash: "SHA-256" },
+      false,
+      ["sign"]
+  );
+
+  // Generate signature
+  const signature = await crypto.subtle.sign("HMAC", cryptoKey, messageBytes);
+
+  // Convert to Base64 URL-safe without padding
+  const digest = base64UrlEncode(new Uint8Array(signature));
 
   const res = await api.post(
-    "/passcode/sendCode",
-    {}, // No body (or you can pass body data here if required)
-    {
-      params: {
-        digest,
-        passcode,
-      },
-    }
+      "/passcode/sendCode",
+      {},
+      {
+        params: {
+          digest,
+          passcode,
+        },
+      }
   );
 
   return res.data;
+}
+function base64UrlEncode(bytes) {
+  return btoa(String.fromCharCode(...bytes))
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, ""); // Remove padding
 }
