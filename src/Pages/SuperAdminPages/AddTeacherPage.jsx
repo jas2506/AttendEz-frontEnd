@@ -243,8 +243,8 @@ function AddTeacherForm() {
                 className="p-3 border border-blue-300 rounded-md"
               >
                 <option value="">Select Mentor Status</option>
-                <option value="true">True</option>
-                <option value="false">False</option>
+                <option value="True">True</option>
+                <option value="False">False</option>
               </select>
 
               <input

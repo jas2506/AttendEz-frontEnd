@@ -30,6 +30,11 @@ export default function FacultyTimetablePage() {
     );
 
   const tt = timetable;
+  if (isLoading) return <p>Loading...</p>;
+
+  if (!tt || !tt.classDetails || Object.keys(tt.classDetails).length === 0) {
+    return <p>Your timetable has not been updated. Create Classes.</p>;
+  }
   const classCode = Object.keys(tt.classDetails)[0]; // first class
   const facultyInfo = tt.classDetails[classCode];
 
@@ -172,11 +177,15 @@ function LandscapeTimetable({ timetableData }) {
                     >
                       <div className="space-y-2">
                         {classesAtTime.map((classAtTime, classIndex) => {
-                          const classDetails = timetableData.classDetails?.[classAtTime.classCode];
+                          const classDetails =
+                            timetableData.classDetails?.[classAtTime.classCode];
 
                           if (!classDetails) {
                             return (
-                              <div key={classIndex} className="text-center text-red-500">
+                              <div
+                                key={classIndex}
+                                className="text-center text-red-500"
+                              >
                                 Error: Class not found
                               </div>
                             );
@@ -200,7 +209,10 @@ function LandscapeTimetable({ timetableData }) {
                               })();
 
                           return (
-                            <div key={classIndex} className="bg-blue-50 border border-blue-200 p-3 rounded-md shadow-sm">
+                            <div
+                              key={classIndex}
+                              className="bg-blue-50 border border-blue-200 p-3 rounded-md shadow-sm"
+                            >
                               <div className="text-xs text-gray-600 mb-1">
                                 {classAtTime.startTime} - {endTime}
                               </div>
@@ -211,7 +223,8 @@ function LandscapeTimetable({ timetableData }) {
                                 {section}
                               </div>
                               <div className="text-xs text-gray-500">
-                                {classAtTime.durationMinutes} min • {classDetails.credits} credits
+                                {classAtTime.durationMinutes} min •{" "}
+                                {classDetails.credits} credits
                               </div>
                             </div>
                           );

@@ -11,7 +11,11 @@ import {
   Save,
   X,
 } from "lucide-react";
-import { getFacultyDetails, getMentorListAttendance, updateMenteeListAndReturnDetails } from "../../TeacherApi";
+import {
+  getFacultyDetails,
+  getMentorListAttendance,
+  updateMenteeListAndReturnDetails,
+} from "../../TeacherApi";
 
 // Utility function to calculate student summaries
 function getStudentSummaries(apiData) {
@@ -263,8 +267,8 @@ function AddMenteeForm({ onSubmit, onCancel, isLoading }) {
 
     const menteeArray = menteeList
       .split(",")
-      .map(reg => reg.trim())
-      .filter(reg => reg.length > 0);
+      .map((reg) => reg.trim())
+      .filter((reg) => reg.length > 0);
 
     if (menteeArray.length === 0) {
       alert("Please enter valid register numbers");
@@ -273,7 +277,7 @@ function AddMenteeForm({ onSubmit, onCancel, isLoading }) {
 
     onSubmit({
       mentee_list: menteeArray,
-      reset: resetList ? "True" : "False"
+      reset: resetList ? "True" : "False",
     });
   };
 
@@ -356,27 +360,33 @@ function MentorListPage() {
       setError("");
       setStatus("");
 
-      // Fetch both APIs in parallel
       const [facultyRes, mentorRes] = await Promise.all([
         getFacultyDetails(),
         getMentorListAttendance(),
       ]);
 
       setFacultyDetails(facultyRes.data);
-      
-      // Check the status of mentor response
-      if (mentorRes.data.status === "NM") {
-        setStatus("NM");
-        setError(mentorRes.data.message);
-      } else if (mentorRes.data.status === "MLNT") {
-        setStatus("MLNT");
-        setError(mentorRes.data.message);
-      } else {
-        setMentorList(mentorRes.data);
-      }
+      setMentorList(mentorRes.data); // only reached if no error
     } catch (err) {
-      setError("Failed to fetch data");
-      console.error(err);
+      if (err.response && err.response.status === 400) {
+        const apiStatus = err.response.data.status;
+        const message = err.response.data.message;
+
+        if (apiStatus === "NM") {
+          setStatus("NM");
+          setError(message);
+        } else if (apiStatus === "MLNT") {
+          setStatus("MLNT");
+          setError(message);
+        } else {
+          setStatus("E");
+          setError(message || "Unexpected error occurred.");
+        }
+      } else {
+        // Non-400 or unknown error
+        setError("Failed to fetch data");
+        console.error(err);
+      }
     } finally {
       setLoading(false);
     }
@@ -386,18 +396,24 @@ function MentorListPage() {
     try {
       setIsUpdating(true);
       const response = await updateMenteeListAndReturnDetails(data);
-      
+
       if (response.data.status === "S") {
         alert("Mentee list updated successfully!");
         setShowAddForm(false);
         // Refresh the data
         await fetchData();
       } else {
-        alert("Failed to update mentee list: " + (response.data.message || "Unknown error"));
+        alert(
+          "Failed to update mentee list: " +
+            (response.data.message || "Unknown error")
+        );
       }
     } catch (err) {
       console.error(err);
-      alert("Error updating mentee list: " + (err.response?.data?.message || err.message));
+      alert(
+        "Error updating mentee list: " +
+          (err.response?.data?.message || err.message)
+      );
     } finally {
       setIsUpdating(false);
     }
@@ -428,8 +444,7 @@ function MentorListPage() {
           </div>
           <h2 className="text-2xl font-bold text-gray-800">Not a Mentor</h2>
           <p className="text-gray-600">
-            It looks like you are not assigned as a mentor, or there are no
-            mentees under your guidance.
+            You are not a Mentor. Contact Admin.
           </p>
         </div>
       </div>
@@ -450,7 +465,9 @@ function MentorListPage() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-white">Mentor View</p>
-                  <p className="text-blue-100 text-sm mt-1">Manage Your Mentees</p>
+                  <p className="text-blue-100 text-sm mt-1">
+                    Manage Your Mentees
+                  </p>
                 </div>
               </div>
             </div>
@@ -462,9 +479,12 @@ function MentorListPage() {
               <div className="bg-yellow-100 text-yellow-600 w-20 h-20 flex items-center justify-center rounded-full mx-auto shadow-inner">
                 <User className="w-10 h-10" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-800">No Mentees Added</h2>
+              <h2 className="text-2xl font-bold text-gray-800">
+                No Mentees Added
+              </h2>
               <p className="text-gray-600">
-                You haven't added any mentees yet. Click the button below to add your first mentees.
+                You haven't added any mentees yet. Click the button below to add
+                your first mentees.
               </p>
               <button
                 onClick={() => setShowAddForm(true)}
@@ -486,14 +506,6 @@ function MentorListPage() {
     );
   }
 
-  if (!mentorList) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-lg text-gray-600">No mentor data found.</p>
-      </div>
-    );
-  }
-
   // Safe to call after null check
   const studentSummaries = getStudentSummaries(mentorList);
 
@@ -511,7 +523,8 @@ function MentorListPage() {
                 <div>
                   <p className="text-2xl font-bold text-white">Mentor View</p>
                   <p className="text-blue-100 text-sm mt-1">
-                    {studentSummaries.length} Mentee{studentSummaries.length !== 1 ? 's' : ''}
+                    {studentSummaries.length} Mentee
+                    {studentSummaries.length !== 1 ? "s" : ""}
                   </p>
                 </div>
               </div>
