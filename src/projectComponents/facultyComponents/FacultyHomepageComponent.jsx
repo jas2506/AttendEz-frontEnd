@@ -734,7 +734,7 @@ function FacultyHomepageComponent({ c }) {
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
   }, []);
 
-  const generateQRCode = async () => {
+  const generateQRCodee = async () => {
     try {
       const response = await generateQRCode(classdetails.classCode);
       const data = response.data;
@@ -784,7 +784,7 @@ function FacultyHomepageComponent({ c }) {
     }
   };
 
-  const generatePasscode = async () => {
+  const generatePasscodee = async () => {
     try {
       const { data } = await generatePasscode(classdetails.classCode);
 
@@ -860,14 +860,14 @@ function FacultyHomepageComponent({ c }) {
                 icon={<QrCode className="w-5 h-5" />}
                 label="Generate QR"
                 description="QR code attendance"
-                onClick={generateQRCode}
+                onClick={generateQRCodee}
               />
 
               <ActionButton
                 icon={<Keyboard className="w-5 h-5" />}
                 label="Generate Code"
                 description="Attendance code"
-                onClick={generatePasscode}
+                onClick={generatePasscodee}
               />
               <ActionButton
                 icon={<NotebookText className="w-5 h-5" />}
