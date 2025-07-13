@@ -50,16 +50,20 @@ function AppRoutes({
 
   return (
     <>
-      {/* Conditional Navbars */}
-      {path.startsWith("/student") && studentLoggedIn && (
-        <Navbar setIsLoggedIn={setStudentLoggedIn} />
-      )}
-      {path.startsWith("/faculty") && teacherLoggedIn && (
-        <FacultyNavbar_j setIsLoggedIn={setTeacherLoggedIn} />
-      )}
-      {path.startsWith("/superadmin") && superAdminLoggedIn && (
-        <NavBarSuperAdmin setIsLoggedIn={setSuperAdminLoggedIn} />
-      )}
+      {/* Conditional Navbars - only show for authenticated routes, not login pages */}
+      {path.startsWith("/student") &&
+        studentLoggedIn &&
+        path !== "/student" && <Navbar setIsLoggedIn={setStudentLoggedIn} />}
+      {path.startsWith("/faculty") &&
+        teacherLoggedIn &&
+        path !== "/faculty" && (
+          <FacultyNavbar_j setIsLoggedIn={setTeacherLoggedIn} />
+        )}
+      {path.startsWith("/superadmin") &&
+        superAdminLoggedIn &&
+        path !== "/superadmin" && (
+          <NavBarSuperAdmin setIsLoggedIn={setSuperAdminLoggedIn} />
+        )}
 
       <Routes>
         {/* Landing Page */}
@@ -68,7 +72,13 @@ function AppRoutes({
         {/* Student Routes */}
         <Route
           path="/student"
-          element={<StudentLoginPage setIsLoggedIn={setStudentLoggedIn} />}
+          element={
+            studentLoggedIn ? (
+              <Navigate to="/student/home" />
+            ) : (
+              <StudentLoginPage setIsLoggedIn={setStudentLoggedIn} />
+            )
+          }
         />
         {studentLoggedIn ? (
           <>
@@ -85,7 +95,13 @@ function AppRoutes({
         {/* Teacher Routes */}
         <Route
           path="/faculty"
-          element={<TeacherLogin setIsLoggedIn={setTeacherLoggedIn} />}
+          element={
+            teacherLoggedIn ? (
+              <Navigate to="/faculty/home" />
+            ) : (
+              <TeacherLogin setIsLoggedIn={setTeacherLoggedIn} />
+            )
+          }
         />
         {teacherLoggedIn ? (
           <>
@@ -113,7 +129,11 @@ function AppRoutes({
         <Route
           path="/superadmin"
           element={
-            <SuperAdminLoginPage setIsLoggedIn={setSuperAdminLoggedIn} />
+            superAdminLoggedIn ? (
+              <Navigate to="/superadmin/manage-teacher" />
+            ) : (
+              <SuperAdminLoginPage setIsLoggedIn={setSuperAdminLoggedIn} />
+            )
           }
         />
         {superAdminLoggedIn ? (
