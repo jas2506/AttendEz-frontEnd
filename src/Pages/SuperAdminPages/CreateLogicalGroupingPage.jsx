@@ -19,7 +19,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Loader2, Trash2, Eye, Users } from "lucide-react";
+import { Loader2, Trash2, Eye, Users, RefreshCcw } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import CreateTimetablePopup from "./CreateTimetablePage";
 import EditLogicalGroupingPopup from "./EditLogicalGroupingPopup";
@@ -274,303 +274,282 @@ export default function CreateLogicalGroupPage() {
   };
 
   return (
-    <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
+    <div className="min-h-screen bg-blue-50">
       {loading && (
-        <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex justify-center items-center">
-          <div className="bg-white rounded-xl p-6 shadow-2xl flex items-center gap-4">
-            <Loader2 className="animate-spin w-8 h-8 text-blue-600" />
-            <span className="text-gray-700 font-medium">Loading...</span>
-          </div>
+        <div className="fixed inset-0 z-50 bg-black/20 flex justify-center items-center">
+          <Loader2 className="animate-spin w-10 h-10 text-blue-600" />
         </div>
       )}
-      <div className="p-6">
-        <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mb-6 text-center">
+      
+      <div className="max-w-4xl mx-auto p-8 mt-6 bg-white/90 rounded-2xl shadow-lg backdrop-blur-sm border border-blue-200 space-y-6">
+        <h2 className="text-3xl font-bold text-blue-700 text-center">
           Logical Grouping Management
         </h2>
-        <div className="flex justify-center mb-6">
+        
+        <div className="flex justify-center">
           <ToggleGroup
             type="single"
             value={mode}
             onValueChange={(val) => val && setMode(val)}
-            className="bg-white/80 backdrop-blur-sm p-1 rounded-xl shadow-lg border border-white/20"
+            className="bg-blue-100 p-1 rounded-lg"
           >
             <ToggleGroupItem
               value="add"
-              className="px-6 py-3 rounded-lg font-medium transition-all duration-200 data-[state=on]:bg-gradient-to-r data-[state=on]:from-blue-500 data-[state=on]:to-blue-600 data-[state=on]:text-white data-[state=on]:shadow-lg hover:bg-blue-50"
+              className="px-4 py-2 data-[state=on]:bg-blue-600 data-[state=on]:text-white"
             >
-              <Users className="w-4 h-4 mr-2" />
               Add Group
             </ToggleGroupItem>
             <ToggleGroupItem
               value="delete"
-              className="px-6 py-3 rounded-lg font-medium transition-all duration-200 data-[state=on]:bg-gradient-to-r data-[state=on]:from-purple-500 data-[state=on]:to-purple-600 data-[state=on]:text-white data-[state=on]:shadow-lg hover:bg-purple-50"
+              className="px-4 py-2 data-[state=on]:bg-blue-600 data-[state=on]:text-white"
             >
-              <Eye className="w-4 h-4 mr-2" />
               View Groups
             </ToggleGroupItem>
           </ToggleGroup>
         </div>
 
         {mode === "add" && (
-          <Card className="bg-white/90 backdrop-blur-sm shadow-xl border-0 rounded-2xl">
-            <CardContent className="space-y-6 py-8 px-8">
-              <div className="grid grid-cols-2 gap-6">
-                <Select value={degree} onValueChange={setDegree}>
-                  <SelectTrigger className="h-12 rounded-xl border-2 border-blue-100 focus:border-blue-400 transition-colors">
-                    <SelectValue placeholder="Select Degree" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="B.E.">B.E.</SelectItem>
-                    <SelectItem value="B.Tech">B.Tech</SelectItem>
-                    <SelectItem value="M.Tech">M.Tech</SelectItem>
-                  </SelectContent>
-                </Select>
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-6">
+              <Select value={degree} onValueChange={setDegree}>
+                <SelectTrigger className="p-3 border border-blue-300 rounded-md">
+                  <SelectValue placeholder="Select Degree" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="B.E.">B.E.</SelectItem>
+                  <SelectItem value="B.Tech">B.Tech</SelectItem>
+                  <SelectItem value="M.Tech">M.Tech</SelectItem>
+                </SelectContent>
+              </Select>
+              <Input
+                placeholder="Section"
+                value={section}
+                onChange={(e) => setSection(e.target.value)}
+                className="p-3 border border-blue-300 rounded-md"
+              />
+              <Select value={passout} onValueChange={setPassout}>
+                <SelectTrigger className="p-3 border border-blue-300 rounded-md">
+                  <SelectValue placeholder="Select Passout Year" />
+                </SelectTrigger>
+                <SelectContent>
+                  {passoutOptions.map((year) => (
+                    <SelectItem key={year} value={year}>
+                      {year}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={groupType} onValueChange={setGroupType}>
+                <SelectTrigger className="p-3 border border-blue-300 rounded-md">
+                  <SelectValue placeholder="Group Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Normal">Normal</SelectItem>
+                  <SelectItem value="Elective">Elective</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="font-semibold text-blue-700 text-lg mb-3 block">
+                Enter Register Numbers (comma-separated)
+              </label>
+              <div className="flex items-center gap-4 mt-2 flex-wrap">
                 <Input
-                  placeholder="Section"
-                  value={section}
-                  onChange={(e) => setSection(e.target.value)}
-                  className="h-12 rounded-xl border-2 border-blue-100 focus:border-blue-400 transition-colors"
+                  type="text"
+                  placeholder="Enter e.g. 3122235001001,3122235001002"
+                  value={manualRegNo}
+                  onChange={(e) => setManualRegNo(e.target.value)}
+                  className="flex-1 p-3 border border-blue-300 rounded-md"
                 />
-                <Select value={passout} onValueChange={setPassout}>
-                  <SelectTrigger className="h-12 rounded-xl border-2 border-blue-100 focus:border-blue-400 transition-colors">
-                    <SelectValue placeholder="Select Passout Year" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {passoutOptions.map((year) => (
-                      <SelectItem key={year} value={year}>
-                        {year}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select value={groupType} onValueChange={setGroupType}>
-                  <SelectTrigger className="h-12 rounded-xl border-2 border-blue-100 focus:border-blue-400 transition-colors">
-                    <SelectValue placeholder="Group Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Normal">Normal</SelectItem>
-                    <SelectItem value="Elective">Elective</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Button
+                  onClick={() => {
+                    const numbers = manualRegNo
+                      .split(",")
+                      .map((num) => num.trim())
+                      .filter(
+                        (num) => num !== "" && !registerNumbers.includes(num)
+                      );
+                    if (numbers.length > 0) {
+                      setRegisterNumbers((prev) => [...prev, ...numbers]);
+                      setManualRegNo("");
+                    }
+                  }}
+                  className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700"
+                >
+                  Add Numbers
+                </Button>
               </div>
-
-              <div>
-                <label className="font-semibold text-blue-700 text-lg mb-3 block">
-                  Enter Register Numbers (comma-separated)
-                </label>
-                <div className="flex items-center gap-4 mt-2 flex-wrap">
-                  <Input
-                    type="text"
-                    placeholder="Enter e.g. 3122235001001,3122235001002"
-                    value={manualRegNo}
-                    onChange={(e) => setManualRegNo(e.target.value)}
-                    className="flex-1 h-12 rounded-xl border-2 border-blue-100 focus:border-blue-400 transition-colors"
-                  />
-                  <Button
-                    onClick={() => {
-                      const numbers = manualRegNo
-                        .split(",")
-                        .map((num) => num.trim())
-                        .filter(
-                          (num) => num !== "" && !registerNumbers.includes(num)
-                        );
-                      if (numbers.length > 0) {
-                        setRegisterNumbers((prev) => [...prev, ...numbers]);
-                        setManualRegNo("");
-                      }
-                    }}
-                    className="h-12 px-6 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg"
-                  >
-                    Add Numbers
-                  </Button>
-                </div>
-                {registerNumbers.length > 0 && (
-                  <div className="mt-4 max-h-32 overflow-auto border-2 border-blue-100 rounded-xl p-4 text-sm bg-gradient-to-r from-blue-50 to-indigo-50">
-                    <div className="font-medium text-blue-700 mb-2">
-                      Added Register Numbers ({registerNumbers.length}):
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      {registerNumbers.map((num, idx) => (
-                        <div
-                          key={idx}
-                          className="bg-white/70 rounded-lg px-3 py-1 text-blue-800 font-mono text-xs"
-                        >
-                          {num}
-                        </div>
-                      ))}
-                    </div>
+              {registerNumbers.length > 0 && (
+                <div className="mt-4 max-h-32 overflow-auto border border-blue-300 rounded-md p-4 text-sm bg-blue-50">
+                  <div className="font-medium text-blue-700 mb-2">
+                    Added Register Numbers ({registerNumbers.length}):
                   </div>
-                )}
-              </div>
-
-              <div>
-                {groupType === "Normal" && (
-                  <div>
-                    <label className="font-semibold text-blue-700 text-lg mb-3 block">
-                      Select Class Advisor
-                    </label>
-                    <div>
-                      <Button
-                        onClick={() => setShowAdvisorPopup(true)}
-                        className="bg-blue-500 hover:bg-blue-600 text-white rounded-xl px-6 py-3"
+                  <div className="grid grid-cols-3 gap-2">
+                    {registerNumbers.map((num, idx) => (
+                      <div
+                        key={idx}
+                        className="bg-white rounded-md px-3 py-1 text-blue-800 font-mono text-xs"
                       >
-                        Choose Advisor
-                      </Button>
-                      {advisorEmail && (
-                        <p className="mt-2 text-sm text-gray-700">
-                          Selected:{" "}
-                          <span className="font-medium">
-                            {
-                              advisors.find((a) => a.email === advisorEmail)
-                                ?.name
-                            }{" "}
-                            ({advisorEmail})
-                          </span>
-                        </p>
-                      )}
-                    </div>
+                        {num}
+                      </div>
+                    ))}
                   </div>
-                )}
+                </div>
+              )}
+            </div>
 
-                <p className="text-sm mt-2 text-gray-500">
-                  Selected: {advisorEmail}
-                </p>
+            <div>
+              {groupType === "Normal" && (
+                <div>
+                  <label className="font-semibold text-blue-700 text-lg mb-3 block">
+                    Select Class Advisor
+                  </label>
+                  <div>
+                    <Button
+                      onClick={() => setShowAdvisorPopup(true)}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md"
+                    >
+                      Choose Advisor
+                    </Button>
+                    {advisorEmail && (
+                      <p className="mt-2 text-sm text-blue-700">
+                        Selected:{" "}
+                        <span className="font-medium">
+                          {
+                            advisors.find((a) => a.email === advisorEmail)
+                              ?.name
+                          }{" "}
+                          ({advisorEmail})
+                        </span>
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
 
+              <div className="mt-4">
                 <label className="font-semibold text-blue-700 text-lg mb-3 block">
                   Timetable
                 </label>
                 <Button
                   onClick={() => setShowTimetablePopup(true)}
-                  className="bg-blue-500 hover:bg-blue-600 text-white rounded-xl px-6 py-3"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md"
                 >
                   Enter Timetable
                 </Button>
-
-                <EnterTimetablePopup
-                  visible={showTimetablePopup}
-                  onClose={() => setShowTimetablePopup(false)}
-                  onSave={handleTimetableSave}
-                  initialData={timetable}
-                />
               </div>
 
-              <Button
-                onClick={handleSubmit}
-                className="w-full h-14 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold text-lg shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
-              >
-                Submit Group
-              </Button>
-            </CardContent>
-          </Card>
+              <EnterTimetablePopup
+                visible={showTimetablePopup}
+                onClose={() => setShowTimetablePopup(false)}
+                onSave={handleTimetableSave}
+                initialData={timetable}
+              />
+            </div>
+
+            <Button
+              onClick={handleSubmit}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-md text-lg font-semibold"
+            >
+              Submit Group
+            </Button>
+          </div>
         )}
 
         {mode === "delete" && (
-          <Card className="bg-white/95 backdrop-blur-sm shadow-2xl border-0 rounded-2xl overflow-hidden">
-            <CardContent className="py-8 px-8">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl">
-                    <Eye className="w-6 h-6 text-white" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
-                    Manage Logical Groupings
-                  </h3>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-bold text-blue-700">Manage Logical Groupings</h3>
+              <Button
+                variant="ghost"
+                className="text-blue-600 hover:bg-blue-100 p-2"
+                onClick={refreshGroupings}
+              >
+                <RefreshCcw className="h-4 w-4 mr-1" />
+                Refresh List
+              </Button>
+            </div>
+
+            {groupings.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="w-24 h-24 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
+                  <Users className="w-12 h-12 text-blue-400" />
                 </div>
-                <Button
-                  onClick={refreshGroupings}
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-4 py-2 rounded-xl shadow-md transition-all duration-200"
-                >
-                  Refresh List
-                </Button>
+                <p className="text-blue-600 text-lg">
+                  No logical groupings found
+                </p>
               </div>
-
-              {groupings.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
-                    <Users className="w-12 h-12 text-gray-400" />
-                  </div>
-                  <p className="text-gray-500 text-lg">
-                    No logical groupings found
-                  </p>
-                </div>
-              ) : (
-                <div className="overflow-hidden border-2 border-purple-100 rounded-2xl shadow-lg">
-                  <div className="overflow-auto max-h-[500px]">
-                    <table className="min-w-full">
-                      <thead className="bg-gradient-to-r from-purple-500 to-pink-500 text-white sticky top-0">
-                        <tr>
-                          <th className="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">
-                            Group Name
-                          </th>
-                          <th className="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">
-                            Group Code
-                          </th>
-                          <th className="px-6 py-4 text-center font-semibold text-sm uppercase tracking-wider">
-                            Actions
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-purple-100">
-                        {groupings.map((group, idx) => (
-                          <tr
-                            key={idx}
-                            className="hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition-all duration-200"
-                          >
-                            <td className="px-6 py-4">
-                              <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-lg flex items-center justify-center">
-                                  <Users className="w-5 h-5 text-white" />
-                                </div>
-                                <div>
-                                  <div className="font-semibold text-gray-900">
-                                    {group.section}
-                                  </div>
-                                  <div className="text-sm text-gray-500">
-                                    Logical Group
-                                  </div>
-                                </div>
+            ) : (
+              <div className="overflow-auto rounded-lg border border-blue-200 max-h-[400px] custom-scrollbar">
+                <table className="min-w-full text-sm text-left text-blue-900">
+                  <thead className="text-xs uppercase text-blue-700 bg-blue-200">
+                    <tr>
+                      <th className="px-4 py-2">Group Name</th>
+                      <th className="px-4 py-2">Group Code</th>
+                      <th className="px-4 py-2">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {groupings.map((group, idx) => (
+                      <tr
+                        key={idx}
+                        className="border-b border-blue-300 even:bg-blue-50"
+                      >
+                        <td className="px-4 py-2">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                              <Users className="w-5 h-5 text-white" />
+                            </div>
+                            <div>
+                              <div className="font-semibold text-blue-900">
+                                {group.section}
                               </div>
-                            </td>
-                            <td className="px-6 py-4">
-                              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800 font-mono">
-                                {group.groupcode}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 text-center flex gap-3 justify-center">
-                              <Button
-                                variant="destructive"
-                                onClick={() =>
-                                  handleDeleteGroup(group.groupcode)
-                                }
-                                className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-2 rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105"
-                              >
-                                <Trash2 className="w-4 h-4 mr-2" />
-                                Delete
-                              </Button>
-                              <Button
-                                onClick={() => handleEditGroup(group)}
-                                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-4 py-2 rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105"
-                              >
-                                Edit Logical Group
-                              </Button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
+                              <div className="text-sm text-blue-600">
+                                Logical Group
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-2">
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 font-mono">
+                            {group.groupcode}
+                          </span>
+                        </td>
+                        <td className="px-4 py-2 flex gap-2">
+                          <Button
+                            variant="destructive"
+                            onClick={() =>
+                              handleDeleteGroup(group.groupcode)
+                            }
+                            className="text-sm"
+                          >
+                            <Trash2 className="w-4 h-4 mr-1" />
+                            Delete
+                          </Button>
+                          <Button
+                            onClick={() => handleEditGroup(group)}
+                            className="bg-blue-600 hover:bg-blue-700 text-white text-sm"
+                          >
+                            Edit Group
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
 
-              <EditLogicalGroupingPopup
-                visible={editPopupOpen}
-                onClose={() => setEditPopupOpen(false)}
-                groupData={editGroupData}
-                onSubmit={handleEditSubmit}
-              />
-            </CardContent>
-          </Card>
+            <EditLogicalGroupingPopup
+              visible={editPopupOpen}
+              onClose={() => setEditPopupOpen(false)}
+              groupData={editGroupData}
+              onSubmit={handleEditSubmit}
+            />
+          </div>
         )}
+        
         <SelectClassAdvisorPopup
           open={showAdvisorPopup}
           onClose={() => {
@@ -584,6 +563,19 @@ export default function CreateLogicalGroupPage() {
           }}
         />
       </div>
+      
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background-color: #60a5fa;
+          border-radius: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #e0f2fe;
+        }
+      `}</style>
     </div>
   );
 }
