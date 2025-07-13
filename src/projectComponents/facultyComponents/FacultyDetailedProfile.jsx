@@ -7,11 +7,12 @@ import { useNavigate } from "react-router-dom";
 export default function FacultyDetailedProfile({ details, setIsLoggedIn }) {
   const navigate = useNavigate();
 
-  function Logoutfunc() {
-    setIsLoggedIn(false);
+  const Logoutfunc = () => {
+    localStorage.removeItem("teacherToken"); // ✅ remove token
+    setIsLoggedIn(false); // ✅ update state
+    navigate("/faculty"); // ✅ redirect to login page
+  };
 
-    navigate("/");
-  }
   return (
     <Card className="w-full p-4">
       <CardContent className="flex flex-col items-center space-y-4">
@@ -23,13 +24,12 @@ export default function FacultyDetailedProfile({ details, setIsLoggedIn }) {
         <div className="w-full space-y-2 text-sm">
           <InfoRow label="Department" value={details.department} />
           <InfoRow label="Designation" value={details.position} />
-         
+
           <InfoRow
             label="Email"
             value={details.faculty_email}
             icon={<Mail className="w-4 h-4 text-muted-foreground" />}
           />
-          
         </div>
       </CardContent>
       <Button

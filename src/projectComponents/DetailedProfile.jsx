@@ -4,19 +4,57 @@ import { Mail, BadgeInfo, User2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
+// InfoRow Component
+function InfoRow({ label, value, icon }) {
+  return (
+    <div className="flex justify-between items-center bg-muted p-2 rounded-md">
+      <span className="font-medium text-muted-foreground flex items-center gap-1">
+        {icon}
+        {label}
+      </span>
+      <span className="font-semibold text-right">{value || "N/A"}</span>
+    </div>
+  );
+}
+
+// Main Component
 export default function DetailedProfile({ details, setIsLoggedIn }) {
   const navigate = useNavigate();
 
   function Logoutfunc() {
+    localStorage.removeItem("studentToken");
+    localStorage.removeItem("hmacpasscode");
     setIsLoggedIn(false);
-
-    navigate("/");
+    window.location.href = "/";
   }
+
+  // Defensive null check to prevent crash
+  if (!details) {
+    return (
+      <Card className="w-full p-4 text-center text-gray-500">
+        <CardContent>
+          <p className="text-lg">
+            Failed to load student details. Please refresh or try again later.
+          </p>
+          <Button
+            onClick={Logoutfunc}
+            variant="ghost"
+            className="mt-4 hover:bg-gray-200 cursor-pointer"
+          >
+            Log out
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="w-full p-4">
       <CardContent className="flex flex-col items-center space-y-4">
         <Avatar className="w-20 h-20">
-          <AvatarFallback className="text-2xl">MS</AvatarFallback>
+          <AvatarFallback className="text-2xl">
+            {details.name?.[0] ?? "?"}
+          </AvatarFallback>
         </Avatar>
         <h2 className="text-xl font-semibold">{details.name}</h2>
 
@@ -41,6 +79,7 @@ export default function DetailedProfile({ details, setIsLoggedIn }) {
           />
         </div>
       </CardContent>
+
       <Button
         onClick={Logoutfunc}
         variant="ghost"
@@ -49,17 +88,5 @@ export default function DetailedProfile({ details, setIsLoggedIn }) {
         Log out
       </Button>
     </Card>
-  );
-}
-
-function InfoRow({ label, value, icon }) {
-  return (
-    <div className="flex justify-between items-center bg-muted p-2 rounded-md">
-      <span className="font-medium text-muted-foreground flex items-center gap-1">
-        {icon}
-        {label}
-      </span>
-      <span className="font-semibold text-right">{value}</span>
-    </div>
   );
 }

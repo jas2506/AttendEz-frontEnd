@@ -27,6 +27,7 @@ function NavBarSuperAdmin({ setIsLoggedIn }) {
   };
 
   const handleLogout = () => {
+    localStorage.removeItem("jwtToken"); // ✅ Critical step for proper logout
     setIsLoggedIn(false);
     navigate("/superadmin/login");
   };

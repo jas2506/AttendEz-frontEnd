@@ -11,21 +11,20 @@ function StudentLoginPage({ setIsLoggedIn }) {
   const handleGoogleLogin = async (credentialResponse) => {
     try {
       const idToken = credentialResponse.credential;
-      console.log(idToken);
-      //hello
       const res = await axios.post(`${backendUrl}/student/googleAuth`, {
         idToken,
       });
 
       const jwt = res.data.token;
       const hmacpasscode = res.data.hmacpasscode;
-      localStorage.setItem("jwtToken", jwt);
+
+      localStorage.setItem("studentToken", jwt);
       localStorage.setItem("hmacpasscode", hmacpasscode);
 
       setIsLoggedIn(true);
       navigate("/student/home");
     } catch (err) {
-      console.error("Login failed jas:", err);
+      console.error("Login failed:", err);
     }
   };
 
@@ -46,11 +45,10 @@ function StudentLoginPage({ setIsLoggedIn }) {
         <div className="mt-6 flex justify-center">
           <GoogleLogin
             onSuccess={handleGoogleLogin}
-            onError={() => console.error("Login Failed jas")}
+            onError={() => console.error("Login Failed")}
           />
         </div>
 
-        {/* Clean footer */}
         <div className="pt-6 border-t border-gray-100">
           <p className="text-gray-400 text-sm font-light">
             Faculty member?{" "}
