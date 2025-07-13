@@ -1,3 +1,4 @@
+//component only vro not page anol
 import React, { useState, useEffect } from "react";
 import {
   Clock,
@@ -13,12 +14,12 @@ import {
 } from "lucide-react";
 import QRCode from "react-qr-code";
 import {
-  generateQRCode,
-  generatePasscode,
-  pollAttendanceWithVersion,
-  confirmAttendanceClose,
-  getAllStudentDetails,
-  saveManualAttendance,
+  generateQRCodeWithSubcode,
+  generatePasscodeWithSubcode,
+  pollAttendanceWithVersionWithSubcode,
+  confirmAttendanceCloseWithSubcode,
+  getAllStudentDetails, //old api
+  saveManualAttendance, //old api
 } from "../../TeacherApi";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -64,7 +65,7 @@ function FacultyHomepageComponent({ c }) {
       if (!active) return; // Stop polling if the effect has been cleaned up.
 
       try {
-        const response = await pollAttendanceWithVersion(
+        const response = await pollAttendanceWithVersionWithSubcode(
           classdetails.classCode,
           currentVersion
         );
@@ -108,7 +109,7 @@ function FacultyHomepageComponent({ c }) {
       if (!active) return;
 
       try {
-        const response = await pollAttendanceWithVersion(
+        const response = await pollAttendanceWithVersionWithSubcode(
           classdetails.classCode,
           currentVersion
         );
@@ -152,7 +153,7 @@ function FacultyHomepageComponent({ c }) {
 
   const generateQRCodee = async () => {
     try {
-      const response = await generateQRCode(classdetails.classCode);
+      const response = await generateQRCodeWithSubcode(classdetails.classCode);
       const data = response.data;
       if (data.status === "S") {
         setQrCodes(data.codes);
@@ -187,7 +188,7 @@ function FacultyHomepageComponent({ c }) {
   const confirmQRAttendance = async () => {
     setQrPollingActive(false); // Stop polling
     try {
-      await confirmAttendanceClose(classdetails.classCode);
+      await confirmAttendanceCloseWithSubcode(classdetails.classCode);
 
       alert("QR Attendance saved.");
       if (document.fullscreenElement) {
@@ -202,7 +203,9 @@ function FacultyHomepageComponent({ c }) {
 
   const generatePasscodee = async () => {
     try {
-      const { data } = await generatePasscode(classdetails.classCode);
+      const { data } = await generatePasscodeWithSubcode(
+        classdetails.classCode
+      );
 
       setGeneratedCode(data.codes);
       setLiveAttendance([]); // Reset list on new code generation
@@ -216,7 +219,7 @@ function FacultyHomepageComponent({ c }) {
   const confirmAttendance = async () => {
     setPollingActive(false); // Stop polling
     try {
-      await confirmAttendanceClose(classdetails.classCode);
+      await confirmAttendanceCloseWithSubcode(classdetails.classCode);
 
       alert("Attendance confirmed and closed.");
       setShowCodePopup(false);

@@ -3,12 +3,17 @@ import { Input } from "@/components/ui/input";
 import { Keyboard, Calendar, Clock, User } from "lucide-react";
 import FacultyHomepageComponent from "../../projectComponents/facultyComponents/FacultyHomepageComponent";
 import { getFacultyDetails, refreshTimetable } from "../../TeacherApi";
+import { fetchClassCodeFromSubstitutionCode } from "../../TeacherApi"; // adjust path if needed
+import FacultyHomepageWithSubcode from "./FacultyHomepageWithSubcode";
 
 function FacultyHomepage() {
   const [currentDateStr, setCurrentDateStr] = useState("");
   const [details, setDetails] = useState(null);
   const [timetable, setTimetable] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [subCode, setSubCode] = useState("");
+  const [showSubCodeResult, setShowSubCodeResult] = useState(false);
+  const [fetchedClassCode, setFetchedClassCode] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,6 +45,22 @@ function FacultyHomepage() {
     const formatted = today.toLocaleDateString("en-US", options);
     setCurrentDateStr(formatted);
   }, []);
+
+  const handleSubCodeSubmit = async () => {
+    try {
+      const res = await fetchClassCodeFromSubstitutionCode(subCode);
+      const data = res.data;
+
+      if (data.status === "S") {
+        setFetchedClassCode(data.classCode);
+        setShowSubCodeResult(true);
+      } else {
+        alert("Invalid or expired substitution code.");
+      }
+    } catch (err) {
+      console.error("Error fetching class code:", err);
+    }
+  };
 
   function getTodaySchedule(data) {
     const days = [
@@ -137,11 +158,16 @@ function FacultyHomepage() {
             <div className="relative flex-1 w-full">
               <Keyboard className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <Input
+                value={subCode}
+                onChange={(e) => setSubCode(e.target.value)}
                 placeholder="Enter Substitution Code"
                 className="pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
               />
             </div>
-            <button className="cursor-pointer bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg w-full md:w-auto">
+            <button
+              onClick={handleSubCodeSubmit}
+              className="cursor-pointer bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg w-full md:w-auto"
+            >
               Submit Code
             </button>
           </div>
@@ -178,14 +204,42 @@ function FacultyHomepage() {
               </div>
             ) : (
               <div className="space-y-4">
-                {todaySchedule.map((course, index) => (
-                  <FacultyHomepageComponent key={index} c={course} />
-                ))}
+                {todaySchedule.map((course, index) =>
+                  course.subCode ? (
+                    <FacultyHomepageWithSubcode
+                      key={index}
+                      c={course}
+                      subCode={course.subCode}
+                    />
+                  ) : (
+                    <FacultyHomepageComponent key={index} c={course} />
+                  )
+                )}
               </div>
             )}
           </div>
         </div>
       </div>
+      {showSubCodeResult && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-10 backdrop-blur-sm bg-black/20">
+          <div className="w-[90%] md:w-[500px] bg-white border border-blue-300 rounded-2xl shadow-xl p-6">
+            <div className="text-center space-y-4">
+              <h2 className="text-lg font-bold text-blue-700">
+                Class Code for Substitution
+              </h2>
+              <p className="text-3xl font-mono tracking-widest bg-blue-50 py-2 px-4 rounded-lg border border-blue-200 inline-block">
+                {fetchedClassCode}
+              </p>
+              <button
+                onClick={() => setShowSubCodeResult(false)}
+                className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

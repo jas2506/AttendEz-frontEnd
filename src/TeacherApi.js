@@ -187,5 +187,34 @@ export const saveManualAttendance = (classCode, present, absent) =>
     absent,
   });
 
+// GET /fetchClassCodeFromSubstitutionCode?substitutionCode=...
+export const fetchClassCodeFromSubstitutionCode = (subCode) =>
+  api.get(`/fetchClassCodeFromSubstitutionCode`, {
+    params: { substitutionCode: subCode },
+  });
+// NEW versions with subCode param
+export const generateQRCodeWithSubcode = (classCode, subCode) =>
+  api.post(`/qr/generateQRCode`, null, {
+    params: { classCode, subCode },
+  });
+
+export const generatePasscodeWithSubcode = (classCode, subCode) =>
+  api.post(`/passcode/generateCode`, null, {
+    params: { classCode, subCode },
+  });
+
+export const confirmAttendanceCloseWithSubcode = (classCode, subCode) =>
+  api.post(`/qrpasscode/confirmAttendanceClose`, null, {
+    params: { classCode, subCode },
+  });
+
+export const pollAttendanceWithVersionWithSubcode = (
+  classCode,
+  lastVersion,
+  subCode
+) =>
+  api.get(`/liveAttendanceViewWithVersion`, {
+    params: { classCode, lastVersion, subCode },
+  });
 
 export { api };
