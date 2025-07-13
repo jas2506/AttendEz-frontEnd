@@ -76,7 +76,7 @@ function SuperAdminLoginPage({ setIsLoggedIn }) {
             onChange={(e) => setPassword(e.target.value)}
             className="focus-visible:ring-2 focus-visible:ring-blue-500"
           />
-          
+
           {error && <p className="text-red-600 text-sm text-center">{error}</p>}
         </CardContent>
 

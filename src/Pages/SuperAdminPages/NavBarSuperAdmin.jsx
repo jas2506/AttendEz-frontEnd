@@ -23,12 +23,12 @@ function NavBarSuperAdmin({ setIsLoggedIn }) {
   const details = JSON.parse(localStorage.getItem("superadminDetails"));
 
   const handleLogout = () => {
-    localStorage.removeItem("superAdminLoggedIn");
     localStorage.removeItem("superadminToken");
+    localStorage.removeItem("superAdminLoggedIn");
     localStorage.removeItem("superadminDetails");
 
+    // ✅ Critical step for proper logout
     setIsLoggedIn(false);
-
     navigate("/superadmin/login");
   };
 

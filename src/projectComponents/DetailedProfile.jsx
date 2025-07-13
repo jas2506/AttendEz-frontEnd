@@ -14,7 +14,7 @@ export default function DetailedProfile({ details, setIsLoggedIn }) {
     // Remove tokens and sensitive data
     localStorage.removeItem("jwtToken");
     localStorage.removeItem("hmacpasscode");
-    localStorage.removeItem("studentLoggedIn"); // ✅ important!
+    localStorage.removeItem("studentLoggedIn"); 
 
     // Redirect to homepage or login
     navigate("/");
