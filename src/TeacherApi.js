@@ -2,6 +2,33 @@ import axios from "axios";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
+export const refreshJwtWithCookie = async (oldToken) => {
+  try {
+    const response = await axios.post(
+      `${backendUrl}/faculty/refreshJWTWithCookie`,
+      {},
+      {
+        headers: {
+          Authorization: oldToken,
+        },
+        withCredentials: true, // Send secure cookie
+      }
+    );
+
+    const data = response.data;
+
+    if (data.status === "S" && data.token) {
+      localStorage.setItem("facultyToken", data.token);
+      return data.token;
+    }
+
+    return null;
+  } catch (error) {
+    console.error("Failed to refresh token:", error);
+    return null;
+  }
+};
+
 const api = axios.create({
   baseURL: `${backendUrl}/faculty`,
 });
@@ -14,6 +41,64 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
+
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (
+      error.response &&
+      error.response.data &&
+      error.response.data.status === "TO" &&
+      !originalRequest._retry
+    ) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers["Authorization"] = token;
+            return api(originalRequest);
+          })
+          .catch((err) => Promise.reject(err));
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      const oldToken = localStorage.getItem("facultyToken");
+      const newToken = await refreshJwtWithCookie(oldToken);
+
+      if (newToken) {
+        originalRequest.headers["Authorization"] = newToken;
+        processQueue(null, newToken);
+        isRefreshing = false;
+        return api(originalRequest);
+      } else {
+        processQueue(new Error("Token refresh failed"), null);
+        isRefreshing = false;
+        return Promise.reject(error);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 // POST /setDetails
 export const setFacultyDetails = (data) => api.post("/setDetails", data);
@@ -67,3 +152,40 @@ export const flipAttendance = (data) => api.post("/flipAttendance", data);
 
 // POST /deleteLecture
 export const deleteLecture = (data) => api.post("/deleteLecture", data);
+
+// POST /qr/generateQRCode?classCode=...
+export const generateQRCode = (classCode) =>
+  api.post(`/qr/generateQRCode`, null, { params: { classCode } });
+
+// POST /passcode/generateCode?classCode=...
+export const generatePasscode = (classCode) =>
+  api.post(`/passcode/generateCode`, null, { params: { classCode } });
+
+// GET /liveAttendanceViewWithVersion?classCode=...&lastVersion=...
+export const pollAttendanceWithVersion = (classCode, lastVersion) =>
+  api.get(`/liveAttendanceViewWithVersion`, {
+    params: { classCode, lastVersion },
+  });
+
+// POST /qrpasscode/confirmAttendanceClose?classCode=...
+export const confirmAttendanceClose = (classCode) =>
+  api.post(`/qrpasscode/confirmAttendanceClose`, null, {
+    params: { classCode },
+  });
+
+// POST /getAllStudentDetails?classCode=...
+export const getAllStudentDetails = (classCode) =>
+  api.post(`/getAllStudentDetails`, null, {
+    params: { classCode },
+  });
+
+// POST /saveManualAttendance
+export const saveManualAttendance = (classCode, present, absent) =>
+  api.post(`/saveManualAttendance`, {
+    classCode,
+    present,
+    absent,
+  });
+
+
+export { api };

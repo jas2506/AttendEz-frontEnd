@@ -13,16 +13,16 @@ function getStudentSummaries(apiValue) {
     for (const studentData of studentsArray) {
       const { name, registernumber, attendance } = studentData;
 
-      if (!attendance || typeof attendance !== "object") continue;
-
       let totalLectures = 0;
       let totalPresent = 0;
 
-      for (const subject of Object.values(attendance)) {
-        for (const lecture of Object.values(subject)) {
-          totalLectures++;
-          if (lecture.present === 1) {
-            totalPresent++;
+      if (attendance && typeof attendance === "object") {
+        for (const subject of Object.values(attendance)) {
+          for (const lecture of Object.values(subject)) {
+            totalLectures++;
+            if (lecture.present === 1) {
+              totalPresent++;
+            }
           }
         }
       }
@@ -42,6 +42,8 @@ function getStudentSummaries(apiValue) {
 
   return studentSummaries;
 }
+
+
 
 function ClassAdvisorPage() {
   const [advisorData, setAdvisorData] = useState(null);
@@ -89,7 +91,6 @@ function ClassAdvisorPage() {
             found.
           </p>
           <p className="text-sm text-gray-400 italic">(Message: {error})</p>
-         
         </div>
       </div>
     );
@@ -107,29 +108,45 @@ function ClassAdvisorPage() {
   const classCode = Object.keys(advisorData.details)[0] || "Your Class";
 
   return (
-    <div className="min-h-screen bg-gray-50 py-6">
-      {/* Header */}
-      <div className="flex items-center justify-between px-6 pb-6 max-w-5xl mx-auto">
-        <h1 className="text-2xl font-bold text-blue-700">Class Advisor View</h1>
-        <h2 className="text-xl font-semibold text-gray-700">
-          Class: {classCode}
-        </h2>
-      </div>
+    <>
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          {/* Header */}
+          <div className="bg-white border border-gray-200 shadow-lg rounded-2xl overflow-hidden mb-6">
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="bg-white/10 p-3 rounded-xl">
+                    <GraduationCap className="w-8 h-8 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-white">
+                      Class Advisor View
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-      {/* Student Cards */}
-      <div className="space-y-6 w-full max-w-5xl px-4 mx-auto">
-        {studentSummaries.map((student, index) => (
-          <FacultyStudentView_g
-            key={index}
-            name={student.name}
-            details={student.details}
-            percentage={student.percentage}
-            apiValue={advisorData}
-            onViewDetails={() => console.log("Details of:", student.details)}
-          />
-        ))}
+          {/* Student Cards - inside same container */}
+          <div className="space-y-6">
+            {studentSummaries.map((student, index) => (
+              <FacultyStudentView_g
+                key={index}
+                name={student.name}
+                details={student.details}
+                percentage={student.percentage}
+                apiValue={advisorData}
+                onViewDetails={() =>
+                  console.log("Details of:", student.details)
+                }
+              />
+            ))}
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

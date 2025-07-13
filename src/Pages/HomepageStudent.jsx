@@ -21,22 +21,19 @@ function getTodayAttendanceStats(attendance, timetable) {
     "Friday",
     "Saturday",
   ];
-  const todayName = weekdays[today.getDay()];
+
+  // const todayName = "Monday"; // for testing
+  const todayName=weekdays[new Date().getDay()];
 
   const todayClasses = timetable.timetable[todayName] || [];
 
   const stats = todayClasses.map((cls) => {
     const code = cls.classCode;
-
-    // Parse start time
     const [startHourStr, startMinStr] = cls.startTime.split(":");
     const startHour = parseInt(startHourStr, 10);
     const startMinute = parseInt(startMinStr, 10);
     const duration = cls.durationMinutes;
 
-    const startTime = { hour: startHour, minute: startMinute };
-
-    // Compute end time
     const startDate = new Date(0, 0, 0, startHour, startMinute);
     const endDate = new Date(startDate.getTime() + duration * 60000);
     const endTime = {
@@ -44,11 +41,9 @@ function getTodayAttendanceStats(attendance, timetable) {
       minute: endDate.getMinutes(),
     };
 
-    // Attendance calculation
+    let total = 0,
+      attended = 0;
     const attendanceRecords = attendance[code];
-    let total = 0;
-    let attended = 0;
-
     if (attendanceRecords) {
       for (const lecture in attendanceRecords) {
         total += 1;
@@ -61,14 +56,20 @@ function getTodayAttendanceStats(attendance, timetable) {
     return {
       classCode: code,
       className: timetable.classDetails[code]?.className || code,
-      startTime,
+      startTime: { hour: startHour, minute: startMinute },
       endTime,
       totalLectures: total,
       attendedLectures: attended,
     };
   });
 
-  return stats;
+  // 🔧 Sort by start time (hour + minute)
+  return stats.sort((a, b) => {
+    if (a.startTime.hour !== b.startTime.hour) {
+      return a.startTime.hour - b.startTime.hour;
+    }
+    return a.startTime.minute - b.startTime.minute;
+  });
 }
 
 function HomepageStudent() {
@@ -207,18 +208,17 @@ function HomepageStudent() {
                 placeholder="Enter Class Code (e.g., nzlah0~CSE2701B)"
                 value={classCode}
                 onChange={(e) => {
-                  let value = e.target.value.replace(/[^a-zA-Z0-9]/g, ""); // Remove all non-alphanumeric characters
+                  let value = e.target.value.replace(/[^a-zA-Z0-9]/g, ""); // Remove non-alphanumerics
 
                   if (value.length > 6) {
-                    // Insert tilde after 6 characters
-                    value = value.slice(0, 6) + "~" + value.slice(6, 14); // Limit to 14 total characters (6 + 8)
+                    value = value.slice(0, 6) + "~" + value.slice(6, 26); // 6 before, 20 after
                   }
 
                   setClassCode(value);
                 }}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 disabled={isSubmitting}
-                maxLength={15} // 6 + 1 (tilde) + 8 = 15
+                maxLength={27}
               />
             </div>
             <button

@@ -12,7 +12,6 @@ import SubjectsPage from "../SubjectsPage";
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function AddTeacherForm() {
-  const [csvError, setCsvError] = useState("");
   const [uploadedTeachers, setUploadedTeachers] = useState([]);
   const [added, setAdded] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
@@ -30,7 +29,7 @@ function AddTeacherForm() {
   const expectedHeaders = ["name", "email", "isMentor", "position"];
 
   const fetchTeachers = async () => {
-    const token = localStorage.getItem("jwtToken");
+    const token = localStorage.getItem("superadminToken");
     if (!token) return toast.error("No auth token found. Please log in again.");
     try {
       setLoading(true);
@@ -95,7 +94,7 @@ function AddTeacherForm() {
           <Button
             variant="destructive"
             onClick={async () => {
-              const token = localStorage.getItem("jwtToken");
+              const token = localStorage.getItem("superadminToken");
               if (!token)
                 return toast.error("No auth token found. Please log in again.");
               try {
@@ -150,7 +149,7 @@ function AddTeacherForm() {
   };
 
   const sendTeacherToBackend = async (teacher) => {
-    const token = localStorage.getItem("jwtToken");
+    const token = localStorage.getItem("superadminToken");
     if (!token) return toast.error("No auth token found. Please log in again.");
     try {
       setLoading(true);
@@ -243,8 +242,8 @@ function AddTeacherForm() {
                 className="p-3 border border-blue-300 rounded-md"
               >
                 <option value="">Select Mentor Status</option>
-                <option value="True">True</option>
-                <option value="False">False</option>
+                <option value="true">True</option>
+                <option value="false">False</option>
               </select>
 
               <input
@@ -261,15 +260,6 @@ function AddTeacherForm() {
                 Add
               </Button>
             </div>
-
-            {uploadSuccess && (
-              <p className="text-green-600 font-semibold">
-                CSV uploaded and saved successfully!
-              </p>
-            )}
-            {csvError && (
-              <p className="text-red-600 font-semibold">{csvError}</p>
-            )}
 
             {uploadedTeachers.length > 0 && (
               <div className="mt-6">

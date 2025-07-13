@@ -20,13 +20,14 @@ function NavBarSuperAdmin({ setIsLoggedIn }) {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const details = {
-    email: "saipranav2310324@ssn.edu.in",
-    name: "SuperAdmin",
-    department: "CSE",
-  };
+  const details = JSON.parse(localStorage.getItem("superadminDetails"));
 
   const handleLogout = () => {
+    localStorage.removeItem("superadminToken");
+    localStorage.removeItem("superAdminLoggedIn");
+    localStorage.removeItem("superadminDetails");
+
+    // ✅ Critical step for proper logout
     setIsLoggedIn(false);
     navigate("/superadmin/login");
   };
@@ -99,8 +100,7 @@ function NavBarSuperAdmin({ setIsLoggedIn }) {
             <DropdownMenuLabel>Profile</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Name: {details.name}</DropdownMenuItem>
-            <DropdownMenuItem>Email: {details.email}</DropdownMenuItem>
-            <DropdownMenuItem>Dept: {details.department}</DropdownMenuItem>
+            <DropdownMenuItem>Dept: {details.dept}</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={handleLogout}

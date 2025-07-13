@@ -26,7 +26,7 @@ export default function CreateTimetablePopup({
   const expectedFields = ["Day", "Class Code", "Start Time", "Duration (min)"];
 
   useEffect(() => {
-    const token = localStorage.getItem("jwtToken");
+    const token = localStorage.getItem("superadminToken");
     axios
       .get(`${backendUrl}/SuperAdmin/viewAllTeachers?department=CSE`, {
         headers: { Authorization: token },

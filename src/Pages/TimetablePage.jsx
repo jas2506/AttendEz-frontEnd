@@ -23,7 +23,23 @@ function TimetablePage() {
 
   if (loading) return <p>Loading...</p>;
 
-  
+  if (
+    !timetableData ||
+    Object.keys(timetableData.timetable || {}).length === 0
+  ) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-6 text-center">
+        <div className="bg-yellow-50 border border-yellow-200 p-6 rounded-xl shadow-sm">
+          <p className="text-yellow-700 font-medium text-lg">
+            Timetable has not been assigned yet.
+          </p>
+          <p className="text-sm text-yellow-600 mt-2">
+            Please contact your class advisor for assistance.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4">

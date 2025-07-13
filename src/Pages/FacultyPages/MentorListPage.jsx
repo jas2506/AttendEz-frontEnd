@@ -16,6 +16,7 @@ import {
   getMentorListAttendance,
   updateMenteeListAndReturnDetails,
 } from "../../TeacherApi";
+import { toast } from "sonner";
 
 // Utility function to calculate student summaries
 function getStudentSummaries(apiData) {
@@ -27,24 +28,27 @@ function getStudentSummaries(apiData) {
     let totalLectures = 0;
     let totalPresent = 0;
 
-    for (const subject of Object.values(attendance)) {
-      for (const lecture of Object.values(subject)) {
-        totalLectures++;
-        if (lecture.present === 1) {
-          totalPresent++;
+    if (attendance && typeof attendance === "object") {
+      for (const subject of Object.values(attendance)) {
+        for (const lecture of Object.values(subject)) {
+          totalLectures++;
+          if (lecture.present === 1) {
+            totalPresent++;
+          }
         }
       }
     }
 
     const percentage =
       totalLectures > 0
-        ? ((totalPresent / totalLectures) * 100).toFixed(1)
-        : "0.0";
+        ? parseFloat(((totalPresent / totalLectures) * 100).toFixed(1))
+        : 0.0;
 
     studentSummaries.push({
       name,
       regNo,
       percentage: parseFloat(percentage),
+      attendanceAvailable: !!attendance,
     });
   }
 
@@ -78,7 +82,10 @@ function StudentCard({ student, apiValue, onViewDetails }) {
         name: subject,
         attended: subjectAttended,
         total: subjectTotal,
-        percentage: ((subjectAttended / subjectTotal) * 100).toFixed(1),
+        percentage:
+          subjectTotal > 0
+            ? ((subjectAttended / subjectTotal) * 100).toFixed(1)
+            : "0.0",
       });
     }
 
@@ -88,7 +95,10 @@ function StudentCard({ student, apiValue, onViewDetails }) {
       courses,
       totalAttended,
       totalClasses,
-      overallPercentage: ((totalAttended / totalClasses) * 100).toFixed(1),
+      overallPercentage:
+        totalClasses > 0
+          ? ((totalAttended / totalClasses) * 100).toFixed(1)
+          : "0.0",
     };
   }
 
@@ -129,63 +139,63 @@ function StudentCard({ student, apiValue, onViewDetails }) {
                     {studentDetailedData.regNumber}
                   </span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-600">Digital ID:</span>
-                  <span className="font-semibold">
-                    {studentDetailedData.regNumber}
-                  </span>
-                </div>
               </div>
             </div>
           </div>
 
           {/* Course-wise attendance table */}
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
-              <thead>
-                <tr className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-                  <th className="p-3 text-left border border-gray-300">
-                    Course
-                  </th>
-                  <th className="p-3 text-center border border-gray-300">
-                    Attended
-                  </th>
-                  <th className="p-3 text-center border border-gray-300">
-                    Total
-                  </th>
-                  <th className="p-3 text-center border border-gray-300">
-                    Percentage
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {studentDetailedData.courses.map((course, idx) => (
-                  <tr
-                    key={idx}
-                    className={idx % 2 === 0 ? "bg-gray-50" : "bg-white"}
-                  >
-                    <td className="p-3 border border-gray-300 font-medium">
-                      {course.name}
-                    </td>
-                    <td className="p-3 text-center border border-gray-300 font-semibold text-blue-600">
-                      {course.attended}
-                    </td>
-                    <td className="p-3 text-center border border-gray-300">
-                      {course.total}
-                    </td>
-                    <td className="p-3 text-center border border-gray-300">
-                      <span
-                        className={`font-bold ${getTextColor(
-                          parseFloat(course.percentage)
-                        )}`}
-                      >
-                        {course.percentage}%
-                      </span>
-                    </td>
+            {!studentDetailedData.attendance ? (
+              <div className="text-center text-gray-500 italic py-8">
+                No attendance records found for this mentee.
+              </div>
+            ) : (
+              <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
+                <thead>
+                  <tr className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+                    <th className="p-3 text-left border border-gray-300">
+                      Course
+                    </th>
+                    <th className="p-3 text-center border border-gray-300">
+                      Attended
+                    </th>
+                    <th className="p-3 text-center border border-gray-300">
+                      Total
+                    </th>
+                    <th className="p-3 text-center border border-gray-300">
+                      Percentage
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {studentDetailedData.courses.map((course, idx) => (
+                    <tr
+                      key={idx}
+                      className={idx % 2 === 0 ? "bg-gray-50" : "bg-white"}
+                    >
+                      <td className="p-3 border border-gray-300 font-medium">
+                        {course.name}
+                      </td>
+                      <td className="p-3 text-center border border-gray-300 font-semibold text-blue-600">
+                        {course.attended}
+                      </td>
+                      <td className="p-3 text-center border border-gray-300">
+                        {course.total}
+                      </td>
+                      <td className="p-3 text-center border border-gray-300">
+                        <span
+                          className={`font-bold ${getTextColor(
+                            parseFloat(course.percentage)
+                          )}`}
+                        >
+                          {course.percentage}%
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
 
           {/* Overall attendance */}
@@ -397,20 +407,44 @@ function MentorListPage() {
       setIsUpdating(true);
       const response = await updateMenteeListAndReturnDetails(data);
 
-      if (response.data.status === "S") {
-        alert("Mentee list updated successfully!");
+      const { mentee_list_details, status, message } = response.data;
+
+      // ✅ Only check the entries you just submitted
+      const requestedRegs = data.mentee_list;
+      const invalidEntries = requestedRegs.filter(
+        (regNo) => mentee_list_details[regNo] === "Mentee details not found"
+      );
+
+      const totalEntries = requestedRegs.length;
+      const validEntries = totalEntries - invalidEntries.length;
+
+      if (status === "S") {
+        if (invalidEntries.length === 0) {
+          toast.success("✅ Mentee list updated successfully!");
+        } else if (validEntries === 0) {
+          toast.error(
+            `❌ Update failed. None of the register numbers were found:\n${invalidEntries.join(
+              ", "
+            )}`,
+            { duration: 7000 }
+          );
+        } else {
+          toast.warning(
+            `⚠️ Partial update: Some register numbers not found:\n${invalidEntries.join(
+              ", "
+            )}`,
+            { duration: 7000 }
+          );
+        }
+
         setShowAddForm(false);
-        // Refresh the data
         await fetchData();
       } else {
-        alert(
-          "Failed to update mentee list: " +
-            (response.data.message || "Unknown error")
-        );
+        toast.error(`Update failed: ${message || "Unknown error"}`);
       }
     } catch (err) {
       console.error(err);
-      alert(
+      toast.error(
         "Error updating mentee list: " +
           (err.response?.data?.message || err.message)
       );
@@ -443,9 +477,7 @@ function MentorListPage() {
             <GraduationCap className="w-10 h-10" />
           </div>
           <h2 className="text-2xl font-bold text-gray-800">Not a Mentor</h2>
-          <p className="text-gray-600">
-            You are not a Mentor. Contact Admin.
-          </p>
+          <p className="text-gray-600">You are not a Mentor. Contact Admin.</p>
         </div>
       </div>
     );

@@ -8,10 +8,18 @@ export default function DetailedProfile({ details, setIsLoggedIn }) {
   const navigate = useNavigate();
 
   function Logoutfunc() {
+    // Clear login status
     setIsLoggedIn(false);
 
+    // Remove tokens and sensitive data
+    localStorage.removeItem("jwtToken");
+    localStorage.removeItem("hmacpasscode");
+    localStorage.removeItem("studentLoggedIn"); 
+
+    // Redirect to homepage or login
     navigate("/");
   }
+
   return (
     <Card className="w-full p-4">
       <CardContent className="flex flex-col items-center space-y-4">

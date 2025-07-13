@@ -9,6 +9,8 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { api } from "../../TeacherApi";
+import { refreshJwtWithCookie } from "../../TeacherApi";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -39,23 +41,21 @@ const TeacherLogin = ({ setIsLoggedIn }) => {
     setError("");
   };
 
-  const apiCall = async (endpoint, body) => {
-    const response = await fetch(`${backendUrl}/faculty${endpoint}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...(token && { Authorization: `${token}` }),
-      },
-      body: JSON.stringify(body),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || "An error occurred");
+  const apiCall = async (endpoint, body, customHeaders = {}) => {
+    try {
+      const response = await api.post(endpoint, body, {
+        headers: {
+          ...customHeaders,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      const errMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Something went wrong. Please try again.";
+      throw new Error(errMessage);
     }
-
-    return data;
   };
 
   const handleLogin = async () => {
@@ -68,11 +68,26 @@ const TeacherLogin = ({ setIsLoggedIn }) => {
         password: formData.password,
       });
 
-      setSuccess("Login successful!");
-      localStorage.setItem("facultyToken", response.token);
-      setToken(response.token);
+      const newToken = response.token;
 
-      console.log("Login successful:", response);
+      // Save the JWT
+      localStorage.setItem("facultyToken", newToken);
+      setToken(newToken);
+      localStorage.setItem("teacherLoggedIn", "true");
+
+      // ✅ Generate cookie using valid JWT
+      await api.post(
+        "/returnHTTPRefreshCookie",
+        {},
+        {
+          headers: {
+            Authorization: `${newToken}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      setSuccess("Login successful!");
       setIsLoggedIn(true);
       navigate("/faculty/home");
     } catch (err) {
@@ -106,15 +121,19 @@ const TeacherLogin = ({ setIsLoggedIn }) => {
     setError("");
 
     try {
-      const response = await apiCall("/verifyOtp", {
-        otp: formData.otp,
-      });
+      const response = await apiCall(
+        "/verifyOtp",
+        { otp: formData.otp },
+        {
+          Authorization: token,
+        }
+      );
 
       setSuccess("OTP verified successfully!");
-      setToken(response.token);
+      setToken(response.token); // this new token can be used later if needed
       setCurrentStep("password");
     } catch (err) {
-      setError("Invalid OTP. Please try again.");
+      setError(err.message || "Invalid OTP. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -137,9 +156,11 @@ const TeacherLogin = ({ setIsLoggedIn }) => {
     }
 
     try {
-      const response = await apiCall("/updatePassword", {
-        password: formData.newPassword,
-      });
+      const response = await apiCall(
+        "/updatePassword",
+        { password: formData.newPassword },
+        { Authorization: `${token}` }
+      );
 
       setSuccess("Password updated successfully! You can now login.");
       setTimeout(() => {
