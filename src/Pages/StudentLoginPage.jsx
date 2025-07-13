@@ -16,10 +16,10 @@ function StudentLoginPage({ setIsLoggedIn }) {
         idToken,
       });
 
-      const jwt = res.data.token;
+      const jwtToken = res.data.token;
       const hmacpasscode = res.data.hmacpasscode;
 
-      localStorage.setItem("studentToken", jwt);
+      localStorage.setItem("studentToken", jwtToken);
       localStorage.setItem("hmacpasscode", hmacpasscode);
       localStorage.setItem("studentLoggedIn", "true");
 

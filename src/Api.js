@@ -1,5 +1,4 @@
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; // Only needed if using in component, not here
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -10,7 +9,7 @@ const api = axios.create({
 
 // Add JWT token to every request
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("jwtToken");
+  const token = localStorage.getItem("studentToken");
   if (token) {
     config.headers.Authorization = `${token}`;
   }

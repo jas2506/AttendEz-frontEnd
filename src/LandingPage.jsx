@@ -16,6 +16,10 @@ export default function LandingPage() {
   const [isVisible, setIsVisible] = useState({});
 
   useEffect(() => {
+    localStorage.clear();
+  }, []);
+
+  useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
