@@ -143,10 +143,15 @@ function AppRoutes({
 }
 
 function App() {
-  const [studentLoggedIn, setStudentLoggedIn] = useState(false);
-  const [teacherLoggedIn, setTeacherLoggedIn] = useState(false);
-  const [superAdminLoggedIn, setSuperAdminLoggedIn] = useState(false);
-
+  const [studentLoggedIn, setStudentLoggedIn] = useState(
+    localStorage.getItem("studentLoggedIn") === "true"
+  );
+  const [teacherLoggedIn, setTeacherLoggedIn] = useState(
+    localStorage.getItem("teacherLoggedIn") === "true"
+  );
+  const [superAdminLoggedIn, setSuperAdminLoggedIn] = useState(
+    localStorage.getItem("superAdminLoggedIn") === "true"
+  );
   return (
     <Router>
       <ConditionalWrappers>
@@ -188,7 +193,12 @@ function ConditionalWrappers({ children }) {
     );
   }
 
-  return content;
+  return (
+    <>
+      <Toaster position="top-center" richColors closeButton />
+      {content}
+    </>
+  );
 }
 
 export default App;

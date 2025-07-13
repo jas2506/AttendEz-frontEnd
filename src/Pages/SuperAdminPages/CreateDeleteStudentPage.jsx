@@ -525,7 +525,7 @@ export default function CreateDeleteStudentPage() {
   const fetchStudents = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("jwtToken");
+      const token = localStorage.getItem("superadminToken");
       const response = await axios.post(
         `${backendUrl}/SuperAdmin/viewAllStudents`,
         { depts: ["CSE"] },
@@ -639,7 +639,7 @@ export default function CreateDeleteStudentPage() {
     const selectedRegisterNumbers = selectedStudents.map(
       (i) => sortedStudents[i].registerNumber
     );
-    const token = localStorage.getItem("jwtToken");
+    const token = localStorage.getItem("superadminToken");
     if (!token) {
       toast.error("No auth token found. Please log in again.");
       return;
@@ -708,7 +708,7 @@ export default function CreateDeleteStudentPage() {
       return;
     }
 
-    const token = localStorage.getItem("jwtToken");
+    const token = localStorage.getItem("superadminToken");
     if (!token) {
       toast.error("No auth token found. Please log in again.");
       return;

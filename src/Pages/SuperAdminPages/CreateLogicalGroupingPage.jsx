@@ -51,7 +51,7 @@ export default function CreateLogicalGroupPage() {
   };
 
   const refreshGroupings = () => {
-    const token = localStorage.getItem("jwtToken");
+    const token = localStorage.getItem("superadminToken");
     if (!token) return alert("No token found.");
     setLoading(true);
     axios
@@ -73,7 +73,7 @@ export default function CreateLogicalGroupPage() {
 
   // Submit edited JSON
   const handleEditSubmit = (data) => {
-    const token = localStorage.getItem("jwtToken");
+    const token = localStorage.getItem("superadminToken");
     if (!token) return alert("Token missing.");
 
     axios
@@ -112,7 +112,7 @@ export default function CreateLogicalGroupPage() {
   );
 
   useEffect(() => {
-    const auth = localStorage.getItem("jwtToken");
+    const auth = localStorage.getItem("superadminToken");
     setLoading(true);
     axios
       .get(`${backendUrl}/SuperAdmin/viewAllTeachers?department=CSE`, {
@@ -137,7 +137,7 @@ export default function CreateLogicalGroupPage() {
   useEffect(() => {
     if (mode === "delete") {
       setLoading(true);
-      const auth = localStorage.getItem("jwtToken");
+      const auth = localStorage.getItem("superadminToken");
       axios
         .get(`${backendUrl}/SuperAdmin/viewAllGroupings`, {
           headers: { Authorization: auth },
@@ -211,7 +211,7 @@ export default function CreateLogicalGroupPage() {
   };
 
   const handleSubmit = () => {
-    const auth = localStorage.getItem("jwtToken");
+    const auth = localStorage.getItem("superadminToken");
     const normalizedDegree = degree.replace(/\./g, "").toUpperCase();
     const payload = {
       degree,
@@ -242,7 +242,7 @@ export default function CreateLogicalGroupPage() {
 
   const handleDeleteGroup = async (groupCode) => {
     console.log("Deleting group:", groupCode);
-    const token = localStorage.getItem("jwtToken");
+    const token = localStorage.getItem("superadminToken");
     if (!token) {
       alert("No token found.");
       return;

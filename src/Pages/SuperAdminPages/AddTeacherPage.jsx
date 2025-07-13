@@ -29,7 +29,7 @@ function AddTeacherForm() {
   const expectedHeaders = ["name", "email", "isMentor", "position"];
 
   const fetchTeachers = async () => {
-    const token = localStorage.getItem("jwtToken");
+    const token = localStorage.getItem("superadminToken");
     if (!token) return toast.error("No auth token found. Please log in again.");
     try {
       setLoading(true);
@@ -94,7 +94,7 @@ function AddTeacherForm() {
           <Button
             variant="destructive"
             onClick={async () => {
-              const token = localStorage.getItem("jwtToken");
+              const token = localStorage.getItem("superadminToken");
               if (!token)
                 return toast.error("No auth token found. Please log in again.");
               try {
@@ -149,7 +149,7 @@ function AddTeacherForm() {
   };
 
   const sendTeacherToBackend = async (teacher) => {
-    const token = localStorage.getItem("jwtToken");
+    const token = localStorage.getItem("superadminToken");
     if (!token) return toast.error("No auth token found. Please log in again.");
     try {
       setLoading(true);

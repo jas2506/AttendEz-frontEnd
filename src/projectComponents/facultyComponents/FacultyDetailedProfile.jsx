@@ -7,17 +7,20 @@ import { useNavigate } from "react-router-dom";
 export default function FacultyDetailedProfile({ details, setIsLoggedIn }) {
   const navigate = useNavigate();
 
-  const Logoutfunc = () => {
-    localStorage.removeItem("teacherToken"); // ✅ remove token
-    setIsLoggedIn(false); // ✅ update state
-    navigate("/faculty"); // ✅ redirect to login page
-  };
+  function Logoutfunc() {
+    setIsLoggedIn(false);
+    localStorage.removeItem("teacherLoggedIn");
+    localStorage.removeItem("facultyToken");
 
+    navigate("/");
+  }
   return (
     <Card className="w-full p-4">
       <CardContent className="flex flex-col items-center space-y-4">
         <Avatar className="w-20 h-20">
-          <AvatarFallback className="text-2xl">MS</AvatarFallback>
+          <AvatarFallback className="text-2xl">
+            {details.name[0]}
+          </AvatarFallback>
         </Avatar>
         <h2 className="text-xl font-semibold">{details.name}</h2>
 

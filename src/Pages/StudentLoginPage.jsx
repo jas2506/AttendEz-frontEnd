@@ -11,6 +11,7 @@ function StudentLoginPage({ setIsLoggedIn }) {
   const handleGoogleLogin = async (credentialResponse) => {
     try {
       const idToken = credentialResponse.credential;
+      console.log(idToken);
       const res = await axios.post(`${backendUrl}/student/googleAuth`, {
         idToken,
       });
@@ -20,12 +21,17 @@ function StudentLoginPage({ setIsLoggedIn }) {
 
       localStorage.setItem("studentToken", jwt);
       localStorage.setItem("hmacpasscode", hmacpasscode);
+      localStorage.setItem("studentLoggedIn", "true");
 
       setIsLoggedIn(true);
       navigate("/student/home");
     } catch (err) {
       console.error("Login failed:", err);
     }
+  };
+
+  const handleFacultyLoginRedirect = () => {
+    navigate("/faculty");
   };
 
   return (
@@ -52,7 +58,10 @@ function StudentLoginPage({ setIsLoggedIn }) {
         <div className="pt-6 border-t border-gray-100">
           <p className="text-gray-400 text-sm font-light">
             Faculty member?{" "}
-            <span className="text-gray-700 font-normal cursor-pointer hover:text-gray-900 transition-colors duration-200 underline decoration-gray-300 hover:decoration-gray-500">
+            <span
+              onClick={handleFacultyLoginRedirect}
+              className="text-gray-700 font-normal cursor-pointer hover:text-gray-900 transition-colors duration-200 underline decoration-gray-300 hover:decoration-gray-500"
+            >
               Login here
             </span>
           </p>

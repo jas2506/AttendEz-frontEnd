@@ -22,30 +22,16 @@ export default function DetailedProfile({ details, setIsLoggedIn }) {
   const navigate = useNavigate();
 
   function Logoutfunc() {
-    localStorage.removeItem("studentToken");
-    localStorage.removeItem("hmacpasscode");
+    // Clear login status
     setIsLoggedIn(false);
-    window.location.href = "/";
-  }
 
-  // Defensive null check to prevent crash
-  if (!details) {
-    return (
-      <Card className="w-full p-4 text-center text-gray-500">
-        <CardContent>
-          <p className="text-lg">
-            Failed to load student details. Please refresh or try again later.
-          </p>
-          <Button
-            onClick={Logoutfunc}
-            variant="ghost"
-            className="mt-4 hover:bg-gray-200 cursor-pointer"
-          >
-            Log out
-          </Button>
-        </CardContent>
-      </Card>
-    );
+    // Remove tokens and sensitive data
+    localStorage.removeItem("jwtToken");
+    localStorage.removeItem("hmacpasscode");
+    localStorage.removeItem("studentLoggedIn");
+
+    // Redirect to homepage or login
+    navigate("/");
   }
 
   return (
