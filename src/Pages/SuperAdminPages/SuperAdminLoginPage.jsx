@@ -30,8 +30,11 @@ function SuperAdminLoginPage({ setIsLoggedIn }) {
 
       const token = res.data.token;
       if (token && token.trim() !== "") {
-        localStorage.setItem("jwtToken", token);
-        setIsLoggedIn(true); // ✅ VERY IMPORTANT
+        localStorage.setItem("superadminToken", token);
+        localStorage.setItem("superAdminLoggedIn", "true");
+        localStorage.setItem("superadminDetails", JSON.stringify(res.data));
+        setIsLoggedIn(true);
+
         navigate("/superadmin/manage-teacher");
       } else {
         setError("Token missing from server response");
@@ -40,6 +43,10 @@ function SuperAdminLoginPage({ setIsLoggedIn }) {
       console.error("Login failed:", err);
       setError("Invalid email or password");
     }
+  };
+
+  const handleFacultyLoginRedirect = () => {
+    navigate("/faculty");
   };
 
   return (
@@ -69,11 +76,7 @@ function SuperAdminLoginPage({ setIsLoggedIn }) {
             onChange={(e) => setPassword(e.target.value)}
             className="focus-visible:ring-2 focus-visible:ring-blue-500"
           />
-          <div className="text-right">
-            <span className="text-sm text-blue-600 cursor-pointer hover:underline transition-all duration-150">
-              Forgot password? Contact developers
-            </span>
-          </div>
+          
           {error && <p className="text-red-600 text-sm text-center">{error}</p>}
         </CardContent>
 
@@ -87,7 +90,10 @@ function SuperAdminLoginPage({ setIsLoggedIn }) {
           <div className="text-center text-sm">
             <p>
               Not the Super Admin?{" "}
-              <span className="text-blue-600 cursor-pointer hover:underline">
+              <span
+                onClick={handleFacultyLoginRedirect}
+                className="text-blue-600 cursor-pointer hover:underline"
+              >
                 Login as Faculty
               </span>
             </p>

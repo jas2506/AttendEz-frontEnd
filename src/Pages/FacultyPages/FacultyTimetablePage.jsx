@@ -32,9 +32,23 @@ export default function FacultyTimetablePage() {
   const tt = timetable;
   if (isLoading) return <p>Loading...</p>;
 
-  if (!tt || !tt.classDetails || Object.keys(tt.classDetails).length === 0) {
-    return <p>Your timetable has not been updated. Create Classes.</p>;
+  if (
+    !tt ||
+    !tt.classDetails ||
+    Object.keys(tt.classDetails).length === 0 ||
+    !tt.timetable ||
+    Object.values(tt.timetable).every(
+      (day) => !Array.isArray(day) || day.length === 0
+    )
+  ) {
+    return (
+      <div className="bg-yellow-50 text-yellow-800 p-4 rounded-md text-center">
+        Your timetable has not been updated or has no classes scheduled. Please
+        create classes.
+      </div>
+    );
   }
+
   const classCode = Object.keys(tt.classDetails)[0]; // first class
   const facultyInfo = tt.classDetails[classCode];
 

@@ -12,7 +12,6 @@ function StudentLoginPage({ setIsLoggedIn }) {
     try {
       const idToken = credentialResponse.credential;
       console.log(idToken);
-      //hello
       const res = await axios.post(`${backendUrl}/student/googleAuth`, {
         idToken,
       });

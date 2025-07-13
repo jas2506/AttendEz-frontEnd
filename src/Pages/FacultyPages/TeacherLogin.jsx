@@ -74,6 +74,9 @@ const TeacherLogin = ({ setIsLoggedIn }) => {
 
       console.log("Login successful:", response);
       setIsLoggedIn(true);
+      localStorage.setItem("teacherLoggedIn", "true");
+
+
       navigate("/faculty/home");
     } catch (err) {
       setError(err.message || "Login failed. Please check your credentials.");
