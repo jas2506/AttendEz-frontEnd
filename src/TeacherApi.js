@@ -198,7 +198,12 @@ export const generateQRCodeWithSubcode = (classCode, subCode) =>
     params: { classCode, subCode },
   });
 
-export const saveManualAttendanceWithSubcode = (classCode, present, absent) =>
+export const saveManualAttendanceWithSubcode = (
+  classCode,
+  present,
+  absent,
+  subCode
+) =>
   api.post(
     `/saveManualAttendance`,
     {
