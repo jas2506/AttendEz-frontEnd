@@ -40,7 +40,7 @@ async function viewStudents(classcode) {
         totalLectures++;
         if (lectureData.present === 1) {
           attendedCount++;
-          lecturesAttended.push(lectureKey);
+          lecturesAttended.push({ lectureKey, date: lectureData.date });
         }
       }
 
@@ -869,6 +869,7 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
                                 className="bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm"
                               >
                                 {lecNum}
+                                {l.date ? ` (${l.date})` : ""}
                               </span>
                             );
                           })}
