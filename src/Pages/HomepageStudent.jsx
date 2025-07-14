@@ -23,7 +23,7 @@ function getTodayAttendanceStats(attendance, timetable) {
   ];
 
   // const todayName = "Monday"; // for testing
-  const todayName=weekdays[new Date().getDay()];
+  const todayName = weekdays[new Date().getDay()];
 
   const todayClasses = timetable.timetable[todayName] || [];
 
@@ -127,10 +127,10 @@ function HomepageStudent() {
 
   if (loading) return <p>Loading...</p>;
 
-  const stats = getTodayAttendanceStats(
-    attendance.attendance,
-    timetable.timetable
-  );
+  const stats =
+    attendance?.attendance && timetable?.timetable
+      ? getTodayAttendanceStats(attendance.attendance, timetable.timetable)
+      : null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -280,7 +280,11 @@ function HomepageStudent() {
 
         {/* Attendance Section */}
         <div className="bg-white p-6 rounded-xl shadow-sm">
-          {stats.length === 0 ? (
+          {stats === null ? (
+            <p className="text-center text-gray-500 text-sm">
+              Attendance record not updated
+            </p>
+          ) : stats.length === 0 ? (
             <p className="text-center text-gray-500 text-sm">
               No classes for today
             </p>
