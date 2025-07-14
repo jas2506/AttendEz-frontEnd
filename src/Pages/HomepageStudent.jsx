@@ -79,6 +79,8 @@ function HomepageStudent() {
   const [timetable, setTimetable] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const [attendanceError, setAttendanceError] = useState(false);
+
   const [classCode, setClassCode] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [popup, setPopup] = useState(null);
@@ -113,10 +115,21 @@ function HomepageStudent() {
         ]);
 
         setDetails(detailsData);
-        setAttendance(attendanceData);
         setTimetable(timetableData);
+
+        if (
+          attendanceData.status === "E" &&
+          attendanceData.message === "incorrect class codes"
+        ) {
+          setAttendanceError(true);
+          setAttendance(null);
+        } else {
+          setAttendance(attendanceData);
+          setAttendanceError(false);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
+        setAttendanceError(true);
       } finally {
         setLoading(false);
       }
@@ -280,7 +293,11 @@ function HomepageStudent() {
 
         {/* Attendance Section */}
         <div className="bg-white p-6 rounded-xl shadow-sm">
-          {stats === null ? (
+          {attendanceError ? (
+            <p className="text-center text-red-500 text-sm py-6">
+              Attendance Records not found
+            </p>
+          ) : stats === null ? (
             <p className="text-center text-gray-500 text-sm">
               Attendance record not updated
             </p>
