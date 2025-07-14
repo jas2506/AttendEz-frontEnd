@@ -121,10 +121,15 @@ function HomepageStudent() {
         setAttendanceError(false);
       } catch (error) {
         console.error("Error fetching data:", error);
+
         if (
-          (error.response.status === "E" || error.response.status === "e") &&
-          error.reponse.attendance === null
+          error.response?.data?.status === "E" &&
+          error.response?.data?.attendance === null
         ) {
+          setAttendanceError(true);
+          setAttendance(null);
+        } else {
+          // fallback for other errors
           setAttendanceError(true);
         }
       } finally {
