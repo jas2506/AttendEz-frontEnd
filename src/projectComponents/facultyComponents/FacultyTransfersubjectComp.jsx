@@ -862,7 +862,7 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
                       <td className="px-6 py-4 text-center">
                         <div className="flex flex-wrap justify-center gap-2">
                           {s.lecturesAttended.map((l) => {
-                            const lecNum = l.replace("lecture.", "L");
+                            const lecNum = l.lectureKey.replace("lecture.", "L");
                             return (
                               <span
                                 key={l}
