@@ -117,19 +117,16 @@ function HomepageStudent() {
         setDetails(detailsData);
         setTimetable(timetableData);
 
-        if (
-          attendanceData.status === "E" &&
-          attendanceData.message === "incorrect class codes"
-        ) {
-          setAttendanceError(true);
-          setAttendance(null);
-        } else {
-          setAttendance(attendanceData);
-          setAttendanceError(false);
-        }
+        setAttendance(attendanceData);
+        setAttendanceError(false);
       } catch (error) {
         console.error("Error fetching data:", error);
-        setAttendanceError(true);
+        if (
+          error.response.status === "E" &&
+          error.reponse.attendance === null
+        ) {
+          setAttendanceError(true);
+        }
       } finally {
         setLoading(false);
       }
