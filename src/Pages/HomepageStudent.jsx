@@ -122,7 +122,7 @@ function HomepageStudent() {
       } catch (error) {
         console.error("Error fetching data:", error);
         if (
-          error.response.status === "E" &&
+          (error.response.status === "E" || error.response.status === "e") &&
           error.reponse.attendance === null
         ) {
           setAttendanceError(true);
