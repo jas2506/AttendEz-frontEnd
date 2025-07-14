@@ -198,6 +198,19 @@ export const generateQRCodeWithSubcode = (classCode, subCode) =>
     params: { classCode, subCode },
   });
 
+export const saveManualAttendanceWithSubcode = (classCode, present, absent) =>
+  api.post(
+    `/saveManualAttendance`,
+    {
+      classCode,
+      present,
+      absent,
+    },
+    {
+      params: { subCode },
+    }
+  );
+
 export const generatePasscodeWithSubcode = (classCode, subCode) =>
   api.post(`/passcode/generateCode`, null, {
     params: { classCode, subCode },
@@ -208,13 +221,10 @@ export const confirmAttendanceCloseWithSubcode = (classCode, subCode) =>
     params: { classCode, subCode },
   });
 
-export const pollAttendanceWithVersionWithSubcode = (
-  classCode,
-  lastVersion,
-  subCode
-) =>
-  api.get(`/liveAttendanceViewWithVersion`, {
-    params: { classCode, lastVersion, subCode },
+// GET /createSubstitutionCode?classCode=...&dateOfUse=...
+export const createSubstitutionCode = (classCode, dateOfUse) =>
+  api.post("/createSubstitutionCode", null, {
+    params: { classCode, dateOfUse },
   });
 
 export { api };

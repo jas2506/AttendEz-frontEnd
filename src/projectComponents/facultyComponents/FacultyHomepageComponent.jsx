@@ -15,8 +15,8 @@ import QRCode from "react-qr-code";
 import {
   generateQRCode,
   generatePasscode,
-  pollAttendanceWithVersion,
   confirmAttendanceClose,
+  pollAttendanceWithVersion,
   getAllStudentDetails,
   saveManualAttendance,
 } from "../../TeacherApi";
