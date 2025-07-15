@@ -24,6 +24,7 @@ import {
   saveManualAttendanceWithSubcode,
   confirmAttendanceCloseWithSubcode,
   getAllStudentDetails,
+  getAllStudentDetailsWithSubcode,
   pollAttendanceWithVersion,
 } from "../../TeacherApi";
 import QRCode from "react-qr-code";
@@ -619,7 +620,7 @@ function SubManualAttendanceModal({ classCode, subCode, onClose }) {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const res = await getAllStudentDetails(classCode);
+        const res = await getAllStudentDetailsWithSubcode(classCode, subCode);
         const data = res.data;
         setStudents(data.details);
         const initialStatus = {};

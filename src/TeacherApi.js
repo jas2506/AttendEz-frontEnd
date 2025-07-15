@@ -232,4 +232,9 @@ export const createSubstitutionCode = (classCode, dateOfUse) =>
     params: { classCode, dateOfUse },
   });
 
+// POST /getAllStudentDetails?classCode=...
+export const getAllStudentDetailsWithSubcode = (classCode, subCode) =>
+  api.post(`/getAllStudentDetails`, null, {
+    params: { classCode, subCode },
+  });
 export { api };
