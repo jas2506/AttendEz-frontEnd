@@ -436,7 +436,7 @@ function FacultyHomepage() {
                 Choose an attendance method for this substitution class
               </p>
 
-              <div className="grid gap-3">
+              {/* <div className="grid gap-3">
                 <button
                   onClick={handleSubQRCode}
                   className="flex items-center justify-center gap-3 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg transition-colors"
@@ -460,6 +460,41 @@ function FacultyHomepage() {
                   <NotebookText className="w-5 h-5" />
                   Manual Attendance
                 </button>
+              </div> */}
+              <div>
+                <h3 className="text-sm font-semibold text-gray-800 mb-2">
+                  Quick Actions
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  <button
+                    onClick={handleSubQRCode}
+                    className="flex flex-col items-center justify-center p-3 bg-white border border-gray-300 shadow-sm hover:shadow-md text-black rounded-lg transition-all"
+                  >
+                    <QrCode className="w-5 h-5 mb-1" />
+                    <span className="text-sm font-medium">Generate QR</span>
+                    <span className="text-xs opacity-80">
+                      QR code attendance
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={handleSubPasscode}
+                    className="flex flex-col items-center justify-center p-3 bg-white border border-gray-300 shadow-sm hover:shadow-md text-black rounded-lg transition-all"
+                  >
+                    <Keyboard className="w-5 h-5 mb-1" />
+                    <span className="text-sm font-medium">Generate Code</span>
+                    <span className="text-xs opacity-80">Attendance code</span>
+                  </button>
+
+                  <button
+                    onClick={() => setShowSubManualModal(true)} // or handleManualEntry
+                    className="flex flex-col items-center justify-center p-3 bg-white border border-gray-300 shadow-sm hover:shadow-md text-black rounded-lg transition-all"
+                  >
+                    <NotebookText className="w-5 h-5 mb-1" />
+                    <span className="text-sm font-medium">Manual Entry</span>
+                    <span className="text-xs opacity-80">Mark manually</span>
+                  </button>
+                </div>
               </div>
 
               <button
