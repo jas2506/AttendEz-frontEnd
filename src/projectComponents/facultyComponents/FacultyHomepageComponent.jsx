@@ -15,8 +15,8 @@ import QRCode from "react-qr-code";
 import {
   generateQRCode,
   generatePasscode,
-  pollAttendanceWithVersion,
   confirmAttendanceClose,
+  pollAttendanceWithVersion,
   getAllStudentDetails,
   saveManualAttendance,
 } from "../../TeacherApi";
@@ -293,7 +293,7 @@ function FacultyHomepageComponent({ c }) {
             <h3 className="text-sm font-semibold text-gray-800 mb-2">
               Quick Actions
             </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               <ActionButton
                 icon={<QrCode className="w-5 h-5" />}
                 label="Generate QR"
@@ -312,13 +312,6 @@ function FacultyHomepageComponent({ c }) {
                 label="Manual Entry"
                 description="Mark manually"
                 onClick={() => setShowManualModal(true)}
-              />
-              <ActionButton
-                icon={<UsersRound className="w-5 h-5" />}
-                label="Substitution"
-                description="Generate Sub Code"
-                isHighlighted
-                onClick={generateSubstitutionCode}
               />
             </div>
           </div>

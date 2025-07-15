@@ -1,10 +1,33 @@
-import React, { useState, useEffect } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
-import { Keyboard, Calendar, Clock, User } from "lucide-react";
+import {
+  Keyboard,
+  Calendar,
+  Clock,
+  User,
+  QrCode,
+  NotebookText,
+  X,
+  Check,
+  UserCheck,
+  UserX,
+} from "lucide-react";
 import FacultyHomepageComponent from "../../projectComponents/facultyComponents/FacultyHomepageComponent";
-import { getFacultyDetails, refreshTimetable } from "../../TeacherApi";
-import { fetchClassCodeFromSubstitutionCode } from "../../TeacherApi"; // adjust path if needed
-import FacultyHomepageWithSubcode from "./FacultyHomepageWithSubcode";
+import {
+  getFacultyDetails,
+  refreshTimetable,
+  fetchClassCodeFromSubstitutionCode,
+  generateQRCodeWithSubcode,
+  generatePasscodeWithSubcode,
+  saveManualAttendanceWithSubcode,
+  confirmAttendanceCloseWithSubcode,
+  getAllStudentDetails,
+  getAllStudentDetailsWithSubcode,
+  pollAttendanceWithVersion,
+} from "../../TeacherApi";
+import QRCode from "react-qr-code";
 
 function FacultyHomepage() {
   const [currentDateStr, setCurrentDateStr] = useState("");
@@ -15,6 +38,23 @@ function FacultyHomepage() {
   const [showSubCodeResult, setShowSubCodeResult] = useState(false);
   const [fetchedClassCode, setFetchedClassCode] = useState("");
 
+  // States for substitution code attendance modals
+  const [showSubQRModal, setShowSubQRModal] = useState(false);
+  const [showSubCodePopup, setShowSubCodePopup] = useState(false);
+  const [showSubManualModal, setShowSubManualModal] = useState(false);
+
+  // States for QR Code with subcode
+  const [subQrCodes, setSubQrCodes] = useState([]);
+  const [currentSubQRIndex, setCurrentSubQRIndex] = useState(0);
+  const [subQrAttendance, setSubQrAttendance] = useState([]);
+  const [showSaveSubQRButton, setShowSaveSubQRButton] = useState(false);
+  const [subQrPollingActive, setSubQrPollingActive] = useState(false);
+
+  // States for Passcode with subcode
+  const [subGeneratedCode, setSubGeneratedCode] = useState("");
+  const [subLiveAttendance, setSubLiveAttendance] = useState([]);
+  const [subPollingActive, setSubPollingActive] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -22,7 +62,6 @@ function FacultyHomepage() {
           getFacultyDetails(),
           refreshTimetable(),
         ]);
-
         setDetails(detailsRes.data.details);
         setTimetable(timetableRes.data.timetable);
         setIsLoading(false);
@@ -30,7 +69,6 @@ function FacultyHomepage() {
         console.error("Error fetching faculty data:", error);
       }
     };
-
     fetchData();
   }, []);
 
@@ -46,11 +84,99 @@ function FacultyHomepage() {
     setCurrentDateStr(formatted);
   }, []);
 
+  // Polling for substitution passcode attendance
+  useEffect(() => {
+    if (!subPollingActive) return;
+
+    let active = true;
+    let currentVersion = "";
+
+    const poll = async () => {
+      if (!active) return;
+      try {
+        const response = await pollAttendanceWithVersion(
+          fetchedClassCode,
+          currentVersion
+        );
+        const data = response.data;
+        if (active && data.status === "S" && data.attendanceRecord) {
+          const updated = Object.entries(data.attendanceRecord).map(
+            ([id, name]) => ({ id, name })
+          );
+          setSubLiveAttendance(updated);
+          currentVersion = data.version || currentVersion;
+        }
+      } catch (err) {
+        console.error("Sub polling error:", err);
+      } finally {
+        if (active) {
+          setTimeout(poll, 3000);
+        }
+      }
+    };
+
+    poll();
+    return () => {
+      active = false;
+    };
+  }, [subPollingActive, fetchedClassCode]);
+
+  // Polling for substitution QR attendance
+  useEffect(() => {
+    if (!subQrPollingActive) return;
+
+    let active = true;
+    let currentVersion = "";
+
+    const poll = async () => {
+      if (!active) return;
+      try {
+        const response = await pollAttendanceWithVersion(
+          fetchedClassCode,
+          currentVersion
+        );
+        const data = response.data;
+        if (active && data.status === "S" && data.attendanceRecord) {
+          const updated = Object.entries(data.attendanceRecord).map(
+            ([id, name]) => ({ id, name })
+          );
+          setSubQrAttendance(updated);
+          currentVersion = data.version || currentVersion;
+        }
+      } catch (err) {
+        console.error("Sub QR polling error:", err);
+      } finally {
+        if (active) {
+          setTimeout(poll, 3000);
+        }
+      }
+    };
+
+    poll();
+    return () => {
+      active = false;
+    };
+  }, [subQrPollingActive, fetchedClassCode]);
+
+  // Handle fullscreen exit for QR modal
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement) {
+        setShowSubQRModal(false);
+        setSubQrPollingActive(false);
+        setShowSaveSubQRButton(false);
+      }
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () =>
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
+
   const handleSubCodeSubmit = async () => {
     try {
       const res = await fetchClassCodeFromSubstitutionCode(subCode);
       const data = res.data;
-
       if (data.status === "S") {
         setFetchedClassCode(data.classCode);
         setShowSubCodeResult(true);
@@ -60,6 +186,94 @@ function FacultyHomepage() {
     } catch (err) {
       console.error("Error fetching class code:", err);
     }
+  };
+
+  const handleSubQRCode = async () => {
+    try {
+      const response = await generateQRCodeWithSubcode(
+        fetchedClassCode,
+        subCode
+      );
+      const data = response.data;
+      if (data.status === "S") {
+        setSubQrCodes(data.codes);
+        setCurrentSubQRIndex(0);
+        setSubQrAttendance([]);
+        setShowSubCodeResult(false);
+        setShowSubQRModal(true);
+        document.documentElement.requestFullscreen();
+        startSubQRSequence(data.codes);
+        setSubQrPollingActive(true);
+      }
+    } catch (err) {
+      console.error("Sub QR Code generation error:", err);
+    }
+  };
+
+  const startSubQRSequence = (codes) => {
+    let index = 0;
+    const interval = setInterval(() => {
+      index += 1;
+      if (index >= codes.length) {
+        clearInterval(interval);
+      } else {
+        setCurrentSubQRIndex(index);
+      }
+    }, 12000);
+
+    setTimeout(() => {
+      setShowSaveSubQRButton(true);
+    }, 15000);
+  };
+
+  const confirmSubQRAttendance = async () => {
+    setSubQrPollingActive(false);
+    try {
+      await confirmAttendanceCloseWithSubcode(fetchedClassCode, subCode);
+      alert("QR Attendance saved.");
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      }
+      setShowSubQRModal(false);
+      setShowSaveSubQRButton(false);
+    } catch (err) {
+      console.error("Error saving sub QR attendance:", err);
+    }
+  };
+
+  const handleSubPasscode = async () => {
+    try {
+      const response = await generatePasscodeWithSubcode(
+        fetchedClassCode,
+        subCode
+      );
+      const data = response.data;
+      if (data.status === "S") {
+        setSubGeneratedCode(data.codes);
+        setSubLiveAttendance([]);
+        setShowSubCodeResult(false);
+        setShowSubCodePopup(true);
+        setSubPollingActive(true);
+      }
+    } catch (err) {
+      console.error("Error generating sub passcode:", err);
+    }
+  };
+
+  const confirmSubAttendance = async () => {
+    setSubPollingActive(false);
+    try {
+      await confirmAttendanceCloseWithSubcode(fetchedClassCode, subCode);
+      alert("Attendance confirmed and closed.");
+      setShowSubCodePopup(false);
+    } catch (err) {
+      console.error("Error closing sub attendance:", err);
+    }
+  };
+
+  const handleSubManualAttendance = () => {
+    setShowSubCodeResult(false);
+    setShowSubManualModal(true);
   };
 
   function getTodaySchedule(data) {
@@ -72,7 +286,6 @@ function FacultyHomepage() {
       "Friday",
       "Saturday",
     ];
-    //const today = days[new Date().getDay()];
     const today = "Monday";
     const timetableToday = data.timetable[today];
     const classDetails = data.classDetails;
@@ -85,11 +298,11 @@ function FacultyHomepage() {
       const match = groupCode.match(/^([A-Z]+)\d{4}([A-Z])$/);
       const section = match ? `${match[1]}-${match[2]}` : groupCode;
       const [hourStr, minuteStr] = entry.startTime.split(":");
-      const hour = parseInt(hourStr, 10);
-      const minute = parseInt(minuteStr, 10);
+      const hour = Number.parseInt(hourStr, 10);
+      const minute = Number.parseInt(minuteStr, 10);
 
       return {
-        classCode: entry.classCode, // <- include classCode here
+        classCode: entry.classCode,
         className: detail.className,
         start: entry.startTime,
         startNumeric: hour * 60 + minute,
@@ -100,7 +313,7 @@ function FacultyHomepage() {
     });
 
     result.sort((a, b) => a.startNumeric - b.startNumeric);
-    return result.map(({ startNumeric, ...rest }) => rest); // remove startNumeric from final return
+    return result.map(({ startNumeric, ...rest }) => rest);
   }
 
   const todaySchedule =
@@ -153,7 +366,6 @@ function FacultyHomepage() {
               Enter Code for Substitution if any
             </p>
           </div>
-
           <div className="flex flex-col md:flex-row items-center gap-4">
             <div className="relative flex-1 w-full">
               <Keyboard className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -188,7 +400,6 @@ function FacultyHomepage() {
               </div>
             </div>
           </div>
-
           <div className="p-4">
             {todaySchedule.length === 0 ? (
               <div className="text-center py-12">
@@ -204,42 +415,353 @@ function FacultyHomepage() {
               </div>
             ) : (
               <div className="space-y-4">
-                {todaySchedule.map((course, index) =>
-                  course.subCode ? (
-                    <FacultyHomepageWithSubcode
-                      key={index}
-                      c={course}
-                      subCode={course.subCode}
-                    />
-                  ) : (
-                    <FacultyHomepageComponent key={index} c={course} />
-                  )
-                )}
+                {todaySchedule.map((course, index) => (
+                  <FacultyHomepageComponent key={index} c={course} />
+                ))}
               </div>
             )}
           </div>
         </div>
       </div>
+
+      {/* Substitution Code Action Popup */}
       {showSubCodeResult && (
         <div className="fixed inset-0 z-50 flex items-start justify-center pt-10 backdrop-blur-sm bg-black/20">
           <div className="w-[90%] md:w-[500px] bg-white border border-blue-300 rounded-2xl shadow-xl p-6">
             <div className="text-center space-y-4">
               <h2 className="text-lg font-bold text-blue-700">
-                Class Code for Substitution
+                Class Code: {fetchedClassCode}
               </h2>
-              <p className="text-3xl font-mono tracking-widest bg-blue-50 py-2 px-4 rounded-lg border border-blue-200 inline-block">
-                {fetchedClassCode}
+              <p className="text-gray-600 text-sm mb-6">
+                Choose an attendance method for this substitution class
               </p>
+
+              {/* <div className="grid gap-3">
+                <button
+                  onClick={handleSubQRCode}
+                  className="flex items-center justify-center gap-3 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg transition-colors"
+                >
+                  <QrCode className="w-5 h-5" />
+                  Generate QR Code
+                </button>
+
+                <button
+                  onClick={handleSubPasscode}
+                  className="flex items-center justify-center gap-3 w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg transition-colors"
+                >
+                  <Keyboard className="w-5 h-5" />
+                  Generate Passcode
+                </button>
+
+                <button
+                  onClick={handleSubManualAttendance}
+                  className="flex items-center justify-center gap-3 w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg transition-colors"
+                >
+                  <NotebookText className="w-5 h-5" />
+                  Manual Attendance
+                </button>
+              </div> */}
+              <div>
+                <h3 className="text-sm font-semibold text-gray-800 mb-2">
+                  Quick Actions
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  <button
+                    onClick={handleSubQRCode}
+                    className="flex flex-col items-center justify-center p-3 bg-white border border-gray-300 shadow-sm hover:shadow-md text-black rounded-lg transition-all"
+                  >
+                    <QrCode className="w-5 h-5 mb-1" />
+                    <span className="text-sm font-medium">Generate QR</span>
+                    <span className="text-xs opacity-80">
+                      QR code attendance
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={handleSubPasscode}
+                    className="flex flex-col items-center justify-center p-3 bg-white border border-gray-300 shadow-sm hover:shadow-md text-black rounded-lg transition-all"
+                  >
+                    <Keyboard className="w-5 h-5 mb-1" />
+                    <span className="text-sm font-medium">Generate Code</span>
+                    <span className="text-xs opacity-80">Attendance code</span>
+                  </button>
+
+                  <button
+                    onClick={() => setShowSubManualModal(true)} // or handleManualEntry
+                    className="flex flex-col items-center justify-center p-3 bg-white border border-gray-300 shadow-sm hover:shadow-md text-black rounded-lg transition-all"
+                  >
+                    <NotebookText className="w-5 h-5 mb-1" />
+                    <span className="text-sm font-medium">Manual Entry</span>
+                    <span className="text-xs opacity-80">Mark manually</span>
+                  </button>
+                </div>
+              </div>
+
               <button
                 onClick={() => setShowSubCodeResult(false)}
-                className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+                className="mt-4 w-full text-gray-500 hover:text-gray-700 py-2 text-sm transition-colors"
               >
-                Close
+                Cancel
               </button>
             </div>
           </div>
         </div>
       )}
+
+      {/* Substitution Passcode Popup */}
+      {showSubCodePopup && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-10 backdrop-blur-sm bg-black/20">
+          <div className="w-[90%] md:w-[500px] bg-white border border-blue-300 rounded-2xl shadow-xl p-6">
+            <div className="text-center space-y-4">
+              <h2 className="text-lg font-bold text-blue-700">
+                Substitution Code Generated
+              </h2>
+              <p className="text-3xl font-mono tracking-widest bg-blue-50 py-2 px-4 rounded-lg border border-blue-200 inline-block">
+                {subGeneratedCode}
+              </p>
+              <div className="text-left mt-6">
+                <h3 className="text-md font-semibold mb-2">
+                  Students Marked Present:
+                </h3>
+                <ul className="max-h-[200px] overflow-y-auto space-y-2">
+                  {subLiveAttendance.map((s) => (
+                    <li key={s.id} className="flex items-center gap-3">
+                      <UserCheck className="w-4 h-4 text-green-600" />
+                      <span>
+                        {s.name} ({s.id})
+                      </span>
+                    </li>
+                  ))}
+                  {subLiveAttendance.length === 0 && (
+                    <p className="text-sm text-gray-500">No responses yet.</p>
+                  )}
+                </ul>
+              </div>
+              <button
+                onClick={confirmSubAttendance}
+                className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+              >
+                Confirm & Save Attendance
+              </button>
+              <button
+                onClick={() => {
+                  setSubPollingActive(false);
+                  setShowSubCodePopup(false);
+                }}
+                className="w-full mt-2 text-sm text-red-500 hover:underline"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Substitution QR Modal */}
+      {showSubQRModal && (
+        <div className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center text-white p-4">
+          <div className="w-full max-w-6xl h-[80vh] flex flex-col">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold">
+                Substitution Class - Scan QR to Mark Attendance
+              </h2>
+            </div>
+
+            <div className="flex-1 flex gap-6 min-h-0">
+              <div className="flex-1 flex items-center justify-center">
+                <div className="flex flex-col items-center justify-center bg-white px-4 rounded-xl">
+                  <QRCode
+                    value={subQrCodes[currentSubQRIndex] || ""}
+                    size={Math.min(
+                      400,
+                      window.innerWidth * 0.6,
+                      window.innerHeight * 0.75
+                    )}
+                    className="mb-6 mt-6"
+                    bgColor="white"
+                    fgColor="#000000"
+                    level="H"
+                  />
+                  <p className="text-black text-2xl mb-4 font-mono font-bold break-all text-center max-w-[90%]">
+                    {subQrCodes[currentSubQRIndex]}
+                  </p>
+                </div>
+              </div>
+
+              <div className="w-80 bg-white rounded-xl p-6 flex flex-col">
+                <h3 className="text-xl font-semibold mb-4 text-black">
+                  Students Marked Present:
+                </h3>
+                <div className="flex-1 overflow-y-auto">
+                  {subQrAttendance.length === 0 ? (
+                    <p className="text-gray-500 text-center py-8">
+                      No responses yet.
+                    </p>
+                  ) : (
+                    <ul className="space-y-3">
+                      {subQrAttendance.map((s) => (
+                        <li
+                          key={s.id}
+                          className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                        >
+                          <UserCheck className="w-5 h-5 text-green-600 flex-shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <span className="text-black font-medium block truncate">
+                              {s.name}
+                            </span>
+                            <span className="text-gray-600 text-sm">
+                              ({s.id})
+                            </span>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {showSaveSubQRButton && (
+              <div className="mt-6 text-center">
+                <button
+                  onClick={confirmSubQRAttendance}
+                  className="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-xl text-white font-semibold text-lg transition-colors"
+                >
+                  Save Attendance
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Substitution Manual Attendance Modal */}
+      {showSubManualModal && (
+        <SubManualAttendanceModal
+          classCode={fetchedClassCode}
+          subCode={subCode}
+          onClose={() => setShowSubManualModal(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+// Substitution Manual Attendance Modal Component
+function SubManualAttendanceModal({ classCode, subCode, onClose }) {
+  const [students, setStudents] = useState({});
+  const [attendance, setAttendance] = useState({});
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const res = await getAllStudentDetailsWithSubcode(classCode, subCode);
+        const data = res.data;
+        setStudents(data.details);
+        const initialStatus = {};
+        for (const id in data.details) {
+          initialStatus[id] = null;
+        }
+        setAttendance(initialStatus);
+      } catch (err) {
+        console.error("Error fetching student details:", err);
+      }
+    };
+    fetchStudents();
+  }, [classCode]);
+
+  const markAttendance = (id, status) => {
+    setAttendance((prev) => ({ ...prev, [id]: status }));
+  };
+
+  const handleSave = () => {
+    const present = [];
+    const absent = [];
+    for (const id in attendance) {
+      if (attendance[id] === "present") present.push(id);
+      else if (attendance[id] === "absent") absent.push(id);
+    }
+
+    saveManualAttendanceWithSubcode(classCode, present, absent, subCode)
+      .then(() => {
+        alert("Substitution attendance saved and closed!");
+        onClose();
+      })
+      .catch((err) => {
+        console.error("Error saving substitution manual attendance:", err);
+      });
+  };
+
+  return (
+    <div className="fixed inset-0 backdrop-blur-sm bg-black/20 flex items-center justify-center z-50">
+      <div className="bg-white rounded-2xl p-6 w-[90%] md:w-[600px] max-h-[80vh] overflow-y-auto relative shadow-2xl border border-gray-200">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors duration-200 p-1 rounded-full hover:bg-gray-100"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
+        <h2 className="text-xl font-bold mb-6 text-blue-700 flex items-center gap-2">
+          <NotebookText className="w-6 h-6" />
+          Substitution Manual Attendance
+        </h2>
+
+        <div className="space-y-4">
+          {Object.entries(students)
+            .sort(([id1], [id2]) => id1.localeCompare(id2))
+            .map(([id, name]) => (
+              <div
+                key={id}
+                className="flex justify-between items-center p-4 bg-gray-50 rounded-xl border border-gray-200 hover:bg-gray-100 transition-colors duration-200"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                    <span className="text-blue-600 font-semibold text-sm">
+                      {name.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-800">{name}</p>
+                    <p className="text-sm text-gray-500">{id}</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => markAttendance(id, "present")}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                      attendance[id] === "present"
+                        ? "bg-green-500 text-white shadow-md transform scale-105"
+                        : "bg-green-100 text-green-700 hover:bg-green-200 border border-green-300"
+                    }`}
+                  >
+                    <UserCheck className="w-4 h-4" />
+                    Present
+                  </button>
+                  <button
+                    onClick={() => markAttendance(id, "absent")}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                      attendance[id] === "absent"
+                        ? "bg-red-500 text-white shadow-md transform scale-105"
+                        : "bg-red-100 text-red-700 hover:bg-red-200 border border-red-300"
+                    }`}
+                  >
+                    <UserX className="w-4 h-4" />
+                    Absent
+                  </button>
+                </div>
+              </div>
+            ))}
+        </div>
+
+        <button
+          className="mt-6 w-full bg-blue-600 text-white hover:bg-blue-700 py-3 text-lg font-semibold rounded-xl transition-all duration-200 hover:shadow-lg flex items-center justify-center gap-2"
+          onClick={handleSave}
+        >
+          <Check className="w-5 h-5" />
+          Save Substitution Attendance
+        </button>
+      </div>
     </div>
   );
 }
