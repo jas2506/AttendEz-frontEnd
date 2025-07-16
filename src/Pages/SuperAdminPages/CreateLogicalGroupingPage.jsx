@@ -226,6 +226,11 @@ export default function CreateLogicalGroupPage() {
 
     if (groupType === "Elective") {
       delete payload.advisorEmail;
+    } else if (groupType === "Lab") {
+      delete payload.advisorEmail;
+      const normalizedDegree = degree.replace(/\./g, "").toUpperCase();
+      //payload.section = `${classCodes[0]}-${normalizedDegree}-LAB-${section}-${passout}`;
+      payload.section = `${normalizedDegree}-LAB-${section}`;
     }
 
     axios
@@ -280,12 +285,12 @@ export default function CreateLogicalGroupPage() {
           <Loader2 className="animate-spin w-10 h-10 text-blue-600" />
         </div>
       )}
-      
+
       <div className="max-w-4xl mx-auto p-8 mt-6 bg-white/90 rounded-2xl shadow-lg backdrop-blur-sm border border-blue-200 space-y-6">
         <h2 className="text-3xl font-bold text-blue-700 text-center">
           Logical Grouping Management
         </h2>
-        
+
         <div className="flex justify-center">
           <ToggleGroup
             type="single"
@@ -346,6 +351,7 @@ export default function CreateLogicalGroupPage() {
                 <SelectContent>
                   <SelectItem value="Normal">Normal</SelectItem>
                   <SelectItem value="Elective">Elective</SelectItem>
+                  <SelectItem value="Lab">Lab</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -416,10 +422,7 @@ export default function CreateLogicalGroupPage() {
                       <p className="mt-2 text-sm text-blue-700">
                         Selected:{" "}
                         <span className="font-medium">
-                          {
-                            advisors.find((a) => a.email === advisorEmail)
-                              ?.name
-                          }{" "}
+                          {advisors.find((a) => a.email === advisorEmail)?.name}{" "}
                           ({advisorEmail})
                         </span>
                       </p>
@@ -460,7 +463,9 @@ export default function CreateLogicalGroupPage() {
         {mode === "delete" && (
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-bold text-blue-700">Manage Logical Groupings</h3>
+              <h3 className="text-xl font-bold text-blue-700">
+                Manage Logical Groupings
+              </h3>
               <Button
                 variant="ghost"
                 className="text-blue-600 hover:bg-blue-100 p-2"
@@ -519,9 +524,7 @@ export default function CreateLogicalGroupPage() {
                         <td className="px-4 py-2 flex gap-2">
                           <Button
                             variant="destructive"
-                            onClick={() =>
-                              handleDeleteGroup(group.groupcode)
-                            }
+                            onClick={() => handleDeleteGroup(group.groupcode)}
                             className="text-sm"
                           >
                             <Trash2 className="w-4 h-4 mr-1" />
@@ -549,7 +552,7 @@ export default function CreateLogicalGroupPage() {
             />
           </div>
         )}
-        
+
         <SelectClassAdvisorPopup
           open={showAdvisorPopup}
           onClose={() => {
@@ -563,7 +566,7 @@ export default function CreateLogicalGroupPage() {
           }}
         />
       </div>
-      
+
       <style>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 10px;
