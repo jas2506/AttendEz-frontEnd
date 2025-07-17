@@ -395,9 +395,19 @@ export default function CreateLogicalGroupPage() {
                     {registerNumbers.map((num, idx) => (
                       <div
                         key={idx}
-                        className="bg-white rounded-md px-3 py-1 text-blue-800 font-mono text-xs"
+                        className="bg-white rounded-md px-3 py-1 text-blue-800 font-mono text-xs flex items-center justify-between gap-2"
                       >
-                        {num}
+                        <span>{num}</span>
+                        <button
+                          onClick={() =>
+                            setRegisterNumbers((prev) =>
+                              prev.filter((n, i) => i !== idx)
+                            )
+                          }
+                          className="text-red-500 hover:text-red-700 text-xs"
+                        >
+                          ✕
+                        </button>
                       </div>
                     ))}
                   </div>
