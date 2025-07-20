@@ -1,12 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { Html5QrcodeScanner } from "html5-qrcode";
 import { Input } from "@/components/ui/input";
-import { Keyboard, X, CheckCircle, AlertCircle } from "lucide-react";
+import {
+  Keyboard,
+  X,
+  CheckCircle,
+  AlertCircle,
+  QrCode,
+  Camera,
+} from "lucide-react";
 import StudentHomepageSubject from "../projectComponents/StudentHomepageSubject";
 import {
   fetchDetails,
   sendPasscode,
   fetchAttendance,
   fetchTimetable,
+  sendQR,
 } from "../Api";
 
 //set day properly for testing
@@ -80,10 +89,15 @@ function HomepageStudent() {
   const [loading, setLoading] = useState(true);
 
   const [attendanceError, setAttendanceError] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
 
   const [classCode, setClassCode] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [popup, setPopup] = useState(null);
+
+  // Add ref to track scanner instance
+  const scannerRef = useRef(null);
+  const scannerInitialized = useRef(false);
 
   useEffect(() => {
     if (popup) {
@@ -139,6 +153,147 @@ function HomepageStudent() {
 
     fetchData();
   }, []);
+
+  // Initialize scanner when modal is shown
+  useEffect(() => {
+    if (showScanner && !scannerInitialized.current) {
+      // Small delay to ensure DOM element is rendered
+      const timer = setTimeout(() => {
+        initializeScanner();
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showScanner]);
+
+  // Cleanup scanner on component unmount or when scanner is closed
+  useEffect(() => {
+    return () => {
+      cleanupScanner();
+    };
+  }, []);
+
+  const initializeScanner = () => {
+    try {
+      const config = {
+        fps: 10,
+        qrbox: { width: 250, height: 250 },
+        rememberLastUsedCamera: true,
+        aspectRatio: 1.0,
+        showTorchButtonIfSupported: true,
+        showFileUploadSection: false,
+        supportedScanTypes: [],
+      };
+
+      const scanner = new Html5QrcodeScanner("qr-reader", config, false);
+      scannerRef.current = scanner;
+      scannerInitialized.current = true;
+
+      scanner.render(
+        async (decodedText, decodedResult) => {
+          try {
+            await cleanupScanner();
+            setShowScanner(false);
+            const res = await sendQR(decodedText);
+            setPopup({
+              message: res.message || "Successfully marked attendance",
+              type: res.status === "S" ? "success" : "error",
+            });
+          } catch (err) {
+            console.error("QR processing error:", err);
+            setPopup({
+              message: "QR Attendance failed. Try again.",
+              type: "error",
+            });
+          }
+        },
+        (errorMessage) => {
+          console.log("QR scan error (normal):", errorMessage);
+        }
+      );
+
+      // 🔧 Completely remove file upload section and clean up UI
+      setTimeout(() => {
+        // Remove the entire file section
+        const fileSection = document.querySelector(
+          "#qr-reader__dashboard_section_fsr"
+        );
+        if (fileSection) {
+          fileSection.style.display = "none";
+        }
+
+        // Also remove any file upload buttons that might appear
+        const fileButtons = document.querySelectorAll(
+          "#qr-reader__dashboard_section_csr > span > button, " +
+            "#qr-reader__dashboard_section_fsr button, " +
+            "[id*='file'], [class*='file']"
+        );
+        fileButtons.forEach((btn) => {
+          if (
+            btn.textContent.toLowerCase().includes("file") ||
+            btn.textContent.toLowerCase().includes("upload") ||
+            btn.textContent.toLowerCase().includes("select")
+          ) {
+            btn.style.display = "none";
+          }
+        });
+
+        // Hide any remaining file-related elements
+        const allElements = document.querySelectorAll("#qr-reader *");
+        allElements.forEach((el) => {
+          if (
+            el.textContent &&
+            (el.textContent.toLowerCase().includes("select a file") ||
+              el.textContent.toLowerCase().includes("upload") ||
+              el.textContent.toLowerCase().includes("file"))
+          ) {
+            el.style.display = "none";
+          }
+        });
+      }, 300);
+    } catch (error) {
+      console.error("Scanner initialization error:", error);
+      setPopup({
+        message: "Failed to initialize camera. Please try again.",
+        type: "error",
+      });
+      setShowScanner(false);
+    }
+  };
+
+  const cleanupScanner = async () => {
+    if (scannerRef.current) {
+      try {
+        await scannerRef.current.clear();
+      } catch (error) {
+        console.error("Error cleaning up scanner:", error);
+      } finally {
+        scannerRef.current = null;
+        scannerInitialized.current = false;
+      }
+    }
+  };
+
+  const startScanner = async () => {
+    // Check for camera permissions first
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      stream.getTracks().forEach((track) => track.stop()); // Stop the test stream
+
+      setShowScanner(true);
+    } catch (error) {
+      console.error("Camera permission error:", error);
+      setPopup({
+        message: "Camera permission denied. Please enable camera access.",
+        type: "error",
+      });
+    }
+  };
+
+  const closeScanner = async () => {
+    await cleanupScanner();
+    setShowScanner(false);
+  };
 
   if (loading) return <p>Loading...</p>;
 
@@ -202,7 +357,7 @@ function HomepageStudent() {
         <div className="bg-white border-b border-gray-100 shadow-sm p-6 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center">
           <div>
             <p className="text-2xl font-bold text-blue-700">
-              Hello, {details.details.name} 👋
+              Hello, {details?.details?.name} 👋
             </p>
             <p className="text-sm text-gray-600 mt-1">
               Here are your classes for today
@@ -213,7 +368,33 @@ function HomepageStudent() {
           </div>
         </div>
 
-        {/* Input Section */}
+        {/* QR Scanner Button Section - Improved Design */}
+        <div className="flex justify-center mb-6">
+          <button
+            onClick={startScanner}
+            disabled={showScanner}
+            className={`group relative inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-semibold text-base transition-all duration-300 transform hover:scale-105 shadow-lg ${
+              showScanner
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed shadow-sm scale-100"
+                : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-blue-200 hover:shadow-xl"
+            }`}
+          >
+            <div className="relative">
+              {showScanner ? (
+                <Camera className="w-6 h-6 animate-pulse" />
+              ) : (
+                <QrCode className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" />
+              )}
+            </div>
+            <span className="font-medium">
+              {showScanner ? "Scanner Active..." : "Scan QR Code"}
+            </span>
+            {!showScanner && (
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+            )}
+          </button>
+        </div>
+
         <div className="max-w-7xl mx-auto p-6">
           <div className="bg-white p-6 rounded-xl shadow-sm flex flex-col md:flex-row items-center gap-4">
             <div className="relative w-full">
@@ -223,10 +404,17 @@ function HomepageStudent() {
                 placeholder="Enter Class Code (e.g., nzlah0~CSE2701B)"
                 value={classCode}
                 onChange={(e) => {
-                  let value = e.target.value.replace(/[^a-zA-Z0-9]/g, ""); // Remove non-alphanumerics
+                  let value = e.target.value.replace(/[^a-zA-Z0-9~]/g, ""); // Allow ~ character
 
-                  if (value.length > 6) {
-                    value = value.slice(0, 6) + "~" + value.slice(6, 26); // 6 before, 20 after
+                  // Handle the ~ formatting
+                  if (value.includes("~")) {
+                    const parts = value.split("~");
+                    if (parts.length === 2) {
+                      value =
+                        parts[0].slice(0, 6) + "~" + parts[1].slice(0, 20);
+                    }
+                  } else if (value.length > 6) {
+                    value = value.slice(0, 6) + "~" + value.slice(6, 26);
                   }
 
                   setClassCode(value);
@@ -239,7 +427,7 @@ function HomepageStudent() {
             <button
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium px-4 py-2 rounded-lg transition duration-200 w-full md:w-auto min-w-[100px]"
+              className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium px-6 py-2 rounded-lg transition duration-200 w-full md:w-auto min-w-[100px]"
             >
               {isSubmitting ? (
                 <div className="flex items-center justify-center">
@@ -255,7 +443,7 @@ function HomepageStudent() {
           {popup && (
             <div className="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 toast-slide-in">
               <div
-                className={`border-l-4 p-4 rounded-md shadow-md bg-white w-80 transition-opacity duration-500 ${
+                className={`border-l-4 p-4 rounded-md shadow-lg bg-white w-80 transition-all duration-300 ${
                   popup.type === "success"
                     ? "border-green-500"
                     : "border-red-500"
@@ -264,11 +452,11 @@ function HomepageStudent() {
                 <div className="flex items-start justify-between">
                   <div className="flex gap-3">
                     {popup.type === "success" ? (
-                      <CheckCircle className="text-green-600 w-5 h-5 mt-0.5" />
+                      <CheckCircle className="text-green-600 w-5 h-5 mt-0.5 flex-shrink-0" />
                     ) : (
-                      <AlertCircle className="text-red-600 w-5 h-5 mt-0.5" />
+                      <AlertCircle className="text-red-600 w-5 h-5 mt-0.5 flex-shrink-0" />
                     )}
-                    <div>
+                    <div className="flex-1">
                       <h3
                         className={`font-semibold ${
                           popup.type === "success"
@@ -278,12 +466,14 @@ function HomepageStudent() {
                       >
                         {popup.type === "success" ? "Success" : "Error"}
                       </h3>
-                      <p className="text-sm text-gray-700">{popup.message}</p>
+                      <p className="text-sm text-gray-700 mt-1">
+                        {popup.message}
+                      </p>
                     </div>
                   </div>
                   <button
                     onClick={closePopup}
-                    className="text-gray-400 hover:text-gray-600"
+                    className="text-gray-400 hover:text-gray-600 ml-2 flex-shrink-0"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -293,6 +483,44 @@ function HomepageStudent() {
           )}
         </div>
 
+        {/* QR Scanner Modal - Enhanced */}
+        {showScanner && (
+          <div className="fixed inset-0 z-50 bg-black bg-opacity-60 flex items-center justify-center p-4 backdrop-blur-sm">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden border border-gray-200">
+              <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-blue-100 rounded-lg">
+                    <QrCode className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <h2 className="text-xl font-semibold text-gray-800">
+                    Scan QR Code
+                  </h2>
+                </div>
+                <button
+                  onClick={closeScanner}
+                  className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-2 rounded-lg transition-colors duration-200"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="p-6">
+                <div
+                  id="qr-reader"
+                  className="w-full rounded-lg overflow-hidden"
+                />
+                <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <p className="text-sm text-blue-800 text-center font-medium">
+                    📱 Position the QR code within the camera frame
+                  </p>
+                  <p className="text-xs text-blue-600 text-center mt-1">
+                    Make sure the code is clearly visible and well-lit
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Attendance Section */}
         <div className="bg-white p-6 rounded-xl shadow-sm">
           {attendanceError ? (
@@ -300,11 +528,11 @@ function HomepageStudent() {
               Attendance Records not found
             </p>
           ) : stats === null ? (
-            <p className="text-center text-gray-500 text-sm">
+            <p className="text-center text-gray-500 text-sm py-6">
               Attendance record not updated
             </p>
           ) : stats.length === 0 ? (
-            <p className="text-center text-gray-500 text-sm">
+            <p className="text-center text-gray-500 text-sm py-6">
               No classes for today
             </p>
           ) : (

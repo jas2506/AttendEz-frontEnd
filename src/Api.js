@@ -87,6 +87,39 @@ export async function sendPasscode(passcode) {
   return res.data;
 }
 
+export async function sendQR(qr) {
+  const keyString = localStorage.getItem("hmacpasscode");
+  if (!keyString) throw new Error("Missing HMAC key");
+
+  const encoder = new TextEncoder();
+  const keyBytes = encoder.encode(keyString);
+  const messageBytes = encoder.encode(qr);
+
+  const cryptoKey = await crypto.subtle.importKey(
+    "raw",
+    keyBytes,
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+
+  const signature = await crypto.subtle.sign("HMAC", cryptoKey, messageBytes);
+  const digest = base64UrlEncode(new Uint8Array(signature));
+
+  const res = await api.post(
+    "/passcode/qr/sendcode",
+    {},
+    {
+      params: {
+        digest,
+        qr,
+      },
+    }
+  );
+
+  return res.data;
+}
+
 function base64UrlEncode(bytes) {
   return btoa(String.fromCharCode(...bytes))
     .replace(/\+/g, "-")

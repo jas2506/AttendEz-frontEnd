@@ -50,9 +50,12 @@ function Navbar({ setIsLoggedIn }) {
           <SheetTrigger>
             <Menu className="w-6 h-6 text-white cursor-pointer" />
           </SheetTrigger>
-          <SheetContent side="left" className="h-full text-center">
+          <SheetContent
+            side="left"
+            className="h-full text-center bg-blue-500 text-white"
+          >
             <SheetHeader>
-              <SheetTitle>Menu</SheetTitle>
+              <SheetTitle className="text-white">Menu</SheetTitle>
             </SheetHeader>
             <div className="flex flex-col gap-4 items-start mt-4">
               <Link to="/student/home">
