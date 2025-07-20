@@ -1,4 +1,5 @@
 import Profile from "./Profile";
+import DevsPage from "../Pages/DevsPage";
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import {
@@ -96,11 +97,11 @@ function Navbar({ setIsLoggedIn }) {
                   active={location.pathname === "/student/custom-gpa"}
                 />
               </Link>
-              <Link to="#">
+              <Link to="/student/devs">
                 <NavItem
                   icon={<Code className="w-4 h-4" />}
                   label="Devs"
-                  active={false}
+                  active={location.pathname === "/student/devs"}
                 />
               </Link>
             </div>
@@ -152,11 +153,11 @@ function Navbar({ setIsLoggedIn }) {
             active={location.pathname === "/student/custom-gpa"}
           />
         </Link>
-        <Link to="#">
+        <Link to="/student/devs">
           <NavItem
             icon={<Code className="w-4 h-4" />}
             label="Devs"
-            active={false}
+            active={location.pathname === "student/devs"}
           />
         </Link>
       </div>

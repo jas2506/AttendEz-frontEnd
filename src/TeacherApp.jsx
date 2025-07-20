@@ -10,6 +10,7 @@ import DevsPage from "./Pages/DevsPage";
 import { useState } from "react";
 import TeacherLogin from "./Pages/FacultyPages/TeacherLogin";
 import ClassAdvisorPage from "./Pages/FacultyPages/ClassAdvisorPage";
+import DevsPage from "./Pages/DevsPage";
 import {
   BrowserRouter as Router,
   Routes,
@@ -49,7 +50,7 @@ function TeacherApp() {
               <Route path="/MentorView" element={<MentorListPage />} />
               <Route path="/CreateClass" element={<FacultyCreateClassPage />} />
               <Route path="/ClassAdvisorView" element={<ClassAdvisorPage />} />
-              <Route path="/Devs" element={<DevsPage />} />
+              <Route path="/devs" element={<DevsPage />} />
               <Route path="*" element={<Navigate to="/FacultyHomepage" />} />
             </>
           ) : (

@@ -35,6 +35,7 @@ import AddTeacherPage from "./Pages/SuperAdminPages/AddTeacherPage";
 import CreateDeleteStudentPage from "./Pages/SuperAdminPages/CreateDeleteStudentPage";
 import CreateLogicalGroupingPage from "./Pages/SuperAdminPages/CreateLogicalGroupingPage";
 import NavBarSuperAdmin from "./Pages/SuperAdminPages/NavBarSuperAdmin";
+import DevsPage from "./Pages/DevsPage";
 const cId = import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_ID;
 
 function AppRoutes({
@@ -87,6 +88,7 @@ function AppRoutes({
             <Route path="/student/subjects" element={<SubjectsPage />} />
             <Route path="/student/gpa" element={<CurrentGPAPage />} />
             <Route path="/student/custom-gpa" element={<CustomGPAcalc />} />
+            <Route path="/student/devs" element={<DevsPage />} />
           </>
         ) : (
           <Route path="/student/*" element={<Navigate to="/student" />} />
@@ -120,6 +122,7 @@ function AppRoutes({
               path="/faculty/class-advisor"
               element={<ClassAdvisorPage />}
             />
+            <Route path="/faculty/devs" element={<DevsPage />} />
           </>
         ) : (
           <Route path="/faculty/*" element={<Navigate to="/faculty" />} />

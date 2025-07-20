@@ -6,21 +6,63 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Mail, Github, Linkedin } from "lucide-react";
+// add others as needed
 
 const devs = [
-  { name: "Saipranav", github: "#", linkedin: "#", email: "a@x.com" },
-  { name: "Murari Sreekumar", github: "#", linkedin: "#", email: "b@x.com" },
-  { name: "Rahul VS", github: "#", linkedin: "#", email: "c@x.com" },
-  { name: "Ramcharan S", github: "#", linkedin: "#", email: "d@x.com" },
-  { name: "Jaswanth Sridharan", github: "#", linkedin: "#", email: "e@x.com" },
-  { name: "Gautham Narayan G", github: "#", linkedin: "#", email: "f@x.com" },
+  {
+    name: "Saipranav",
+    role: "Backend Developer, DevOps, DB",
+    image: "#", // or full URL
+    github: "https://github.com/AvGeeky",
+    linkedin: "#",
+    email: "a@x.com",
+  },
+  {
+    name: "Murari Sreekumar",
+    role: "Backend Developer, DB and Tester",
+    image: "#",
+    github: "https://github.com/muru2005",
+    linkedin: "#",
+    email: "b@x.com",
+  },
+  {
+    name: "Rahul VS",
+    role: "Mobile App",
+    image: "#",
+    github: "https://github.com/techieRahul17",
+    linkedin: "#",
+    email: "c@x.com",
+  },
+  {
+    name: "Ramcharan S",
+    role: "Mobile App",
+    image: "#",
+    github: "https://github.com/Ramcharan-Swaminathan",
+    linkedin: "#",
+    email: "d@x.com",
+  },
+  {
+    name: "Jaswanth Sridharan",
+    role: "UI/UX, Web Developer",
+    image: "#",
+    github: "https://github.com/jas2506",
+    linkedin: "#",
+    email: "e@x.com",
+  },
+  {
+    name: "Gautham Narayan G",
+    role: "UI/UX, Web Developer",
+    image: "#",
+    github: "https://github.com/gautham-gln",
+    linkedin: "https://www.linkedin.com/in/gautham-narayan-g",
+    email: "f@x.com",
+  },
 ];
 
 export default function DevsPage() {
   return (
     <div className="min-h-screen px-10 py-16 bg-white">
       <div className="grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-12">
-        {/* LEFT: Profile Cards Grid */}
         <div className="grid grid-cols-3 gap-x-10 gap-y-12">
           <TooltipProvider>
             {devs.map((dev, idx) => (
@@ -28,14 +70,20 @@ export default function DevsPage() {
                 <TooltipTrigger asChild>
                   <Card className="w-72 bg-gray-100 rounded-xl p-4 hover:shadow-xl transition-shadow duration-300">
                     <CardContent className="flex flex-col items-center text-center gap-3">
-                      <div className="w-28 h-28 bg-white rounded-full border-2 border-gray-300" />
+                      <img
+                        src={dev.image}
+                        alt={dev.name}
+                        className="w-28 h-28 rounded-full border-2 border-gray-300 object-cover"
+                      />
+
                       <h2 className="text-lg font-bold text-blue-700 whitespace-nowrap overflow-hidden text-ellipsis w-full text-center">
                         {dev.name}
                       </h2>
 
                       <p className="text-sm font-semibold text-gray-700">
-                        Backend Developer
+                        {dev.role}
                       </p>
+
                       <p className="text-sm text-gray-600">CSE, 3rd year</p>
                       <div className="flex justify-between w-full mt-2 px-6">
                         <a
