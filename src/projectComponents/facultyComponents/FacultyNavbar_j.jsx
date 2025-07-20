@@ -1,4 +1,5 @@
 import FacultyProfile from "./FacultyProfile";
+import DevsPage from "../../Pages/DevsPage";
 import { useLocation, Link } from "react-router-dom";
 import {
   Presentation,
@@ -105,8 +106,8 @@ function FacultyNavbar_j({ setIsLoggedIn }) {
               <NavItem
                 icon={<Code className="w-4 h-4" />}
                 label="Devs"
-                path="#"
-                isActive={false}
+                path="/faculty/devs"
+                isActive={location.pathname === "/faculty/devs"}
               />
             </div>
           </SheetContent>
@@ -160,8 +161,8 @@ function FacultyNavbar_j({ setIsLoggedIn }) {
         <NavItem
           icon={<Code className="w-4 h-4" />}
           label="Devs"
-          path="#"
-          isActive={false}
+          path="/faculty/devs"
+          isActive={location.pathname === "/faculty/devs"}
         />
       </div>
 
