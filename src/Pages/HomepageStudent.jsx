@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Html5QrcodeScanner } from "html5-qrcode";
+import { Html5Qrcode } from "html5-qrcode";
 import { Input } from "@/components/ui/input";
 import {
   Keyboard,
@@ -154,14 +154,11 @@ function HomepageStudent() {
     fetchData();
   }, []);
 
-  // Initialize scanner when modal is shown
   useEffect(() => {
     if (showScanner && !scannerInitialized.current) {
-      // Small delay to ensure DOM element is rendered
       const timer = setTimeout(() => {
         initializeScanner();
       }, 100);
-
       return () => clearTimeout(timer);
     }
   }, [showScanner]);
@@ -173,97 +170,77 @@ function HomepageStudent() {
     };
   }, []);
 
-  const initializeScanner = () => {
-    try {
-      const config = {
-        fps: 10,
-        qrbox: { width: 250, height: 250 },
-        rememberLastUsedCamera: true,
-        aspectRatio: 1.0,
-        showTorchButtonIfSupported: true,
-        showFileUploadSection: false,
-        supportedScanTypes: [],
-      };
+  function initializeScanner() {
+    const qrRegionId = "qr-reader";
 
-      const scanner = new Html5QrcodeScanner("qr-reader", config, false);
-      scannerRef.current = scanner;
-      scannerInitialized.current = true;
+    if (scannerInitialized.current || !document.getElementById(qrRegionId))
+      return;
 
-      scanner.render(
+    const html5QrCode = new Html5Qrcode(qrRegionId);
+    scannerRef.current = html5QrCode;
+    scannerInitialized.current = true;
+
+    const config = {
+      fps: 10,
+      qrbox: { width: 250, height: 250 },
+    };
+
+    html5QrCode
+      .start(
+        { facingMode: "environment" },
+        config,
         async (decodedText, decodedResult) => {
+          console.log("QR Code scanned:", decodedText);
+
+          // Stop scanner immediately to prevent multiple scans
+          await html5QrCode.stop().catch((err) => {
+            console.error("Error stopping scanner:", err);
+          });
+
+          scannerInitialized.current = false;
+          scannerRef.current = null;
+
           try {
-            await cleanupScanner();
-            setShowScanner(false);
             const res = await sendQR(decodedText);
             setPopup({
               message: res.message || "Successfully marked attendance",
               type: res.status === "S" ? "success" : "error",
             });
-          } catch (err) {
-            console.error("QR processing error:", err);
+          } catch (error) {
+            console.error("Error sending QR:", error);
+
+            let message = "Failed to submit QR. Please try again.";
+
+            // 🔧 Extract message from error response if available
+            if (error.response?.data?.message) {
+              message = error.response.data.message;
+            }
+
             setPopup({
-              message: "QR Attendance failed. Try again.",
+              message,
               type: "error",
             });
+          } finally {
+            setShowScanner(false);
           }
         },
         (errorMessage) => {
-          console.log("QR scan error (normal):", errorMessage);
+          console.warn("QR scan error:", errorMessage);
         }
-      );
-
-      // 🔧 Completely remove file upload section and clean up UI
-      setTimeout(() => {
-        // Remove the entire file section
-        const fileSection = document.querySelector(
-          "#qr-reader__dashboard_section_fsr"
-        );
-        if (fileSection) {
-          fileSection.style.display = "none";
-        }
-
-        // Also remove any file upload buttons that might appear
-        const fileButtons = document.querySelectorAll(
-          "#qr-reader__dashboard_section_csr > span > button, " +
-            "#qr-reader__dashboard_section_fsr button, " +
-            "[id*='file'], [class*='file']"
-        );
-        fileButtons.forEach((btn) => {
-          if (
-            btn.textContent.toLowerCase().includes("file") ||
-            btn.textContent.toLowerCase().includes("upload") ||
-            btn.textContent.toLowerCase().includes("select")
-          ) {
-            btn.style.display = "none";
-          }
+      )
+      .catch((err) => {
+        console.error("Failed to start scanning:", err);
+        setPopup({
+          message: "Failed to start scanner. Try again.",
+          type: "error",
         });
-
-        // Hide any remaining file-related elements
-        const allElements = document.querySelectorAll("#qr-reader *");
-        allElements.forEach((el) => {
-          if (
-            el.textContent &&
-            (el.textContent.toLowerCase().includes("select a file") ||
-              el.textContent.toLowerCase().includes("upload") ||
-              el.textContent.toLowerCase().includes("file"))
-          ) {
-            el.style.display = "none";
-          }
-        });
-      }, 300);
-    } catch (error) {
-      console.error("Scanner initialization error:", error);
-      setPopup({
-        message: "Failed to initialize camera. Please try again.",
-        type: "error",
       });
-      setShowScanner(false);
-    }
-  };
+  }
 
   const cleanupScanner = async () => {
     if (scannerRef.current) {
       try {
+        await scannerRef.current.stop();
         await scannerRef.current.clear();
       } catch (error) {
         console.error("Error cleaning up scanner:", error);
@@ -510,7 +487,7 @@ function HomepageStudent() {
                 />
                 <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
                   <p className="text-sm text-blue-800 text-center font-medium">
-                    📱 Position the QR code within the camera frame
+                    Position the QR code within the camera frame
                   </p>
                   <p className="text-xs text-blue-600 text-center mt-1">
                     Make sure the code is clearly visible and well-lit

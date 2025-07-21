@@ -107,12 +107,12 @@ export async function sendQR(qr) {
   const digest = base64UrlEncode(new Uint8Array(signature));
 
   const res = await api.post(
-    "/passcode/qr/sendcode",
+    "/qr/sendCode",
     {},
     {
       params: {
         digest,
-        qr,
+        qrCode: qr,
       },
     }
   );

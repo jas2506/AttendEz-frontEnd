@@ -570,41 +570,45 @@ function ManualAttendanceModal({ classCode, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 backdrop-blur-sm bg-black/20 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl p-6 w-[90%] md:w-[600px] max-h-[80vh] overflow-y-auto relative shadow-2xl border border-gray-200">
+    <div className="fixed inset-0 backdrop-blur-sm bg-black/20 flex items-center justify-center z-50 px-2">
+      <div className="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-sm sm:max-w-lg h-[95vh] overflow-y-auto relative shadow-2xl border border-gray-200">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors duration-200 p-1 rounded-full hover:bg-gray-100"
+          className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors duration-200 p-1 rounded-full hover:bg-gray-100"
         >
           <X className="w-5 h-5" />
         </button>
-        <h2 className="text-xl font-bold mb-6 text-blue-700 flex items-center gap-2">
-          <NotebookText className="w-6 h-6" />
+
+        <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-blue-700 flex items-center gap-2">
+          <NotebookText className="w-5 h-5 sm:w-6 sm:h-6" />
           Manual Attendance
         </h2>
-        <div className="space-y-4">
+
+        <div className="space-y-3">
           {Object.entries(students)
             .sort(([id1], [id2]) => id1.localeCompare(id2))
             .map(([id, name]) => (
               <div
                 key={id}
-                className="flex justify-between items-center p-4 bg-gray-50 rounded-xl border border-gray-200 hover:bg-gray-100 transition-colors duration-200"
+                className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center p-3 sm:p-4 bg-gray-50 rounded-xl border border-gray-200 hover:bg-gray-100 transition-colors duration-200"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <div className="flex items-center gap-3 mb-2 sm:mb-0">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 bg-blue-100 rounded-full flex items-center justify-center">
                     <span className="text-blue-600 font-semibold text-sm">
                       {name.charAt(0).toUpperCase()}
                     </span>
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-800">{name}</p>
-                    <p className="text-sm text-gray-500">{id}</p>
+                    <p className="font-semibold text-gray-800 text-sm sm:text-base">
+                      {name}
+                    </p>
+                    <p className="text-xs text-gray-500">{id}</p>
                   </div>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex gap-2 sm:gap-3 w-full sm:w-auto justify-between">
                   <button
                     onClick={() => markAttendance(id, "present")}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                    className={`flex-1 flex items-center justify-center gap-1 sm:gap-2 px-3 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
                       attendance[id] === "present"
                         ? "bg-green-500 text-white shadow-md transform scale-105"
                         : "bg-green-100 text-green-700 hover:bg-green-200 border border-green-300"
@@ -615,7 +619,7 @@ function ManualAttendanceModal({ classCode, onClose }) {
                   </button>
                   <button
                     onClick={() => markAttendance(id, "absent")}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                    className={`flex-1 flex items-center justify-center gap-1 sm:gap-2 px-3 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
                       attendance[id] === "absent"
                         ? "bg-red-500 text-white shadow-md transform scale-105"
                         : "bg-red-100 text-red-700 hover:bg-red-200 border border-red-300"
@@ -628,8 +632,9 @@ function ManualAttendanceModal({ classCode, onClose }) {
               </div>
             ))}
         </div>
+
         <button
-          className="mt-6 w-full bg-blue-600 text-white hover:bg-blue-700 py-3 text-lg font-semibold rounded-xl transition-all duration-200 hover:shadow-lg flex items-center justify-center gap-2"
+          className="mt-5 w-full bg-blue-600 text-white hover:bg-blue-700 py-3 text-base font-semibold rounded-xl transition-all duration-200 hover:shadow-lg flex items-center justify-center gap-2"
           onClick={handleSave}
         >
           <Check className="w-5 h-5" />

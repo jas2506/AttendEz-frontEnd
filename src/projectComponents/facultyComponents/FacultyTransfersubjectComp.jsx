@@ -388,7 +388,8 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
   return (
     <>
       <div className="rounded-2xl border border-gray-300 bg-white shadow-md overflow-hidden p-4 md:p-5 w-full max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-3">
+        <div className="flex flex-col gap-3 mb-3">
+          {/* Class Info */}
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
               <BookOpen className="w-5 h-5 text-blue-600" />
@@ -410,20 +411,19 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
             </div>
           </div>
 
-          <div className="flex gap-3 mt-2 md:mt-0">
-            {/* View Lecture Wise Attendance Button */}
+          {/* Buttons Group */}
+          <div className="flex flex-wrap gap-3 mt-2">
             <Button
               onClick={() => setLectureStatsOpen(true)}
-              className="cursor-pointer flex items-center gap-2 text-sm text-green-700 border-green-200 bg-green-50 hover:bg-green-100"
+              className="flex-grow md:flex-grow-0 min-w-[140px] flex items-center gap-2 text-sm text-green-700 border-green-200 bg-green-50 hover:bg-green-100"
             >
               <BarChart3 className="w-4 h-4" />
               View Lecture Wise Attendance
             </Button>
 
-            {/* View Students Button */}
             <Button
               onClick={() => setStudentsOpen(true)}
-              className="cursor-pointer flex items-center gap-2 text-sm text-purple-700 border-purple-200 bg-purple-50 hover:bg-purple-100"
+              className="flex-grow md:flex-grow-0 min-w-[120px] flex items-center gap-2 text-sm text-purple-700 border-purple-200 bg-purple-50 hover:bg-purple-100"
             >
               <Eye className="w-4 h-4" />
               View Students
@@ -431,7 +431,7 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
 
             <Button
               onClick={() => setTransferModalOpen(true)}
-              className="cursor-pointer flex items-center gap-2 text-sm text-blue-700 border-blue-200 bg-blue-50 hover:bg-blue-100"
+              className="flex-grow md:flex-grow-0 min-w-[160px] flex items-center gap-2 text-sm text-blue-700 border-blue-200 bg-blue-50 hover:bg-blue-100"
             >
               <Users className="w-4 h-4" />
               Transfer to another Faculty
@@ -439,7 +439,7 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
 
             <Button
               onClick={() => setDeleteConfirmOpen(true)}
-              className="cursor-pointer flex items-center gap-2 text-sm text-red-600 border-red-200 bg-red-50 hover:bg-red-100"
+              className="flex-grow md:flex-grow-0 min-w-[100px] flex items-center gap-2 text-sm text-red-600 border-red-200 bg-red-50 hover:bg-red-100"
             >
               <Trash2 className="w-4 h-4" />
               Delete
@@ -862,7 +862,10 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
                       <td className="px-6 py-4 text-center">
                         <div className="flex flex-wrap justify-center gap-2">
                           {s.lecturesAttended.map((l) => {
-                            const lecNum = l.lectureKey.replace("lecture.", "L");
+                            const lecNum = l.lectureKey.replace(
+                              "lecture.",
+                              "L"
+                            );
                             return (
                               <span
                                 key={l}
