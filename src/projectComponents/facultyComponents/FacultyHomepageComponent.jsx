@@ -526,15 +526,14 @@ function ActionButton({
 function ManualAttendanceModal({ classCode, onClose }) {
   const [students, setStudents] = useState({});
   const [attendance, setAttendance] = useState({});
-  const [mode, setMode] = useState("present"); // "present" or "absent"
 
   useEffect(() => {
     const fetchStudents = async () => {
       try {
         const res = await getAllStudentDetails(classCode);
         const data = res.data;
-        setStudents(data.details);
 
+        setStudents(data.details);
         const initialStatus = {};
         for (let id in data.details) {
           initialStatus[id] = null;
@@ -548,27 +547,24 @@ function ManualAttendanceModal({ classCode, onClose }) {
     fetchStudents();
   }, [classCode]);
 
-  const toggleStatus = (id) => {
-    setAttendance((prev) => ({
-      ...prev,
-      [id]: prev[id] === true ? null : true, // true = marked (present or absent based on mode)
-    }));
+  const markAttendance = (id, status) => {
+    setAttendance((prev) => ({ ...prev, [id]: status }));
+  };
+
+  const markAll = (status) => {
+    const updated = {};
+    for (let id in students) {
+      updated[id] = status;
+    }
+    setAttendance(updated);
   };
 
   const handleSave = () => {
     const present = [];
     const absent = [];
-
     for (let id in attendance) {
-      const isMarked = attendance[id] === true;
-
-      if (mode === "present") {
-        if (isMarked) present.push(id);
-        else absent.push(id);
-      } else {
-        if (isMarked) absent.push(id);
-        else present.push(id);
-      }
+      if (attendance[id] === "present") present.push(id);
+      else if (attendance[id] === "absent") absent.push(id);
     }
 
     saveManualAttendance(classCode, present, absent)
@@ -596,31 +592,6 @@ function ManualAttendanceModal({ classCode, onClose }) {
           Manual Attendance
         </h2>
 
-        {/* Toggle */}
-        <div className="flex gap-2 mb-4">
-          <button
-            className={`flex-1 py-2 rounded-lg text-sm font-semibold transition ${
-              mode === "present"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-            onClick={() => setMode("present")}
-          >
-            Mark Present
-          </button>
-          <button
-            className={`flex-1 py-2 rounded-lg text-sm font-semibold transition ${
-              mode === "absent"
-                ? "bg-red-600 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-            onClick={() => setMode("absent")}
-          >
-            Mark Absent
-          </button>
-        </div>
-
-        {/* Student List */}
         <div className="space-y-3">
           {Object.entries(students)
             .sort(([id1], [id2]) => id1.localeCompare(id2))
@@ -642,40 +613,53 @@ function ManualAttendanceModal({ classCode, onClose }) {
                     <p className="text-xs text-gray-500">{id}</p>
                   </div>
                 </div>
-
-                {/* Single button depending on mode */}
-                <div className="w-full sm:w-auto">
+                <div className="flex gap-2 sm:gap-3 w-full sm:w-auto justify-between">
                   <button
-                    onClick={() => toggleStatus(id)}
-                    className={`w-full sm:w-auto flex items-center justify-center gap-1 px-3 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
-                      attendance[id] === true
-                        ? mode === "present"
-                          ? "bg-green-500 text-white shadow-md transform scale-105"
-                          : "bg-red-500 text-white shadow-md transform scale-105"
-                        : mode === "present"
-                        ? "bg-green-100 text-green-700 hover:bg-green-200 border border-green-300"
+                    onClick={() => markAttendance(id, "present")}
+                    className={`flex-1 flex items-center justify-center gap-1 sm:gap-2 px-3 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
+                      attendance[id] === "present"
+                        ? "bg-green-500 text-white shadow-md transform scale-105"
+                        : "bg-green-100 text-green-700 hover:bg-green-200 border border-green-300"
+                    }`}
+                  >
+                    <UserCheck className="w-4 h-4" />
+                    Present
+                  </button>
+                  <button
+                    onClick={() => markAttendance(id, "absent")}
+                    className={`flex-1 flex items-center justify-center gap-1 sm:gap-2 px-3 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
+                      attendance[id] === "absent"
+                        ? "bg-red-500 text-white shadow-md transform scale-105"
                         : "bg-red-100 text-red-700 hover:bg-red-200 border border-red-300"
                     }`}
                   >
-                    {mode === "present" ? (
-                      <>
-                        <UserCheck className="w-4 h-4" />
-                        Present
-                      </>
-                    ) : (
-                      <>
-                        <UserX className="w-4 h-4" />
-                        Absent
-                      </>
-                    )}
+                    <UserX className="w-4 h-4" />
+                    Absent
                   </button>
                 </div>
               </div>
             ))}
         </div>
 
+        {/* Mark All Buttons */}
+        <div className="flex gap-2 mt-5">
+          <button
+            className="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-all"
+            onClick={() => markAll("present")}
+          >
+            Mark All Present
+          </button>
+          <button
+            className="flex-1 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-all"
+            onClick={() => markAll("absent")}
+          >
+            Mark All Absent
+          </button>
+        </div>
+
+        {/* Save */}
         <button
-          className="mt-5 w-full bg-blue-600 text-white hover:bg-blue-700 py-3 text-base font-semibold rounded-xl transition-all duration-200 hover:shadow-lg flex items-center justify-center gap-2"
+          className="mt-3 w-full bg-blue-600 text-white hover:bg-blue-700 py-3 text-base font-semibold rounded-xl transition-all duration-200 hover:shadow-lg flex items-center justify-center gap-2"
           onClick={handleSave}
         >
           <Check className="w-5 h-5" />
