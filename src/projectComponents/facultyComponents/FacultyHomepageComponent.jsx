@@ -414,7 +414,7 @@ function FacultyHomepageComponent({ c }) {
               {/* Right Side - Students List */}
               <div className="w-80 bg-white rounded-xl p-6 flex flex-col">
                 <h3 className="text-xl font-semibold mb-4 text-black">
-                  Students Marked Present:
+                  Students Marked Present: {qrAttendance.length}
                 </h3>
 
                 <div className="flex-1 overflow-y-auto">
