@@ -341,9 +341,10 @@ function FacultyHomepageComponent({ c }) {
               </p>
 
               <div className="text-left mt-6">
-                <h3 className="text-md font-semibold mb-2">
-                  Students Marked Present:
+                <h3 className="text-xl font-semibold mb-4 text-black">
+                  Students Marked Present: {liveAttendance.length}
                 </h3>
+
                 <ul className="max-h-[200px] overflow-y-auto space-y-2">
                   {liveAttendance.map((s) => (
                     <li key={s.id} className="flex items-center gap-3">
