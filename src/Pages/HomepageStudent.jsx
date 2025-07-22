@@ -95,6 +95,10 @@ function HomepageStudent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [popup, setPopup] = useState(null);
 
+  const [zoomSupported, setZoomSupported] = useState(false);
+  const [zoomRange, setZoomRange] = useState({ min: 1, max: 1 });
+  const [zoomValue, setZoomValue] = useState(1);
+
   // Add ref to track scanner instance
   const scannerRef = useRef(null);
   const scannerInitialized = useRef(false);
@@ -192,7 +196,6 @@ function HomepageStudent() {
         async (decodedText, decodedResult) => {
           console.log("QR Code scanned:", decodedText);
 
-          // Stop scanner immediately to prevent multiple scans
           await html5QrCode.stop().catch((err) => {
             console.error("Error stopping scanner:", err);
           });
@@ -208,10 +211,7 @@ function HomepageStudent() {
             });
           } catch (error) {
             console.error("Error sending QR:", error);
-
             let message = "Failed to submit QR. Please try again.";
-
-            // 🔧 Extract message from error response if available
             if (error.response?.data?.message) {
               message = error.response.data.message;
             }
@@ -228,12 +228,27 @@ function HomepageStudent() {
           console.warn("QR scan error:", errorMessage);
         }
       )
-      .catch((err) => {
-        console.error("Failed to start scanning:", err);
-        setPopup({
-          message: "Failed to start scanner. Try again.",
-          type: "error",
-        });
+      .then(async () => {
+        const capabilities = await html5QrCode.getRunningTrackCapabilities();
+        console.log(capabilities);
+        if (capabilities.zoom) {
+          setZoomSupported(true);
+          setZoomRange({
+            min: capabilities.zoom.min,
+            max: capabilities.zoom.max,
+          });
+          setZoomValue(capabilities.zoom.min); // default to min
+
+          try {
+            await html5QrCode.applyVideoConstraints({
+              advanced: [{ zoom: capabilities.zoom.min }],
+            });
+          } catch (error) {
+            console.warn("Failed to apply initial zoom:", error);
+          }
+        } else {
+          setZoomSupported(false);
+        }
       });
   }
 
@@ -242,6 +257,9 @@ function HomepageStudent() {
       try {
         await scannerRef.current.stop();
         await scannerRef.current.clear();
+        setZoomSupported(false);
+        setZoomRange({ min: 1, max: 1 });
+        setZoomValue(1);
       } catch (error) {
         console.error("Error cleaning up scanner:", error);
       } finally {
@@ -485,6 +503,42 @@ function HomepageStudent() {
                   id="qr-reader"
                   className="w-full rounded-lg overflow-hidden"
                 />
+
+                {zoomSupported && (
+                  <div className="mt-4">
+                    <label
+                      htmlFor="zoom-slider"
+                      className="block text-sm font-medium text-gray-700 text-center"
+                    >
+                      Zoom Level
+                    </label>
+                    <input
+                      id="zoom-slider"
+                      type="range"
+                      min={zoomRange.min}
+                      max={zoomRange.max}
+                      step="0.1"
+                      value={zoomValue}
+                      onChange={async (e) => {
+                        const value = parseFloat(e.target.value);
+                        setZoomValue(value);
+
+                        try {
+                          await scannerRef.current?.applyVideoConstraints({
+                            advanced: [{ zoom: value }],
+                          });
+                        } catch (error) {
+                          console.warn("Zoom change error:", error);
+                        }
+                      }}
+                      className="w-full mt-2 accent-blue-600"
+                    />
+                    <p className="text-xs text-center text-gray-500 mt-1">
+                      {zoomValue.toFixed(1)}x
+                    </p>
+                  </div>
+                )}
+
                 <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
                   <p className="text-sm text-blue-800 text-center font-medium">
                     Position the QR code within the camera frame
