@@ -287,7 +287,7 @@ function FacultyHomepage() {
       "Friday",
       "Saturday",
     ];
-    const today = "Monday";
+    const today = "Tuesday";
     const timetableToday = data.timetable[today];
     const classDetails = data.classDetails;
 
