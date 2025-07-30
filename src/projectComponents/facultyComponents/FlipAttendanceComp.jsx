@@ -17,10 +17,6 @@ const LectureDetailsModal = ({
     const currentStatus = attendance[regNo];
     const updatedStatus = currentStatus === 1 ? 0 : 1;
 
-    console.log(
-      `Flipping attendance for ${regNo} in lecture ${lectureNumber}...`
-    );
-
     setAttendance((prev) => ({
       ...prev,
       [regNo]: updatedStatus,
@@ -32,8 +28,6 @@ const LectureDetailsModal = ({
         registernumber: regNo,
         lecturenumber: lectureNumber,
       });
-
-      console.log(`Flip successful for ${regNo}`, response.data);
     } catch (error) {
       console.error(`Flip failed for ${regNo}:`, error);
     }
@@ -71,16 +65,16 @@ const LectureDetailsModal = ({
           {absentees.map(([regNo, _]) => (
             <div
               key={regNo}
-              className="flex justify-between items-center p-3 rounded-lg bg-red-100"
+              className="flex justify-between items-center p-4 rounded-lg bg-red-100 shadow-md hover:bg-red-200 transition-all duration-300"
             >
               <span className="font-medium text-gray-800">
                 {studentMap[regNo]} ({regNo})
               </span>
               <button
                 onClick={() => handleFlip(regNo)}
-                className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded"
+                className="px-4 py-1.5 bg-gradient-to-r from-green-400 to-green-600 text-white rounded-full shadow-md transition-all duration-300 transform hover:scale-105 hover:from-green-500 hover:to-green-700"
               >
-                Flip Attendance
+                Mark Present
               </button>
             </div>
           ))}
@@ -88,16 +82,16 @@ const LectureDetailsModal = ({
           {presentees.map(([regNo, _]) => (
             <div
               key={regNo}
-              className="flex justify-between items-center p-3 rounded-lg bg-green-100"
+              className="flex justify-between items-center p-4 rounded-lg bg-green-100 shadow-md hover:bg-green-200 transition-all duration-300"
             >
               <span className="font-medium text-gray-800">
                 {studentMap[regNo]} ({regNo})
               </span>
               <button
                 onClick={() => handleFlip(regNo)}
-                className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded"
+                className="px-4 py-1.5 bg-gradient-to-r from-red-400 to-red-600 text-white rounded-full shadow-md transition-all duration-300 transform hover:scale-105 hover:from-red-500 hover:to-red-700"
               >
-                Flip Attendance
+                Mark Absent
               </button>
             </div>
           ))}
