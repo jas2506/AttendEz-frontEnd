@@ -1,6 +1,5 @@
 "use client";
 
-
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import {
@@ -287,7 +286,7 @@ function FacultyHomepage() {
       "Friday",
       "Saturday",
     ];
-    const today = "Tuesday";
+    const today = days[new Date().getDay()];
     const timetableToday = data.timetable[today];
     const classDetails = data.classDetails;
 
