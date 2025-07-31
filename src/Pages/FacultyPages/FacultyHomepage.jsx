@@ -559,36 +559,32 @@ function FacultyHomepage() {
 
       {/* Substitution QR Modal */}
       {showSubQRModal && (
-        <div className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center text-white p-4">
-          <div className="w-full max-w-6xl h-[80vh] flex flex-col">
-            <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold">
-                Substitution Class - Scan QR to Mark Attendance
-              </h2>
+        <div className="fixed inset-0 z-50 bg-black/90 flex flex-row items-center justify-center text-white p-4">
+          <div className="w-full max-w-6xl h-[80vh] flex flex-row">
+            {/* QR Code Section */}
+            <div className="flex-3 flex items-center justify-center">
+              <div className="flex flex-col items-center justify-center bg-white px-4 rounded-xl">
+                <QRCode
+                  value={subQrCodes[currentSubQRIndex] || ""}
+                  size={Math.min(
+                    800, // Increase size to make the QR code even larger
+                    window.innerWidth * 0.8, // Allow up to 80% of the screen width
+                    window.innerHeight * 0.75 // 75% of screen height
+                  )}
+                  className="mb-6 mt-6"
+                  bgColor="white"
+                  fgColor="#000000"
+                  level="H"
+                />
+                <p className="text-black text-2xl mb-4 font-mono font-bold break-all text-center max-w-[90%]">
+                  {subQrCodes[currentSubQRIndex]}
+                </p>
+              </div>
             </div>
 
-            <div className="flex-1 flex gap-6 min-h-0">
-              <div className="flex-1 flex items-center justify-center">
-                <div className="flex flex-col items-center justify-center bg-white px-4 rounded-xl">
-                  <QRCode
-                    value={subQrCodes[currentSubQRIndex] || ""}
-                    size={Math.min(
-                      400,
-                      window.innerWidth * 0.6,
-                      window.innerHeight * 0.75
-                    )}
-                    className="mb-6 mt-6"
-                    bgColor="white"
-                    fgColor="#000000"
-                    level="H"
-                  />
-                  <p className="text-black text-2xl mb-4 font-mono font-bold break-all text-center max-w-[90%]">
-                    {subQrCodes[currentSubQRIndex]}
-                  </p>
-                </div>
-              </div>
-
-              <div className="w-80 bg-white rounded-xl p-6 flex flex-col">
+            {/* Students List Section */}
+            <div className="w-[280px] bg-white rounded-xl p-6 flex flex-col justify-between">
+              <div>
                 <h3 className="text-xl font-semibold mb-4 text-black">
                   Students Marked Present:
                 </h3>
@@ -619,18 +615,19 @@ function FacultyHomepage() {
                   )}
                 </div>
               </div>
-            </div>
 
-            {showSaveSubQRButton && (
-              <div className="mt-6 text-center">
-                <button
-                  onClick={confirmSubQRAttendance}
-                  className="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-xl text-white font-semibold text-lg transition-colors"
-                >
-                  Save Attendance
-                </button>
-              </div>
-            )}
+              {/* Footer Button - Positioned Below Students List */}
+              {showSaveSubQRButton && (
+                <div className="mt-4">
+                  <button
+                    onClick={confirmSubQRAttendance}
+                    className="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-xl text-white font-semibold text-lg transition-colors w-full"
+                  >
+                    Save Attendance
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

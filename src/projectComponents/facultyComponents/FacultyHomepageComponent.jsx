@@ -388,16 +388,17 @@ function FacultyHomepageComponent({ c }) {
             <div className="text-center mb-6">
               <h2 className="text-2xl font-bold">Scan QR to Mark Attendance</h2>
             </div>
+
             {/* Main Content - Side by Side */}
             <div className="flex-1 flex gap-6 min-h-0">
               {/* Left Side - QR Code (Bigger and Centered) */}
-              <div className="flex-1 flex items-center justify-center">
+              <div className="flex-3 flex items-center justify-center">
                 <div className="flex flex-col items-center justify-center bg-white px-4 rounded-xl">
                   <QRCode
                     value={qrCodes[currentQRIndex] || ""}
                     size={Math.min(
-                      400, // Increased max size
-                      window.innerWidth * 0.6, // Takes up 60% of screen width
+                      800, // Increase max size to make QR code larger
+                      window.innerWidth * 0.8, // Takes up 80% of screen width
                       window.innerHeight * 0.75 // Up to 75% of screen height
                     )}
                     className="mb-6 mt-6"
@@ -411,51 +412,54 @@ function FacultyHomepageComponent({ c }) {
                 </div>
               </div>
 
-              {/* Right Side - Students List */}
-              <div className="w-80 bg-white rounded-xl p-6 flex flex-col">
-                <h3 className="text-xl font-semibold mb-4 text-black">
-                  Students Marked Present: {qrAttendance.length}
-                </h3>
+              {/* Right Side - Students List and Save Button */}
+              <div className="w-[280px] bg-white rounded-xl p-6 flex flex-col justify-between">
+                <div>
+                  <h3 className="text-xl font-semibold mb-4 text-black">
+                    Students Marked Present: {qrAttendance.length}
+                  </h3>
 
-                <div className="flex-1 overflow-y-auto">
-                  {qrAttendance.length === 0 ? (
-                    <p className="text-gray-500 text-center py-8">
-                      No responses yet.
-                    </p>
-                  ) : (
-                    <ul className="space-y-3">
-                      {qrAttendance.map((s) => (
-                        <li
-                          key={s.id}
-                          className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
-                        >
-                          <UserCheck className="w-5 h-5 text-green-600 flex-shrink-0" />
-                          <div className="flex-1 min-w-0">
-                            <span className="text-black font-medium block truncate">
-                              {s.name}
-                            </span>
-                            <span className="text-gray-600 text-sm">
-                              ({s.id})
-                            </span>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                  <div className="flex-1 overflow-y-auto">
+                    {qrAttendance.length === 0 ? (
+                      <p className="text-gray-500 text-center py-8">
+                        No responses yet.
+                      </p>
+                    ) : (
+                      <ul className="space-y-3">
+                        {qrAttendance.map((s) => (
+                          <li
+                            key={s.id}
+                            className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                          >
+                            <UserCheck className="w-5 h-5 text-green-600 flex-shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <span className="text-black font-medium block truncate">
+                                {s.name}
+                              </span>
+                              <span className="text-gray-600 text-sm">
+                                ({s.id})
+                              </span>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                 </div>
+
+                {/* Footer Button - Positioned Below Students List */}
+                {showSaveQRButton && (
+                  <div className="mt-4">
+                    <button
+                      onClick={confirmQRAttendance}
+                      className="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-xl text-white font-semibold text-lg transition-colors w-full"
+                    >
+                      Save Attendance
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
-            {/* Footer Button */}
-            {showSaveQRButton && (
-              <div className="mt-6 text-center">
-                <button
-                  onClick={confirmQRAttendance}
-                  className="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-xl text-white font-semibold text-lg transition-colors"
-                >
-                  Save Attendance
-                </button>
-              </div>
-            )}
           </div>
         </div>
       )}
