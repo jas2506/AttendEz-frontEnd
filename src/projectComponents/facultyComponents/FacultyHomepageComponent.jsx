@@ -49,19 +49,16 @@ function FacultyHomepageComponent({ c }) {
 
   const [showSubCodePopup, setShowSubCodePopup] = useState(false);
   const [substitutionCode, setSubstitutionCode] = useState("");
-  // --- REFACTORED POLLING LOGIC FOR PASSCODE ATTENDANCE ---
   useEffect(() => {
-    // This effect handles the polling for live attendance via passcode.
-    // It only runs when `pollingActive` changes.
     if (!pollingActive) {
-      return; // Do nothing if polling is not active.
+      return;
     }
 
-    let active = true; // Flag to control the loop inside the effect.
-    let currentVersion = ""; // Internal version tracking.
+    let active = true;
+    let currentVersion = "";
 
     const poll = async () => {
-      if (!active) return; // Stop polling if the effect has been cleaned up.
+      if (!active) return;
 
       try {
         const response = await pollAttendanceWithVersion(
@@ -81,22 +78,19 @@ function FacultyHomepageComponent({ c }) {
         console.error("Polling error:", err);
       } finally {
         if (active) {
-          setTimeout(poll, 3000); // Schedule the next poll.
+          setTimeout(poll, 3000);
         }
       }
     };
 
-    poll(); // Start the polling loop.
+    poll();
 
-    // Cleanup function: This runs when `pollingActive` becomes false or the component unmounts.
     return () => {
       active = false;
     };
   }, [pollingActive, classdetails.classCode]);
 
-  // --- REFACTORED POLLING LOGIC FOR QR ATTENDANCE ---
   useEffect(() => {
-    // This effect handles polling for QR code attendance.
     if (!qrPollingActive) {
       return;
     }
@@ -136,12 +130,11 @@ function FacultyHomepageComponent({ c }) {
     };
   }, [qrPollingActive, classdetails.classCode]);
 
-  // Effect to handle exiting fullscreen mode
   useEffect(() => {
     const handleFullscreenChange = () => {
       if (!document.fullscreenElement) {
         setShowQRModal(false);
-        setQrPollingActive(false); // Stop polling
+        setQrPollingActive(false);
         setShowSaveQRButton(false);
       }
     };
@@ -161,7 +154,7 @@ function FacultyHomepageComponent({ c }) {
         setShowQRModal(true);
         document.documentElement.requestFullscreen();
         startQRSequence(data.codes);
-        setQrPollingActive(true); // Start polling
+        setQrPollingActive(true);
       }
     } catch (err) {
       console.error("QR Code generation error:", err);
@@ -185,7 +178,7 @@ function FacultyHomepageComponent({ c }) {
   };
 
   const confirmQRAttendance = async () => {
-    setQrPollingActive(false); // Stop polling
+    setQrPollingActive(false);
     try {
       await confirmAttendanceClose(classdetails.classCode);
 
@@ -205,16 +198,16 @@ function FacultyHomepageComponent({ c }) {
       const { data } = await generatePasscode(classdetails.classCode);
 
       setGeneratedCode(data.codes);
-      setLiveAttendance([]); // Reset list on new code generation
+      setLiveAttendance([]);
       setShowCodePopup(true);
-      setPollingActive(true); // Start polling
+      setPollingActive(true);
     } catch (err) {
       console.error("Error generating passcode:", err);
     }
   };
 
   const confirmAttendance = async () => {
-    setPollingActive(false); // Stop polling
+    setPollingActive(false);
     try {
       await confirmAttendanceClose(classdetails.classCode);
 
@@ -369,7 +362,7 @@ function FacultyHomepageComponent({ c }) {
 
               <button
                 onClick={() => {
-                  setPollingActive(false); // This will now correctly stop the polling via useEffect cleanup
+                  setPollingActive(false);
                   setShowCodePopup(false);
                 }}
                 className="w-full mt-2 text-sm text-red-500 hover:underline"
@@ -389,17 +382,15 @@ function FacultyHomepageComponent({ c }) {
               <h2 className="text-2xl font-bold">Scan QR to Mark Attendance</h2>
             </div>
 
-            {/* Main Content - Side by Side */}
             <div className="flex-1 flex gap-6 min-h-0">
-              {/* Left Side - QR Code (Bigger and Centered) */}
               <div className="flex-3 flex items-center justify-center">
                 <div className="flex flex-col items-center justify-center bg-white px-4 rounded-xl">
                   <QRCode
                     value={qrCodes[currentQRIndex] || ""}
                     size={Math.min(
-                      800, // Increase max size to make QR code larger
-                      window.innerWidth * 0.8, // Takes up 80% of screen width
-                      window.innerHeight * 0.75 // Up to 75% of screen height
+                      800,
+                      window.innerWidth * 0.8,
+                      window.innerHeight * 0.75
                     )}
                     className="mb-6 mt-6"
                     bgColor="white"
@@ -488,8 +479,6 @@ function FacultyHomepageComponent({ c }) {
     </div>
   );
 }
-
-// ActionButton and ManualAttendanceModal components remain unchanged.
 
 function ActionButton({
   icon,
@@ -597,6 +586,23 @@ function ManualAttendanceModal({ classCode, onClose }) {
           Manual Attendance
         </h2>
 
+        {/* Mark All Buttons moved to the top */}
+        <div className="flex gap-2 mb-5">
+          <button
+            className="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-all"
+            onClick={() => markAll("present")}
+          >
+            Mark All Present
+          </button>
+          <button
+            className="flex-1 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-all"
+            onClick={() => markAll("absent")}
+          >
+            Mark All Absent
+          </button>
+        </div>
+
+        {/* List of Students */}
         <div className="space-y-3">
           {Object.entries(students)
             .sort(([id1], [id2]) => id1.localeCompare(id2))
@@ -644,22 +650,6 @@ function ManualAttendanceModal({ classCode, onClose }) {
                 </div>
               </div>
             ))}
-        </div>
-
-        {/* Mark All Buttons */}
-        <div className="flex gap-2 mt-5">
-          <button
-            className="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-all"
-            onClick={() => markAll("present")}
-          >
-            Mark All Present
-          </button>
-          <button
-            className="flex-1 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-all"
-            onClick={() => markAll("absent")}
-          >
-            Mark All Absent
-          </button>
         </div>
 
         {/* Save */}
