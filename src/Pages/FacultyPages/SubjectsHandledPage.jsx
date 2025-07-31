@@ -68,9 +68,15 @@ function SubjectsHandledPage() {
       ];
 
       filteredLectures.forEach((lecture) => {
+        // Count students present and total students
+        const presentCount = lecture.attendance.filter(
+          ([, status]) => status === 1 || status === 2 // Present or Partial
+        ).length;
+        const totalCount = lecture.attendance.length;
+
         lectureReportContent.push(
           {
-            text: `Lecture ${lecture.lectureId} - Date: ${lecture.date}`,
+            text: `Lecture ${lecture.lectureId} - Date: ${lecture.date} (${presentCount}/${totalCount} Present)`,
             style: "subheader",
             margin: [0, 10, 0, 5],
           },
@@ -81,15 +87,18 @@ function SubjectsHandledPage() {
               widths: ["*", "*", "*"],
               body: [
                 ["Register No", "Name", "Status"],
-                ...lecture.attendance.map(([reg, status]) => [
-                  reg,
-                  regnoNameMap[reg] || "Unknown",
-                  status === 1
-                    ? "Present"
-                    : status === 2
-                    ? "Partial"
-                    : "Absent",
-                ]),
+                // Sort attendance by register number
+                ...lecture.attendance
+                  .map(([reg, status]) => [
+                    reg,
+                    regnoNameMap[reg] || "Unknown",
+                    status === 1
+                      ? "Present"
+                      : status === 2
+                      ? "Partial"
+                      : "Absent",
+                  ])
+                  .sort(([regA], [regB]) => regA.localeCompare(regB)), // Sort by register number
               ],
             },
             layout: "lightHorizontalLines",
@@ -110,7 +119,6 @@ function SubjectsHandledPage() {
         .createPdf(lectureDoc)
         .download(`${selectedClassCode}_LectureWise_Report.pdf`);
 
-      // 2️⃣ STUDENT-WISE PDF
       const studentMap = {};
 
       filteredLectures.forEach((lecture) => {
@@ -135,6 +143,12 @@ function SubjectsHandledPage() {
         });
       });
 
+      const sortedStudentEntries = Object.entries(studentMap).sort(
+        ([regA], [regB]) => {
+          return regA.localeCompare(regB);
+        }
+      );
+
       const studentReportContent = [
         {
           text: "Student-wise Attendance Report",
@@ -146,7 +160,7 @@ function SubjectsHandledPage() {
         { text: `From: ${startDate} To: ${endDate}`, margin: [0, 0, 0, 10] },
       ];
 
-      Object.entries(studentMap).forEach(([reg, data]) => {
+      sortedStudentEntries.forEach(([reg, data]) => {
         const percentage =
           totalLectures > 0
             ? Math.round((data.attendedCount / totalLectures) * 100)
@@ -427,12 +441,9 @@ function SubjectsHandledPage() {
                       ))}
                     </select>
                   </div>
-                  
-                  
 
                   {/* Date Selection */}
                   <div>
-
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Select Date
                     </label>
