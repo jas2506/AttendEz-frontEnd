@@ -32,6 +32,7 @@ function getTodayAttendanceStats(attendance, timetable) {
   ];
 
   // const todayName = "Monday"; // for testing
+  
   const todayName = weekdays[new Date().getDay()];
 
   const todayClasses = timetable.timetable[todayName] || [];
