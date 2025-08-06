@@ -372,6 +372,7 @@ function FacultyHomepageComponent({ c }) {
             </div>
           </div>
         </div>
+        
       )}
 
       {showQRModal && (
