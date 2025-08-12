@@ -376,75 +376,83 @@ function FacultyHomepageComponent({ c }) {
       )}
 
       {showQRModal && (
-        <div className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center text-white p-4">
-          <div className="w-full max-w-6xl h-[80vh] flex flex-col">
+        <div className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center text-white p-2 sm:p-4">
+          <div className="w-full h-full max-w-7xl flex flex-col">
             {/* Header */}
-            <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold">Scan QR to Mark Attendance</h2>
+            <div className="text-center mb-4 sm:mb-6 flex-shrink-0">
+              <h2 className="text-xl sm:text-2xl font-bold">Scan QR to Mark Attendance</h2>
             </div>
 
-            <div className="flex-1 flex gap-6 min-h-0">
-              <div className="flex-3 flex items-center justify-center">
-                <div className="flex flex-col items-center justify-center bg-white px-4 rounded-xl">
-                  <QRCode
-                    value={qrCodes[currentQRIndex] || ""}
-                    size={Math.min(
-                      800,
-                      window.innerWidth * 0.8,
-                      window.innerHeight * 0.75
-                    )}
-                    className="mb-6 mt-6"
-                    bgColor="white"
-                    fgColor="#000000"
-                    level="H"
-                  />
-                  <p className="text-black text-2xl mb-4 font-mono font-bold break-all text-center max-w-[90%]">
+            {/* Main Content Area */}
+            <div className="flex-1 flex flex-col lg:flex-row gap-4 lg:gap-6 min-h-0">
+              {/* Left Side - QR Code */}
+              <div className="flex-1 flex items-center justify-center min-h-0">
+                <div className="flex flex-col items-center justify-center bg-white p-4 sm:p-6 rounded-xl max-w-full max-h-full">
+                  <div className="w-full flex justify-center mb-4">
+                    <QRCode
+                      value={qrCodes[currentQRIndex] || ""}
+                      size={Math.min(
+                        600,
+                        window.innerWidth * 0.65,
+                        window.innerHeight * 0.65
+                      )}
+                      className="max-w-full h-auto"
+                      bgColor="white"
+                      fgColor="#000000"
+                      level="H"
+                    />
+                  </div>
+                  <p className="text-black text-lg sm:text-xl lg:text-2xl font-mono font-bold break-all text-center max-w-full px-2">
                     {qrCodes[currentQRIndex]}
                   </p>
                 </div>
               </div>
 
-              {/* Right Side - Students List and Save Button */}
-              <div className="w-[280px] bg-white rounded-xl p-6 flex flex-col justify-between">
-                <div>
-                  <h3 className="text-xl font-semibold mb-4 text-black">
-                    Students Marked Present: {qrAttendance.length}
+              {/* Right Side - Students List and Controls */}
+              <div className="w-full lg:w-80 xl:w-96 bg-white rounded-xl p-4 sm:p-6 flex flex-col min-h-0 max-h-full">
+                {/* Student Count Header */}
+                <div className="flex-shrink-0 mb-4">
+                  <h3 className="text-lg sm:text-xl font-semibold text-black">
+                    Students Present: {qrAttendance.length}
                   </h3>
-
-                  <div className="flex-1 overflow-y-auto">
-                    {qrAttendance.length === 0 ? (
-                      <p className="text-gray-500 text-center py-8">
-                        No responses yet.
-                      </p>
-                    ) : (
-                      <ul className="space-y-3">
-                        {qrAttendance.map((s) => (
-                          <li
-                            key={s.id}
-                            className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
-                          >
-                            <UserCheck className="w-5 h-5 text-green-600 flex-shrink-0" />
-                            <div className="flex-1 min-w-0">
-                              <span className="text-black font-medium block truncate">
-                                {s.name}
-                              </span>
-                              <span className="text-gray-600 text-sm">
-                                ({s.id})
-                              </span>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
                 </div>
 
-                {/* Footer Button - Positioned Below Students List */}
+                {/* Scrollable Students List */}
+                <div className="flex-1 overflow-y-auto min-h-0 mb-4">
+                  {qrAttendance.length === 0 ? (
+                    <div className="flex items-center justify-center h-32">
+                      <p className="text-gray-500 text-center">
+                        No responses yet.
+                      </p>
+                    </div>
+                  ) : (
+                    <ul className="space-y-2 sm:space-y-3 pr-2">
+                      {qrAttendance.map((s) => (
+                        <li
+                          key={s.id}
+                          className="flex items-center gap-3 p-2 sm:p-3 bg-gray-50 rounded-lg"
+                        >
+                          <UserCheck className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 flex-shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <span className="text-black font-medium block truncate text-sm sm:text-base">
+                              {s.name}
+                            </span>
+                            <span className="text-gray-600 text-xs sm:text-sm">
+                              ({s.id})
+                            </span>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                {/* Save Button - Always visible at bottom */}
                 {showSaveQRButton && (
-                  <div className="mt-4">
+                  <div className="flex-shrink-0">
                     <button
                       onClick={confirmQRAttendance}
-                      className="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-xl text-white font-semibold text-lg transition-colors w-full"
+                      className="bg-blue-600 hover:bg-blue-700 px-6 sm:px-8 py-2 sm:py-3 rounded-xl text-white font-semibold text-base sm:text-lg transition-colors w-full"
                     >
                       Save Attendance
                     </button>
