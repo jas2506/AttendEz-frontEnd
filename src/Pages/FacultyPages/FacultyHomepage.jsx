@@ -14,6 +14,7 @@ import {
   UserCheck,
   UserX,
 } from "lucide-react";
+import { toast } from "sonner";
 import FacultyHomepageComponent from "../../projectComponents/facultyComponents/FacultyHomepageComponent";
 import {
   getFacultyDetails,
@@ -181,10 +182,10 @@ function FacultyHomepage() {
         setFetchedClassCode(data.classCode);
         setShowSubCodeResult(true);
       } else {
-        alert("Invalid or expired substitution code.");
+        toast.error("Invalid or expired substitution code.");
       }
     } catch (err) {
-      console.error("Error fetching class code:", err);
+      toast.error("Error fetching class code:", err);
     }
   };
 
@@ -230,14 +231,14 @@ function FacultyHomepage() {
     setSubQrPollingActive(false);
     try {
       await confirmAttendanceCloseWithSubcode(fetchedClassCode, subCode);
-      alert("QR Attendance saved.");
+      toast.success("QR Attendance saved.");
       if (document.fullscreenElement) {
         document.exitFullscreen();
       }
       setShowSubQRModal(false);
       setShowSaveSubQRButton(false);
     } catch (err) {
-      console.error("Error saving sub QR attendance:", err);
+      toast.error("Error saving sub QR attendance:", err);
     }
   };
 
@@ -264,7 +265,7 @@ function FacultyHomepage() {
     setSubPollingActive(false);
     try {
       await confirmAttendanceCloseWithSubcode(fetchedClassCode, subCode);
-      alert("Attendance confirmed and closed.");
+      toast.success("Attendance confirmed and closed.");
       setShowSubCodePopup(false);
     } catch (err) {
       console.error("Error closing sub attendance:", err);
@@ -665,10 +666,24 @@ function SubManualAttendanceModal({ classCode, subCode, onClose }) {
       }
     };
     fetchStudents();
-  }, [classCode]);
+  }, [classCode, subCode]);
 
   const markAttendance = (id, status) => {
     setAttendance((prev) => ({ ...prev, [id]: status }));
+  };
+
+  // NEW: Mark All Present
+  const markAllPresent = () => {
+    const updated = {};
+    for (const id in students) updated[id] = "present";
+    setAttendance(updated);
+  };
+
+  // NEW: Mark All Absent
+  const markAllAbsent = () => {
+    const updated = {};
+    for (const id in students) updated[id] = "absent";
+    setAttendance(updated);
   };
 
   const handleSave = () => {
@@ -681,11 +696,11 @@ function SubManualAttendanceModal({ classCode, subCode, onClose }) {
 
     saveManualAttendanceWithSubcode(classCode, present, absent, subCode)
       .then(() => {
-        alert("Substitution attendance saved and closed!");
+        toast.success("Substitution attendance saved and closed!");
         onClose();
       })
       .catch((err) => {
-        console.error("Error saving substitution manual attendance:", err);
+        toast.error("Error saving substitution manual attendance:", err);
       });
   };
 
@@ -703,6 +718,22 @@ function SubManualAttendanceModal({ classCode, subCode, onClose }) {
           <NotebookText className="w-6 h-6" />
           Substitution Manual Attendance
         </h2>
+
+        {/* NEW: Mark All Buttons */}
+        <div className="flex gap-3 mb-4">
+          <button
+            onClick={markAllPresent}
+            className="flex-1 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition"
+          >
+            Mark All Present
+          </button>
+          <button
+            onClick={markAllAbsent}
+            className="flex-1 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"
+          >
+            Mark All Absent
+          </button>
+        </div>
 
         <div className="space-y-4">
           {Object.entries(students)

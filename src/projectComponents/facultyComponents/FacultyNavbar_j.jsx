@@ -55,7 +55,7 @@ function FacultyNavbar_j({ setIsLoggedIn }) {
           </SheetTrigger>
           <SheetContent
             side="left"
-            className="h-full text-white w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-center"
+            className="h-full w-[70%] text-white bg-gradient-to-r from-blue-600 to-indigo-600 text-center"
           >
             <SheetHeader>
               <SheetTitle className="text-white">Menu</SheetTitle>

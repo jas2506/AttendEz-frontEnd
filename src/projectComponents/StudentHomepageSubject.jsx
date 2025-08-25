@@ -20,18 +20,17 @@ function StudentHomepageSubject({ classname, start, end, n, t }) {
 
   let adviceText = "";
   if (attendancePercentage < 75 && attendancePercentage > 0) {
-    const requiredAttended = Math.ceil(0.75 * totalClasses);
-    const moreNeeded = requiredAttended - numberAttended;
+    const moreNeeded = Math.ceil((0.75 * totalClasses - numberAttended) / 0.25);
     adviceText = `Attend ${moreNeeded} more class${
       moreNeeded > 1 ? "es" : ""
     } to reach 75%`;
   } else if (attendancePercentage > 0) {
-    let x = 0;
-    while ((numberAttended / (totalClasses + x)) * 100 >= 75) {
-      x++;
-    }
-    x--;
-    adviceText = `You can miss ${x} more class${x !== 1 ? "es" : ""}`;
+    const maxMissable = Math.floor(
+      (numberAttended - 0.75 * totalClasses) / 0.75
+    );
+    adviceText = `You can miss ${maxMissable} more class${
+      maxMissable !== 1 ? "es" : ""
+    }`;
   }
 
   return (
