@@ -46,7 +46,7 @@ function FacultyNavbar_j({ setIsLoggedIn }) {
   if (isLoading) return <p>Loading...</p>;
 
   return (
-    <div className="h-14 flex items-center justify-between px-3 sm:px-6 w-full bg-gradient-to-r from-blue-600 to-indigo-600 shadow-xl overflow-x-auto">
+    <div className="h-14 flex items-center justify-between px-3 sm:px-6 w-full bg-gradient-to-r from-blue-600 to-indigo-600 shadow-xl">
       {/* Mobile View */}
       <div className="block lg:hidden">
         <Sheet>
@@ -115,7 +115,7 @@ function FacultyNavbar_j({ setIsLoggedIn }) {
       </div>
 
       {/* Desktop View */}
-      <div className="hidden md:flex flex-wrap gap-4 text-white items-center max-w-full overflow-x-auto">
+      <div className="hidden md:flex flex-wrap gap-4 text-white items-center max-w-full">
         <NavItem
           icon={<Home className="w-4 h-4" />}
           label="Home"
