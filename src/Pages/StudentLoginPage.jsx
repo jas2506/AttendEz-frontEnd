@@ -2,16 +2,18 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import axios from "axios";
+import { useState } from "react";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function StudentLoginPage({ setIsLoggedIn }) {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const handleGoogleLogin = async (credentialResponse) => {
     try {
+      setLoading(true); // start loading
       const idToken = credentialResponse.credential;
-      console.log(idToken);
       const res = await axios.post(`${backendUrl}/student/googleAuth`, {
         idToken,
       });
@@ -27,6 +29,7 @@ function StudentLoginPage({ setIsLoggedIn }) {
       navigate("/student/home");
     } catch (err) {
       console.error("Login failed:", err);
+      setLoading(false); // stop loading if failed
     }
   };
 
@@ -35,7 +38,15 @@ function StudentLoginPage({ setIsLoggedIn }) {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-white">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-white relative">
+      {/* Loading overlay */}
+      {loading && (
+        <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center z-50">
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="mt-4 text-gray-700 font-medium">Signing you in...</p>
+        </div>
+      )}
+
       <div className="bg-white rounded-3xl p-12 shadow-xl border border-gray-100 text-center space-y-8 w-full max-w-md">
         <div className="space-y-4">
           <div className="relative">
@@ -52,6 +63,7 @@ function StudentLoginPage({ setIsLoggedIn }) {
           <GoogleLogin
             onSuccess={handleGoogleLogin}
             onError={() => console.error("Login Failed")}
+            useOneTap
           />
         </div>
 
