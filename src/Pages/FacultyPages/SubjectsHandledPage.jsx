@@ -1,4 +1,5 @@
 import FacultyTransfersubjectComp from "../../projectComponents/facultyComponents/FacultyTransfersubjectComp";
+import { toast } from "sonner";
 import { User, Copy, Check, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import {
@@ -27,6 +28,9 @@ function SubjectsHandledPage() {
   const [startDate, setStartDate] = useState("");
   const [selectedClassCode, setSelectedClassCode] = useState("");
 
+  // Add a new state
+  const [reportType, setReportType] = useState("both");
+
   const handleDownloadReport = async () => {
     try {
       const res = await getClassDetails(selectedClassCode);
@@ -49,13 +53,13 @@ function SubjectsHandledPage() {
         }));
 
       if (filteredLectures.length === 0) {
-        alert("No lectures found for this date range.");
+        toast.error("No lectures found for this date range.");
         return;
       }
 
       const totalLectures = filteredLectures.length;
 
-      // 1️⃣ LECTURE-WISE PDF
+      // ========== LECTURE-WISE ==========
       const lectureReportContent = [
         {
           text: "Attendance Report",
@@ -68,9 +72,8 @@ function SubjectsHandledPage() {
       ];
 
       filteredLectures.forEach((lecture) => {
-        // Count students present and total students
         const presentCount = lecture.attendance.filter(
-          ([, status]) => status === 1 || status === 2 // Present or Partial
+          ([, status]) => status === 1 || status === 2
         ).length;
         const totalCount = lecture.attendance.length;
 
@@ -87,7 +90,6 @@ function SubjectsHandledPage() {
               widths: ["*", "*", "*"],
               body: [
                 ["Register No", "Name", "Status"],
-                // Sort attendance by register number
                 ...lecture.attendance
                   .map(([reg, status]) => [
                     reg,
@@ -98,7 +100,7 @@ function SubjectsHandledPage() {
                       ? "Partial"
                       : "Absent",
                   ])
-                  .sort(([regA], [regB]) => regA.localeCompare(regB)), // Sort by register number
+                  .sort(([regA], [regB]) => regA.localeCompare(regB)),
               ],
             },
             layout: "lightHorizontalLines",
@@ -115,12 +117,8 @@ function SubjectsHandledPage() {
         },
       };
 
-      pdfMake
-        .createPdf(lectureDoc)
-        .download(`${selectedClassCode}_LectureWise_Report.pdf`);
-
+      // ========== STUDENT-WISE ==========
       const studentMap = {};
-
       filteredLectures.forEach((lecture) => {
         lecture.attendance.forEach(([reg, status]) => {
           if (!studentMap[reg]) {
@@ -144,9 +142,7 @@ function SubjectsHandledPage() {
       });
 
       const sortedStudentEntries = Object.entries(studentMap).sort(
-        ([regA], [regB]) => {
-          return regA.localeCompare(regB);
-        }
+        ([regA], [regB]) => regA.localeCompare(regB)
       );
 
       const studentReportContent = [
@@ -200,12 +196,26 @@ function SubjectsHandledPage() {
         },
       };
 
-      pdfMake
-        .createPdf(studentDoc)
-        .download(`${selectedClassCode}_StudentWise_Report.pdf`);
+      // 📌 Download depending on reportType
+      if (reportType === "lecture") {
+        pdfMake
+          .createPdf(lectureDoc)
+          .download(`${selectedClassCode}_LectureWise_Report.pdf`);
+      } else if (reportType === "student") {
+        pdfMake
+          .createPdf(studentDoc)
+          .download(`${selectedClassCode}_StudentWise_Report.pdf`);
+      } else {
+        pdfMake
+          .createPdf(lectureDoc)
+          .download(`${selectedClassCode}_LectureWise_Report.pdf`);
+        pdfMake
+          .createPdf(studentDoc)
+          .download(`${selectedClassCode}_StudentWise_Report.pdf`);
+      }
     } catch (err) {
       console.error("Failed to generate reports:", err);
-      alert("Something went wrong while generating the reports.");
+      toast.error("Something went wrong while generating the reports.");
     }
   };
 
@@ -365,7 +375,6 @@ function SubjectsHandledPage() {
           </div>
         </div>
       </div>
-      {/* Subjects List */}
       <div className="grid gap-4">
         {subs.map((course, idx) => (
           <FacultyTransfersubjectComp
@@ -381,17 +390,14 @@ function SubjectsHandledPage() {
         </p>
       )}
 
-      {/* Generate Substitution Code Button */}
-      <div className="flex justify-center mt-8">
+      <div className="flex justify-center gap-6 mt-8">
         <button
           onClick={openModal}
           className="bg-[#4642EE] cursor-pointer text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors"
         >
           Generate Substitution Code
         </button>
-      </div>
 
-      <div className="flex justify-center mt-8">
         <button
           onClick={openReport}
           className="bg-[#4642EE] cursor-pointer text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors"
@@ -580,10 +586,25 @@ function SubjectsHandledPage() {
               </div>
             </div>
 
+            {/* Report Type Selector */}
+            <div className="mt-4">
+              <label className="block text-sm font-medium mb-1">
+                Report Type
+              </label>
+              <select
+                value={reportType}
+                onChange={(e) => setReportType(e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg"
+              >
+                <option value="both">Both</option>
+                <option value="lecture">Lecture-wise</option>
+                <option value="student">Student-wise</option>
+              </select>
+            </div>
+
             <button
               onClick={handleDownloadReport}
-              className="w-full bg-[#4642EE] text-white py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors"
-              //disabled={!selectedSubject || !startDate || !endDate}
+              className="w-full bg-[#4642EE] text-white py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors mt-6"
             >
               Download Report
             </button>
