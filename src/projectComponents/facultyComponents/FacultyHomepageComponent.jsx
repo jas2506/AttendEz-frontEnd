@@ -40,6 +40,25 @@ function FacultyHomepageComponent({ c }) {
   const [liveAttendance, setLiveAttendance] = useState([]);
   const [pollingActive, setPollingActive] = useState(false);
 
+  const [countdown, setCountdown] = useState(36);
+
+  useEffect(() => {
+    let timer;
+    if (showQRModal) {
+      setCountdown(36); // reset when modal opens
+      timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [showQRModal]);
+
   // State for QR Code Attendance
   const [qrCodes, setQrCodes] = useState([]);
   const [currentQRIndex, setCurrentQRIndex] = useState(0);
@@ -372,7 +391,6 @@ function FacultyHomepageComponent({ c }) {
             </div>
           </div>
         </div>
-        
       )}
 
       {showQRModal && (
@@ -380,7 +398,9 @@ function FacultyHomepageComponent({ c }) {
           <div className="w-full h-full max-w-7xl flex flex-col">
             {/* Header */}
             <div className="text-center mb-4 sm:mb-6 flex-shrink-0">
-              <h2 className="text-xl sm:text-2xl font-bold">Scan QR to Mark Attendance</h2>
+              <h2 className="text-xl sm:text-2xl font-bold">
+                Scan QR to Mark Attendance
+              </h2>
             </div>
 
             {/* Main Content Area */}
@@ -388,20 +408,51 @@ function FacultyHomepageComponent({ c }) {
               {/* Left Side - QR Code */}
               <div className="flex-1 flex items-center justify-center min-h-0">
                 <div className="flex flex-col items-center justify-center bg-white p-4 sm:p-6 rounded-xl max-w-full max-h-full">
+                  {/* QR with blur after expiry */}
+                  {/* QR with overlay when expired */}
+                  {/* QR area */}
                   <div className="w-full flex justify-center mb-4">
-                    <QRCode
-                      value={qrCodes[currentQRIndex] || ""}
-                      size={Math.min(
-                        600,
-                        window.innerWidth * 0.65,
-                        window.innerHeight * 0.65
-                      )}
-                      className="max-w-full h-auto"
-                      bgColor="white"
-                      fgColor="#000000"
-                      level="H"
-                    />
+                    {countdown > 0 ? (
+                      <QRCode
+                        value={qrCodes[currentQRIndex] || ""}
+                        size={Math.min(
+                          600,
+                          window.innerWidth * 0.65,
+                          window.innerHeight * 0.65
+                        )}
+                        className="max-w-full h-auto"
+                        bgColor="white"
+                        fgColor="#000000"
+                        level="H"
+                      />
+                    ) : (
+                      <div
+                        className="flex items-center justify-center bg-white rounded-lg"
+                        style={{
+                          width: Math.min(
+                            600,
+                            window.innerWidth * 0.65,
+                            window.innerHeight * 0.65
+                          ),
+                          height: Math.min(
+                            600,
+                            window.innerWidth * 0.65,
+                            window.innerHeight * 0.65
+                          ),
+                        }}
+                      >
+                        <span className="text-red-600 text-3xl sm:text-5xl font-extrabold text-center">
+                          QR EXPIRED
+                        </span>
+                      </div>
+                    )}
                   </div>
+
+                  {/* Countdown */}
+                  <p className="text-red-600 font-bold text-lg sm:text-xl mb-2">
+                    {countdown > 0 ? `Expires in ${countdown}s` : null}
+                  </p>
+
                   <p className="text-black text-lg sm:text-xl lg:text-2xl font-mono font-bold break-all text-center max-w-full px-2">
                     {qrCodes[currentQRIndex]}
                   </p>
