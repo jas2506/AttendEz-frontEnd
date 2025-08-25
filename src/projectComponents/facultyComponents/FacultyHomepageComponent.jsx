@@ -12,6 +12,7 @@ import {
   UserX,
 } from "lucide-react";
 import QRCode from "react-qr-code";
+import { toast } from "sonner";
 import {
   generateQRCode,
   generatePasscode,
@@ -201,7 +202,8 @@ function FacultyHomepageComponent({ c }) {
     try {
       await confirmAttendanceClose(classdetails.classCode);
 
-      alert("QR Attendance saved.");
+      toast.success("QR Attendance saved.");
+
       if (document.fullscreenElement) {
         document.exitFullscreen();
       }
@@ -209,6 +211,7 @@ function FacultyHomepageComponent({ c }) {
       setShowSaveQRButton(false);
     } catch (err) {
       console.error("Error saving QR attendance:", err);
+      toast.error("Failed to save QR Attendance.");
     }
   };
 
@@ -230,10 +233,10 @@ function FacultyHomepageComponent({ c }) {
     try {
       await confirmAttendanceClose(classdetails.classCode);
 
-      alert("Attendance confirmed and closed.");
+      toast.success("Attendance confirmed and closed.");
       setShowCodePopup(false);
     } catch (err) {
-      console.error("Error closing attendance:", err);
+      toast.error("Error closing attendance:", err);
     }
   };
   const generateSubstitutionCode = async () => {
@@ -253,7 +256,7 @@ function FacultyHomepageComponent({ c }) {
         setSubstitutionCode(data.substitutionCode);
         setShowSubCodePopup(true);
       } else {
-        alert("Failed to generate substitution code.");
+        toast.error("Failed to generate substitution code.");
       }
     } catch (err) {
       console.error("Error generating substitution code:", err);
@@ -623,11 +626,11 @@ function ManualAttendanceModal({ classCode, onClose }) {
 
     saveManualAttendance(classCode, present, absent)
       .then(() => {
-        alert("Attendance saved and closed!");
+        toast.success("Attendance saved and closed!");
         onClose();
       })
       .catch((err) => {
-        console.error("Error saving manual attendance:", err);
+        toast.error("Error saving manual attendance:", err);
       });
   };
 

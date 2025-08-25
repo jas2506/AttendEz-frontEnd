@@ -19,10 +19,8 @@ function FlipAttendance_g({
         {/* Roll Number */}
         <div className="text-sm font-medium text-gray-800">{rollNumber}</div>
 
-        {/* Name */}
         <div className="text-sm text-gray-600">{name}</div>
 
-        {/* Status Indicator */}
         <div
           className={`w-4 h-4 full ${
             isPresent ? "bg-green-500" : "bg-red-500"
