@@ -12,6 +12,27 @@ import {
 import { useEffect, useState } from "react";
 
 export default function LandingPage() {
+  const [status, setStatus] = useState("loading");
+  // "loading" | "online" | "offline"
+
+  useEffect(() => {
+    const checkStatus = async () => {
+      try {
+        const res = await fetch("/api/ping");
+        const text = await res.text();
+        if (text === "pong") {
+          setStatus("online");
+        } else {
+          setStatus("offline");
+        }
+      } catch (err) {
+        setStatus("offline");
+      }
+    };
+
+    checkStatus();
+  }, []);
+
   const [scrollY, setScrollY] = useState(0);
   const [isVisible, setIsVisible] = useState({});
 
@@ -101,10 +122,26 @@ export default function LandingPage() {
             Fast, Transparent and Secure.
           </p>
         </div>
-        <div className="hidden md:flex items-center gap-2 text-slate-500 text-sm">
-          <div className="w-2 h-2 bg-emerald-400 rounded-full animate-ping"></div>
-          <div className="w-2 h-2 bg-emerald-400 rounded-full absolute animate-pulse"></div>
-          <span className="ml-2">System Online</span>
+        <div className="hidden md:flex items-center gap-2 text-slate-500 text-sm relative">
+          {status === "loading" && (
+            <>
+              <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+              <span className="ml-2">Checking...</span>
+            </>
+          )}
+          {status === "online" && (
+            <>
+              <div className="w-2 h-2 bg-emerald-400 rounded-full animate-ping"></div>
+              <div className="w-2 h-2 bg-emerald-400 rounded-full absolute animate-pulse"></div>
+              <span className="ml-2">System Online</span>
+            </>
+          )}
+          {status === "offline" && (
+            <>
+              <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
+              <span className="ml-2">System Offline</span>
+            </>
+          )}
         </div>
       </header>
 
@@ -209,7 +246,7 @@ export default function LandingPage() {
                 {
                   role: "Student",
                   icon: GraduationCap,
-                  href: "/student/login",
+                  href: "/student",
                   gradient: "from-emerald-100 to-emerald-200",
                   iconColor: "text-emerald-600",
                   delay: "0.6s",
