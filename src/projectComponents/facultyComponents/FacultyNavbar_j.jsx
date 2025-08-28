@@ -134,12 +134,12 @@ function FacultyNavbar_j({ setIsLoggedIn }) {
           path="/faculty/timetable"
           isActive={location.pathname === "/faculty/timetable"}
         />
-        <NavItem
+        {/* <NavItem
           icon={<Pencil className="w-4 h-4" />}
           label="Approve OD"
           path="#"
           isActive={false}
-        />
+        /> */}
         <NavItem
           icon={<Presentation className="w-4 h-4" />}
           label="Mentor View"

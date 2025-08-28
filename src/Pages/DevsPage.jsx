@@ -22,6 +22,8 @@ const devs = [
     github: "https://github.com/AvGeeky",
     linkedin: "https://www.linkedin.com/in/saipranav-m/",
     email: "sai@buildapp.in",
+    oneliner:
+      "Builds and keeps the backend running smoothly (and the servers behaving).",
   },
   {
     name: "Murari Sreekumar",
@@ -31,6 +33,7 @@ const devs = [
     linkedin:
       "https://www.linkedin.com/in/murari-sreekumar-1a5809305?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3B1UuUPkK9Tq2ZdQYjITygIw%3D%3D",
     email: "murari@buildapp.in",
+    oneliner: "Backend and testing expert who spots issues before you do.",
   },
   {
     name: "Rahul VS",
@@ -39,6 +42,7 @@ const devs = [
     github: "https://github.com/techieRahul17",
     linkedin: "https://www.linkedin.com/in/rahul-v-s",
     email: "rahul@buildapp.in",
+    oneliner: "Crafts mobile apps that are as smooth as they are reliable.",
   },
   {
     name: "Ramcharan S",
@@ -47,6 +51,7 @@ const devs = [
     github: "https://github.com/Ramcharan-Swaminathan",
     linkedin: "https://www.linkedin.com/in/ramcharan-s-30506628a",
     email: "ramcharan@buildapp.in",
+    oneliner: "Turns late-night coffee into fast, functional mobile code.",
   },
   {
     name: "Jaswanth Sridharan",
@@ -55,6 +60,7 @@ const devs = [
     github: "https://github.com/jas2506",
     linkedin: "https://www.linkedin.com/in/jaswanth-sridharan",
     email: "jaswanth@buildapp.in",
+    oneliner: "Builds interfaces that are clean, modern, and user-approved.",
   },
   {
     name: "Gautham Narayan G",
@@ -63,6 +69,7 @@ const devs = [
     github: "https://github.com/gautham-gln",
     linkedin: "https://www.linkedin.com/in/gautham-narayan-g",
     email: "gautham@buildapp.in",
+    oneliner: "Gives websites both brains and style with code and design.",
   },
 ];
 
@@ -115,7 +122,7 @@ export default function DevsPage() {
                   </Card>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Let's connect and collaborate!</p>
+                  <p>{dev.oneliner}</p>
                 </TooltipContent>
               </Tooltip>
             ))}

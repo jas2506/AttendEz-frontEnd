@@ -79,13 +79,13 @@ function Navbar({ setIsLoggedIn }) {
                   active={location.pathname === "/student/timetable"}
                 />
               </Link>
-              <Link to="#">
+              {/* <Link to="#">
                 <NavItem
                   icon={<Pencil className="w-4 h-4" />}
                   label="OD-form"
                   active={false}
                 />
-              </Link>
+              </Link> */}
               <Link to="/student/gpa">
                 <NavItem
                   icon={<Calculator className="w-4 h-4" />}
