@@ -6,7 +6,17 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Mail, Github, Linkedin } from "lucide-react";
+/*Saipranav – Builds and keeps the backend running smoothly (and the servers behaving).
 
+Murari Sreekumar – Backend and testing expert who spots issues before you do.
+
+Rahul VS – Crafts mobile apps that are as smooth as they are reliable.
+
+Ramcharan S – Turns late-night coffee into fast, functional mobile code.
+
+Jaswanth Sridharan – Builds interfaces that are clean, modern, and user-approved.
+
+Gautham Narayan G – Gives websites both brains and style with code and design.*/
 import gln from "../assets/gln.jpg";
 import saipranav from "../assets/saipranav.jpg";
 import murari from "../assets/murari.jpg";
