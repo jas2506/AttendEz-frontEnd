@@ -150,8 +150,7 @@ export const getLectureAttendanceByClassCode = (data) =>
 // POST /flipAttendance
 export const flipAttendance = (data) => api.post("/flipAttendance", data);
 
-// POST /deleteLecture
-export const deleteLecture = (data) => api.post("/deleteLecture", data);
+
 
 // POST /qr/generateQRCode?classCode=...
 export const generateQRCode = (classCode) =>
@@ -238,3 +237,10 @@ export const getAllStudentDetailsWithSubcode = (classCode, subCode) =>
     params: { classCode, subCode },
   });
 export { api };
+
+//delete lecture
+export const deleteLecture = (classCode, lectureNo) =>
+  api.post("/deleteLecture", {
+    classcode: classCode,
+    lectureno: lectureNo
+  });

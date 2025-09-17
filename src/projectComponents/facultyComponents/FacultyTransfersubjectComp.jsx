@@ -15,6 +15,7 @@ import {
   getStudentAttendanceByClassCode,
   transferClass,
   dropClass,
+  deleteLecture,
 } from "../../TeacherApi";
 import LectureDetailsModal from "./FlipAttendanceComp"; // adjust path accordingly
 
@@ -296,6 +297,21 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
     }
   };
 
+  //delete lecture
+  const handleDeleteLecture = async (lectureNo) => {
+    try {
+      await deleteLecture(classdetails.classCode, lectureNo);
+      toast.success("Lecture deleted successfully");
+      
+      // Optionally, remove the lecture from stats state locally
+      setStats((prevStats) => prevStats.filter((s) => s.name !== lectureNo));
+    } catch (error) {
+      console.error("Failed to delete lecture:", error);
+      toast.error("Failed to delete lecture");
+    }
+  };
+  
+
   // Updated handleTransfer function that accepts onTransferSuccess prop
   const handleTransfer = async () => {
     if (!newFacEmail.trim()) {
@@ -384,6 +400,8 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
         stats.reduce((acc, s) => acc + parseFloat(s.percent), 0) / totalLectures
       ).toFixed(1)
     : 0;
+
+  
 
   return (
     <>
@@ -701,6 +719,9 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
                     <th className="px-6 py-4 text-center font-semibold text-gray-700">
                       Attendance Rate
                     </th>
+                    <th className="px-6 py-4 text-center font-semibold text-gray-700">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -737,6 +758,14 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
                         >
                           {s.percent}%
                         </span>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <button
+                          className="text-red-600 hover:text-red-800 font-semibold"
+                          onClick={() => handleDeleteLecture(s.name)}
+                        >
+                          Delete
+                        </button>
                       </td>
                     </tr>
                   ))}
