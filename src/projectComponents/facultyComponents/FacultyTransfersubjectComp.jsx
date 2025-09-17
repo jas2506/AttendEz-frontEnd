@@ -297,13 +297,12 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
 
   const confirmDeleteLecture = async () => {
     setIsConfirmOpen(false); // close the modal immediately
-  
+
     try {
       await deleteLecture(classdetails.classCode, lectureToDelete);
-      toast.success("Lecture deleted successfully"); // show success toast
-  
+
       setLectureToDelete(null);
-  
+
       // Refresh the entire page
       window.location.reload();
     } catch (error) {
@@ -311,7 +310,6 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
       toast.error("Failed to delete lecture");
     }
   };
-  
 
   // Add this function inside your FacultyTransfersubjectComp component
   const handleCloseResponseModal = () => {
