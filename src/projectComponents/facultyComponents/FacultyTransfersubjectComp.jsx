@@ -304,7 +304,7 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
       setLectureToDelete(null);
 
       // Refresh the data after deletion
-      fetchData();
+      await fetchData();
     } catch (error) {
       console.error("Failed to delete lecture:", error);
       toast.error("Failed to delete lecture");
