@@ -208,6 +208,9 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
   const [transferModalOpen, setTransferModalOpen] = useState(false);
   const [responseModalOpen, setResponseModalOpen] = useState(false);
 
+  const [lectureToDelete, setLectureToDelete] = useState(null);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+
   const [stats, setStats] = useState([]);
   const [students, setStudents] = useState([]);
   const [newFacEmail, setNewFacEmail] = useState("");
@@ -255,8 +258,8 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
     }
   };
 
-  useEffect(() => {
-    async function fetchData() {
+  const fetchData = async () => {
+    try {
       const response = await getLectureAttendanceByClassCode({
         classcode: classdetails.classCode,
       });
@@ -268,8 +271,13 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
       setRawLectureDetails(details);
       setStats(statsData);
       setStudents(studentsData);
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+      toast.error("Failed to load lecture data");
     }
+  };
 
+  useEffect(() => {
     fetchData();
   }, [classdetails.classCode]);
 
@@ -287,6 +295,21 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
     setStudents(studentsData);
   };
 
+  const confirmDeleteLecture = async () => {
+    try {
+      await deleteLecture(classdetails.classCode, lectureToDelete);
+      toast.success("Lecture deleted successfully");
+      setIsConfirmOpen(false);
+      setLectureToDelete(null);
+
+      // Refresh the data after deletion
+      fetchData();
+    } catch (error) {
+      console.error("Failed to delete lecture:", error);
+      toast.error("Failed to delete lecture");
+    }
+  };
+
   // Add this function inside your FacultyTransfersubjectComp component
   const handleCloseResponseModal = () => {
     setResponseModalOpen(false);
@@ -302,7 +325,7 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
     try {
       await deleteLecture(classdetails.classCode, lectureNo);
       toast.success("Lecture deleted successfully");
-      
+
       // Optionally, remove the lecture from stats state locally
       setStats((prevStats) => prevStats.filter((s) => s.name !== lectureNo));
     } catch (error) {
@@ -310,7 +333,6 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
       toast.error("Failed to delete lecture");
     }
   };
-  
 
   // Updated handleTransfer function that accepts onTransferSuccess prop
   const handleTransfer = async () => {
@@ -400,8 +422,6 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
         stats.reduce((acc, s) => acc + parseFloat(s.percent), 0) / totalLectures
       ).toFixed(1)
     : 0;
-
-  
 
   return (
     <>
@@ -762,7 +782,10 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
                       <td className="px-6 py-4 text-center">
                         <button
                           className="text-red-600 hover:text-red-800 font-semibold"
-                          onClick={() => handleDeleteLecture(s.name)}
+                          onClick={() => {
+                            setLectureToDelete(s.name); // or s.lectureNo if applicable
+                            setIsConfirmOpen(true);
+                          }}
                         >
                           Delete
                         </button>
@@ -772,6 +795,33 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
                 </tbody>
               </table>
             </div>
+          </div>
+        </div>
+      </FullScreenModal>
+
+      {/* Confirmation Modal */}
+      <FullScreenModal
+        isOpen={isConfirmOpen}
+        onClose={() => setIsConfirmOpen(false)}
+      >
+        <div className="p-8 space-y-6 text-center">
+          <h3 className="text-xl font-bold text-gray-800">Confirm Deletion</h3>
+          <p className="text-gray-600">
+            Are you sure you want to delete this lecture?
+          </p>
+          <div className="flex justify-center gap-4 mt-6">
+            <button
+              className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+              onClick={() => setIsConfirmOpen(false)}
+            >
+              Cancel
+            </button>
+            <button
+              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              onClick={confirmDeleteLecture}
+            >
+              Delete
+            </button>
           </div>
         </div>
       </FullScreenModal>
