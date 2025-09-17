@@ -85,8 +85,8 @@ export default function LandingPage() {
             style={{
               left: `${20 + i * 15}%`,
               top: `${30 + i * 10}%`,
-              animationDelay: `${i * 0.5}s`,
-              animationDuration: `${3 + i * 0.5}s`,
+              animationDelay: `${i * 0.05}s`,
+              animationDuration: `${1 + i * 0.2}s`,
               transform: `translateY(${scrollY * (0.1 + i * 0.05)}px)`,
             }}
           ></div>
@@ -197,7 +197,7 @@ export default function LandingPage() {
                 key={index}
                 className={`flex items-center gap-4 text-slate-700 opacity-0 animate-fade-in-up hover:translate-x-2 transition-all duration-300`}
                 style={{
-                  animationDelay: `${1.2 + index * 0.2}s`,
+                  animationDelay: `${1 + index * 0.1}s`,
                   animationFillMode: "forwards",
                 }}
               >

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Keyboard,
   Calendar,
@@ -56,6 +57,12 @@ function FacultyHomepage() {
   const [subLiveAttendance, setSubLiveAttendance] = useState([]);
   const [subPollingActive, setSubPollingActive] = useState(false);
 
+  const [selectedDay, setSelectedDay] = useState(() => {
+    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    return days[new Date().getDay()]; // today
+  });
+
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -85,7 +92,6 @@ function FacultyHomepage() {
     setCurrentDateStr(formatted);
   }, []);
 
-  // Polling for substitution passcode attendance
   useEffect(() => {
     if (!subPollingActive) return;
 
@@ -277,50 +283,43 @@ function FacultyHomepage() {
     setShowSubManualModal(true);
   };
 
-  function getTodaySchedule(data) {
-    const days = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ];
-    const today = days[new Date().getDay()];
-    const timetableToday = data.timetable[today];
-    const classDetails = data.classDetails;
+  function getTodaySchedule(data, day) {
+  const timetableToday = data.timetable[day];
+  const classDetails = data.classDetails;
 
-    if (!timetableToday) return [];
+  if (!timetableToday) return [];
 
-    const result = timetableToday.map((entry) => {
-      const detail = classDetails[entry.classCode];
-      const groupCode = detail.groupCode;
-      const match = groupCode.match(/^([A-Z]+)\d{4}([A-Z])$/);
-      const section = match ? `${match[1]}-${match[2]}` : groupCode;
-      const [hourStr, minuteStr] = entry.startTime.split(":");
-      const hour = Number.parseInt(hourStr, 10);
-      const minute = Number.parseInt(minuteStr, 10);
+  const result = timetableToday.map((entry) => {
+    const detail = classDetails[entry.classCode];
+    const groupCode = detail.groupCode;
+    const match = groupCode.match(/^([A-Z]+)\d{4}([A-Z])$/);
+    const section = match ? `${match[1]}-${match[2]}` : groupCode;
+    const [hourStr, minuteStr] = entry.startTime.split(":");
+    const hour = Number.parseInt(hourStr, 10);
+    const minute = Number.parseInt(minuteStr, 10);
 
-      return {
-        classCode: entry.classCode,
-        className: detail.className,
-        start: entry.startTime,
-        startNumeric: hour * 60 + minute,
-        duration: entry.durationMinutes,
-        passoutYear: `UG-${detail.passoutYear}`,
-        section,
-      };
-    });
+    return {
+      classCode: entry.classCode,
+      className: detail.className,
+      start: entry.startTime,
+      startNumeric: hour * 60 + minute,
+      duration: entry.durationMinutes,
+      passoutYear: `UG-${detail.passoutYear}`,
+      section,
+    };
+  });
 
-    result.sort((a, b) => a.startNumeric - b.startNumeric);
-    return result.map(({ startNumeric, ...rest }) => rest);
-  }
+  result.sort((a, b) => a.startNumeric - b.startNumeric);
+  return result.map(({ startNumeric, ...rest }) => rest);
+}
 
-  const todaySchedule =
-    !isLoading && timetable && timetable.timetable && timetable.classDetails
-      ? getTodaySchedule(timetable)
-      : [];
+
+  const filteredSchedule =
+  !isLoading && timetable && timetable.timetable && timetable.classDetails
+    ? getTodaySchedule(timetable, selectedDay)
+    : [];
+
+
 
   if (isLoading)
     return (
@@ -385,6 +384,21 @@ function FacultyHomepage() {
             </button>
           </div>
         </div>
+        <div className="flex items-center gap-2 mb-4">
+  <span className="font-semibold">Select Day:</span>
+  <Select value={selectedDay} onValueChange={setSelectedDay}>
+    <SelectTrigger className="w-[150px]">
+      <SelectValue placeholder="Select a day" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="Monday">Monday</SelectItem>
+      <SelectItem value="Tuesday">Tuesday</SelectItem>
+      <SelectItem value="Wednesday">Wednesday</SelectItem>
+      <SelectItem value="Thursday">Thursday</SelectItem>
+      <SelectItem value="Friday">Friday</SelectItem>
+    </SelectContent>
+  </Select>
+</div>
 
         {/* Today's Schedule Section */}
         <div className="bg-white border border-gray-200 shadow-lg rounded-2xl overflow-hidden">
@@ -402,7 +416,7 @@ function FacultyHomepage() {
             </div>
           </div>
           <div className="p-4">
-            {todaySchedule.length === 0 ? (
+            {filteredSchedule.length === 0 ? (
               <div className="text-center py-12">
                 <div className="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Calendar className="w-8 h-8 text-gray-400" />
@@ -416,7 +430,7 @@ function FacultyHomepage() {
               </div>
             ) : (
               <div className="space-y-4">
-                {todaySchedule.map((course, index) => (
+                {filteredSchedule.map((course, index) => (
                   <FacultyHomepageComponent key={index} c={course} />
                 ))}
               </div>
