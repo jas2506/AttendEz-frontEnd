@@ -116,7 +116,7 @@ export async function sendQR(qr) {
       },
     }
   );
-
+  //test test
   return res.data;
 }
 
