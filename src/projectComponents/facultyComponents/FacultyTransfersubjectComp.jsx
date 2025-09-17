@@ -296,10 +296,11 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
   };
 
   const confirmDeleteLecture = async () => {
+    setIsConfirmOpen(false);
+
     try {
       await deleteLecture(classdetails.classCode, lectureToDelete);
       toast.success("Lecture deleted successfully");
-      setIsConfirmOpen(false);
       setLectureToDelete(null);
 
       // Refresh the data after deletion
@@ -804,24 +805,28 @@ function FacultyTransfersubjectComp({ c, onTransferSuccess }) {
         isOpen={isConfirmOpen}
         onClose={() => setIsConfirmOpen(false)}
       >
-        <div className="p-8 space-y-6 text-center">
-          <h3 className="text-xl font-bold text-gray-800">Confirm Deletion</h3>
-          <p className="text-gray-600">
-            Are you sure you want to delete this lecture?
-          </p>
-          <div className="flex justify-center gap-4 mt-6">
-            <button
-              className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-              onClick={() => setIsConfirmOpen(false)}
-            >
-              Cancel
-            </button>
-            <button
-              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-              onClick={confirmDeleteLecture}
-            >
-              Delete
-            </button>
+        <div className="flex items-center justify-center min-h-full">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm mx-4">
+            <h3 className="text-xl font-bold text-gray-800 text-center">
+              Confirm Deletion
+            </h3>
+            <p className="text-gray-600 mt-2 text-center">
+              Are you sure you want to delete this lecture?
+            </p>
+            <div className="flex justify-center gap-4 mt-6">
+              <button
+                className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                onClick={() => setIsConfirmOpen(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                onClick={confirmDeleteLecture}
+              >
+                Delete
+              </button>
+            </div>
           </div>
         </div>
       </FullScreenModal>
