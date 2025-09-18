@@ -46,7 +46,7 @@ function FacultyHomepageComponent({ c }) {
   useEffect(() => {
     let timer;
     if (showQRModal) {
-      setCountdown(36); // reset when modal opens
+      setCountdown(45); // reset when modal opens
       timer = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
