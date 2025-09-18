@@ -190,7 +190,7 @@ function FacultyHomepageComponent({ c }) {
       } else {
         setCurrentQRIndex(index);
       }
-    }, 12000);
+    }, 15000);
 
     setTimeout(() => {
       setShowSaveQRButton(true);
