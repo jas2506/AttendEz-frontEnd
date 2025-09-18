@@ -2,7 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Keyboard,
   Calendar,
@@ -58,11 +64,18 @@ function FacultyHomepage() {
   const [subPollingActive, setSubPollingActive] = useState(false);
 
   const [selectedDay, setSelectedDay] = useState(() => {
-    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const days = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
     return days[new Date().getDay()]; // today
   });
 
-  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -284,42 +297,39 @@ function FacultyHomepage() {
   };
 
   function getTodaySchedule(data, day) {
-  const timetableToday = data.timetable[day];
-  const classDetails = data.classDetails;
+    const timetableToday = data.timetable[day];
+    const classDetails = data.classDetails;
 
-  if (!timetableToday) return [];
+    if (!timetableToday) return [];
 
-  const result = timetableToday.map((entry) => {
-    const detail = classDetails[entry.classCode];
-    const groupCode = detail.groupCode;
-    const match = groupCode.match(/^([A-Z]+)\d{4}([A-Z])$/);
-    const section = match ? `${match[1]}-${match[2]}` : groupCode;
-    const [hourStr, minuteStr] = entry.startTime.split(":");
-    const hour = Number.parseInt(hourStr, 10);
-    const minute = Number.parseInt(minuteStr, 10);
+    const result = timetableToday.map((entry) => {
+      const detail = classDetails[entry.classCode];
+      const groupCode = detail.groupCode;
+      const match = groupCode.match(/^([A-Z]+)\d{4}([A-Z])$/);
+      const section = match ? `${match[1]}-${match[2]}` : groupCode;
+      const [hourStr, minuteStr] = entry.startTime.split(":");
+      const hour = Number.parseInt(hourStr, 10);
+      const minute = Number.parseInt(minuteStr, 10);
 
-    return {
-      classCode: entry.classCode,
-      className: detail.className,
-      start: entry.startTime,
-      startNumeric: hour * 60 + minute,
-      duration: entry.durationMinutes,
-      passoutYear: `UG-${detail.passoutYear}`,
-      section,
-    };
-  });
+      return {
+        classCode: entry.classCode,
+        className: detail.className,
+        start: entry.startTime,
+        startNumeric: hour * 60 + minute,
+        duration: entry.durationMinutes,
+        passoutYear: `UG-${detail.passoutYear}`,
+        section,
+      };
+    });
 
-  result.sort((a, b) => a.startNumeric - b.startNumeric);
-  return result.map(({ startNumeric, ...rest }) => rest);
-}
-
+    result.sort((a, b) => a.startNumeric - b.startNumeric);
+    return result.map(({ startNumeric, ...rest }) => rest);
+  }
 
   const filteredSchedule =
-  !isLoading && timetable && timetable.timetable && timetable.classDetails
-    ? getTodaySchedule(timetable, selectedDay)
-    : [];
-
-
+    !isLoading && timetable && timetable.timetable && timetable.classDetails
+      ? getTodaySchedule(timetable, selectedDay)
+      : [];
 
   if (isLoading)
     return (
@@ -385,20 +395,20 @@ function FacultyHomepage() {
           </div>
         </div>
         <div className="flex items-center gap-2 mb-4">
-  <span className="font-semibold">Select Day:</span>
-  <Select value={selectedDay} onValueChange={setSelectedDay}>
-    <SelectTrigger className="w-[150px]">
-      <SelectValue placeholder="Select a day" />
-    </SelectTrigger>
-    <SelectContent>
-      <SelectItem value="Monday">Monday</SelectItem>
-      <SelectItem value="Tuesday">Tuesday</SelectItem>
-      <SelectItem value="Wednesday">Wednesday</SelectItem>
-      <SelectItem value="Thursday">Thursday</SelectItem>
-      <SelectItem value="Friday">Friday</SelectItem>
-    </SelectContent>
-  </Select>
-</div>
+          <span className="font-semibold">Select Day:</span>
+          <Select value={selectedDay} onValueChange={setSelectedDay}>
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="Select a day" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Monday">Monday</SelectItem>
+              <SelectItem value="Tuesday">Tuesday</SelectItem>
+              <SelectItem value="Wednesday">Wednesday</SelectItem>
+              <SelectItem value="Thursday">Thursday</SelectItem>
+              <SelectItem value="Friday">Friday</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
         {/* Today's Schedule Section */}
         <div className="bg-white border border-gray-200 shadow-lg rounded-2xl overflow-hidden">
@@ -409,9 +419,14 @@ function FacultyHomepage() {
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">
-                  Today's Schedule
+                  {selectedDay}'s Schedule
                 </h2>
-                <p className="text-gray-600 text-sm">Your classes for today</p>
+                <p className="text-gray-600 text-sm">
+                  Your classes for{" "}
+                  {selectedDay === currentDateStr.split(",")[0]
+                    ? "today"
+                    : selectedDay}
+                </p>
               </div>
             </div>
           </div>
@@ -422,7 +437,7 @@ function FacultyHomepage() {
                   <Calendar className="w-8 h-8 text-gray-400" />
                 </div>
                 <p className="text-gray-500 text-base font-medium">
-                  No classes scheduled for today
+                  No classes scheduled for {selectedDay.toLowerCase()}
                 </p>
                 <p className="text-gray-400 text-sm mt-1">
                   Enjoy your free day!

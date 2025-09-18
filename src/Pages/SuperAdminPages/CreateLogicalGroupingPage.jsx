@@ -42,7 +42,9 @@ export default function CreateLogicalGroupPage() {
     delete editable.groupcode;
     delete editable.id;
 
-    setManualRegNo((group.registernumbers || []).join(", "));
+    const sortedRegNos = (group.registernumbers || []).slice().sort();
+
+    setManualRegNo(sortedRegNos.join(", "));
     setAdvisorEmail(group.advisorEmail || "");
     setTimetable(group.timetable || {});
     setClassCodes(group["class-code"] || []);
