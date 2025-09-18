@@ -41,7 +41,7 @@ function FacultyHomepageComponent({ c }) {
   const [liveAttendance, setLiveAttendance] = useState([]);
   const [pollingActive, setPollingActive] = useState(false);
 
-  const [countdown, setCountdown] = useState(36);
+  const [countdown, setCountdown] = useState(45);
 
   useEffect(() => {
     let timer;
