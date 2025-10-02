@@ -65,9 +65,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 text-slate-800 relative overflow-hidden">
-      {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Floating orbs with parallax */}
         <div
           className="absolute top-1/4 -right-32 w-64 h-64 bg-gradient-to-br from-blue-100/40 to-indigo-100/40 rounded-full blur-3xl animate-pulse"
           style={{ transform: `translateY(${scrollY * 0.3}px)` }}
@@ -77,7 +75,6 @@ export default function LandingPage() {
           style={{ transform: `translateY(${scrollY * -0.2}px)` }}
         ></div>
 
-        {/* Floating particles */}
         {[...Array(6)].map((_, i) => (
           <div
             key={i}
@@ -178,7 +175,6 @@ export default function LandingPage() {
             </p>
           </div>
 
-          {/* Features */}
           <div
             id="features"
             className={`space-y-4 transition-all duration-1000 delay-500 ${
@@ -189,7 +185,6 @@ export default function LandingPage() {
           >
             {[
               "Real-time attendance tracking",
-              "On duty approval system",
               "Collaborative platform for all users",
               "Faster attendance using time-synced QR codes or one-time passcodes",
             ].map((feature, index) => (
@@ -209,8 +204,6 @@ export default function LandingPage() {
             ))}
           </div>
         </div>
-
-        {/* Right Section */}
         <div
           id="role-selector"
           className={`flex-shrink-0 transition-all duration-1000 delay-700 ${

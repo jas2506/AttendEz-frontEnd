@@ -19,8 +19,8 @@ const TeacherLogin = ({ setIsLoggedIn }) => {
 
   const [currentStep, setCurrentStep] = useState("login"); // 'login', 'email', 'otp', 'password'
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+    email: "sih@admin.com",
+    password: "SIH#25@",
     otp: "",
     newPassword: "",
     confirmPassword: "",

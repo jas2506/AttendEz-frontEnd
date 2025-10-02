@@ -173,6 +173,8 @@ export default function EditLogicalGroupPopup({
                             "Wednesday",
                             "Thursday",
                             "Friday",
+                            "Saturday",
+                            "Sunday",
                           ].map((d) => (
                             <SelectItem key={d} value={d}>
                               {d}

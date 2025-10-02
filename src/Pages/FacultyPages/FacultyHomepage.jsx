@@ -72,6 +72,7 @@ function FacultyHomepage() {
       "Thursday",
       "Friday",
       "Saturday",
+      "Sunday",
     ];
     return days[new Date().getDay()]; // today
   });
@@ -406,6 +407,8 @@ function FacultyHomepage() {
               <SelectItem value="Wednesday">Wednesday</SelectItem>
               <SelectItem value="Thursday">Thursday</SelectItem>
               <SelectItem value="Friday">Friday</SelectItem>
+              <SelectItem value="Saturday">Saturday</SelectItem>
+              <SelectItem value="Sunday">Sunday</SelectItem>
             </SelectContent>
           </Select>
         </div>
