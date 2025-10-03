@@ -30,6 +30,7 @@ function FacultyHomepageComponent({ c }) {
   const endTime = new Date(`2000-01-01 ${classdetails.start}`);
   endTime.setMinutes(endTime.getMinutes() + classdetails.duration);
   const formattedEndTime = endTime.toTimeString().slice(0, 5);
+  
 
   // State for modals and popups
   const [showManualModal, setShowManualModal] = useState(false);
