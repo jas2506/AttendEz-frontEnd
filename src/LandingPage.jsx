@@ -14,7 +14,6 @@ import { useEffect, useState } from "react";
 export default function LandingPage() {
   const [status, setStatus] = useState("online");
   // "loading" | "online" | "offline"
-
   
 
   const [scrollY, setScrollY] = useState(0);
