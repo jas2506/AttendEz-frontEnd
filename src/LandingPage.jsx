@@ -12,26 +12,10 @@ import {
 import { useEffect, useState } from "react";
 
 export default function LandingPage() {
-  const [status, setStatus] = useState("loading");
+  const [status, setStatus] = useState("online");
   // "loading" | "online" | "offline"
 
-  useEffect(() => {
-    const checkStatus = async () => {
-      try {
-        const res = await fetch("/ping");
-        const text = await res.text();
-        if (text === "pong") {
-          setStatus("online");
-        } else {
-          setStatus("offline");
-        }
-      } catch (err) {
-        setStatus("offline");
-      }
-    };
-
-    checkStatus();
-  }, []);
+  
 
   const [scrollY, setScrollY] = useState(0);
   const [isVisible, setIsVisible] = useState({});
