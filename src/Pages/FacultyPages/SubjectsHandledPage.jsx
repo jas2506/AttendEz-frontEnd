@@ -9,7 +9,7 @@ import {
 } from "../../TeacherApi";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
-
+import * as XLSX from "xlsx";
 pdfMake.vfs = pdfFonts.vfs;
 
 function SubjectsHandledPage() {
@@ -35,6 +35,7 @@ function SubjectsHandledPage() {
     try {
       const res = await getClassDetails(selectedClassCode);
       const { attendance, regnoNameMap } = res.data.details;
+      //console.log(res);
 
       const start = startDate.replace(/-/g, "");
       const end = endDate.replace(/-/g, "");
@@ -216,6 +217,96 @@ function SubjectsHandledPage() {
     } catch (err) {
       console.error("Failed to generate reports:", err);
       toast.error("Something went wrong while generating the reports.");
+    }
+  };
+
+  const handleDownloadLogBook = async () => {
+    if (!selectedClassCode || !startDate || !endDate) {
+      toast.error("Please select class and date range");
+      return;
+    }
+
+    try {
+      const res = await getClassDetails(selectedClassCode);
+      const { attendance, regNumbers, regnoNameMap } = res.data.details;
+
+      if (!attendance || !regNumbers) {
+        toast.error("No attendance data found for this class");
+        return;
+      }
+
+      // Prepare columns: Date-LectureNumber
+      const start = startDate.replace(/-/g, "");
+      const end = endDate.replace(/-/g, "");
+
+      // Collect all unique columns
+      const columns = [];
+      Object.entries(attendance)
+        .sort(([aKey], [bKey]) => {
+          // Sort by lecture number
+          const aNum = parseInt(aKey.split(".")[1], 10);
+          const bNum = parseInt(bKey.split(".")[1], 10);
+          return aNum - bNum;
+        })
+        .forEach(([lecKey, lecData]) => {
+          const lecDate = lecData.date?.toString();
+          if (lecDate >= start && lecDate <= end) {
+            const lecNum = lecKey.split(".")[1];
+            // Format date as DD/MM/YYYY
+            const formattedDate = `${lecDate.substring(
+              6,
+              8
+            )}/${lecDate.substring(4, 6)}/${lecDate.substring(0, 4)}`;
+            columns.push(`${formattedDate} - L${lecNum}`);
+          }
+        });
+
+      // Build rows
+      const rows = regNumbers.sort().map((reg) => {
+        const row = [reg, regnoNameMap[reg] || "Unknown"];
+        columns.forEach((col) => {
+          const [colDate, lecNum] = col.split(" - L");
+          const lectureKey = `lecture.${lecNum}`;
+          const lecData = attendance[lectureKey];
+          if (lecData && lecData[reg] !== undefined) {
+            row.push(
+              lecData[reg] === 1 ? "✅" : lecData[reg] === 2 ? "Partial" : "❌"
+            );
+          } else {
+            row.push(""); // no record
+          }
+        });
+        return row;
+      });
+
+      // Final worksheet data
+      const wsData = [["Register No", "Name", ...columns], ...rows];
+
+      const ws = XLSX.utils.aoa_to_sheet(wsData);
+      const range = XLSX.utils.decode_range(ws["!ref"]);
+      for (let R = range.s.r; R <= range.e.r; ++R) {
+        for (let C = range.s.c; C <= range.e.c; ++C) {
+          const cell_address = { c: C, r: R };
+          const cell_ref = XLSX.utils.encode_cell(cell_address);
+          if (!ws[cell_ref]) continue;
+          ws[cell_ref].s = {
+            alignment: { horizontal: "center", vertical: "center" },
+          };
+        }
+      }
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "LogBook");
+
+      XLSX.writeFile(
+        wb,
+        `${selectedClassCode}_LogBook_${startDate}_to_${endDate}.xlsx`
+      );
+
+      toast.success("Log Book generated successfully!");
+    } catch (err) {
+      console.error("LOGBOOK ERROR:", err);
+      toast.error("Failed to generate log book report.");
     }
   };
 
@@ -597,14 +688,20 @@ function SubjectsHandledPage() {
                 className="w-full p-3 border border-gray-300 rounded-lg"
               >
                 <option value="both">Both</option>
+                <option value="logbook">Log Book (Excel)</option>
                 <option value="lecture">Lecture-wise</option>
                 <option value="student">Student-wise</option>
               </select>
             </div>
 
             <button
-              onClick={handleDownloadReport}
-              className="w-full bg-[#4642EE] text-white py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors mt-6"
+              onClick={() => {
+                if (reportType === "logbook") {
+                  handleDownloadLogBook();
+                } else {
+                  handleDownloadReport();
+                }
+              }}
             >
               Download Report
             </button>
