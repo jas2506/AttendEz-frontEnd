@@ -397,7 +397,7 @@ function HomepageStudent() {
               <Keyboard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Enter Class Code (e.g., nzlah0~CSE2701B)"
+                placeholder="Enter Class Code"
                 value={classCode}
                 onChange={(e) => {
                   let value = e.target.value.replace(/[^a-zA-Z0-9~]/g, ""); // Allow ~ character
