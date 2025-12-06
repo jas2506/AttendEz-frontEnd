@@ -183,7 +183,7 @@ function Navbar({ setIsLoggedIn }) {
   );
 }
 
-/* ORIGINAL NavItem (used everywhere including drawer) */
+/* ORIGINAL NavItem (used  everywhere including drawer) */
 function NavItem({ icon, label, path, isActive }) {
   return (
     <Link
@@ -206,7 +206,7 @@ function NavItem({ icon, label, path, isActive }) {
 }
 
 /* Bottom nav item – separate styling so it doesn't affect drawer */
-function BottomNavItem({ icon, label, path, isActive }) {
+function BottomNavItem({ icon, label, path, isActive }) { 
   return (
     <Link
       to={path}
