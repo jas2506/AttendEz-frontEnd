@@ -599,11 +599,12 @@ function HomepageStudent() {
           )}
         </div>
         <div className="h-40">
-          <div className="sm:hidden w-full mt-16 flex flex-col items-center justify-center">
-            <p className="text-[29px] text-gray-400 tracking-wide opacity-80">
-              Made with <span className="text-red-500">love</span>
+          <div className="w-full mt-16 flex flex-col items-center justify-center">
+            <p className="text-[29px] font-semibold bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 bg-clip-text text-transparent opacity-90">
+              Made with love
             </p>
-            <p className="text-[27px] text-gray-400 mt-1 opacity-70">
+
+            <p className="text-[27px] mt-1 bg-gradient-to-r from-blue-300 via-blue-400 to-blue-500 bg-clip-text text-transparent opacity-80">
               by your friendly devs of CSE
             </p>
           </div>
