@@ -364,52 +364,53 @@ function HomepageStudent() {
 
   return (
     <>
-      <div className="min-h-screen p-6 space-y-6 pb-20">
-        {/* Header Section */}
-        <div className="bg-white border-b border-gray-100 shadow-sm p-6 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center">
-          <div>
-            <p className="text-2xl font-bold text-blue-700">
-              Hello, {details?.details?.name} 👋
-            </p>
-            <p className="text-sm text-gray-600 mt-1">
-              Here are your classes for today
-            </p>
-          </div>
-          <div className="text-sm text-gray-500 mt-4 md:mt-0">
-            {currentDateStr}
-          </div>
-        </div>
-
-        {/* QR Scanner Button Section - Improved Design */}
-        <div className="flex justify-center mb-6">
-          <button
-            onClick={startScanner}
-            disabled={showScanner}
-            className={`group relative inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-semibold text-base transition-all duration-300 transform hover:scale-105 shadow-lg ${
-              showScanner
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed shadow-sm scale-100"
-                : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-blue-200 hover:shadow-xl"
-            }`}
-          >
-            <div className="relative">
-              {showScanner ? (
-                <Camera className="w-6 h-6 animate-pulse" />
-              ) : (
-                <QrCode className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" />
-              )}
+      <div className="min-h-screen p-6 pb-20">
+        <div className="max-w-5xl mx-auto space-y-6">
+          {/* Header Section */}
+          <div className="bg-white border-b border-gray-100 shadow-sm p-6 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
+            <div>
+              <p className="text-2xl font-bold text-blue-700">
+                Hello, {details?.details?.name} 👋
+              </p>
+              <p className="text-sm text-gray-600 mt-1">
+                Here are your classes for today
+              </p>
             </div>
-            <span className="font-medium">
-              {showScanner ? "Scanner Active..." : "Scan QR Code"}
-            </span>
-            {!showScanner && (
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-            )}
-          </button>
-        </div>
+            <div className="text-sm text-gray-500 mt-4 md:mt-0">
+              {currentDateStr}
+            </div>
+          </div>
 
-        <div className="max-w-7xl mx-auto p-6">
-          <div className="bg-white p-6 rounded-xl shadow-sm flex flex-col md:flex-row items-center gap-4">
-            <div className="relative w-full">
+          {/* QR Scanner Button Section - Improved Design */}
+          <div className="flex justify-center mb-6">
+            <button
+              onClick={startScanner}
+              disabled={showScanner}
+              className={`group relative inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-semibold text-base transition-all duration-300 transform hover:scale-105 shadow-lg w-full md:w-auto max-w-sm ${
+                showScanner
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed shadow-sm scale-100"
+                  : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-blue-200 hover:shadow-xl"
+              }`}
+            >
+              <div className="relative">
+                {showScanner ? (
+                  <Camera className="w-6 h-6 animate-pulse" />
+                ) : (
+                  <QrCode className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" />
+                )}
+              </div>
+              <span className="font-medium">
+                {showScanner ? "Scanner Active..." : "Scan QR Code"}
+              </span>
+              {!showScanner && (
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+              )}
+            </button>
+          </div>
+
+          {/* Input + Submit Section */}
+          <div className="bg-white p-6 rounded-xl shadow-sm flex flex-col md:flex-row items-center gap-4 max-w-3xl mx-auto">
+            <div className="relative w-full md:flex-1">
               <Keyboard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
@@ -493,120 +494,121 @@ function HomepageStudent() {
               </div>
             </div>
           )}
-        </div>
 
-        {/* QR Scanner Modal - Enhanced */}
-        {showScanner && (
-          <div className="fixed inset-0 z-50 bg-black bg-opacity-60 flex items-center justify-center p-4 backdrop-blur-sm">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden border border-gray-200">
-              <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <QrCode className="w-5 h-5 text-blue-600" />
+          {/* QR Scanner Modal - Enhanced */}
+          {showScanner && (
+            <div className="fixed inset-0 z-50 bg-black bg-opacity-60 flex items-center justify-center p-4 backdrop-blur-sm">
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden border border-gray-200">
+                <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-100 rounded-lg">
+                      <QrCode className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <h2 className="text-xl font-semibold text-gray-800">
+                      Scan QR Code
+                    </h2>
                   </div>
-                  <h2 className="text-xl font-semibold text-gray-800">
-                    Scan QR Code
-                  </h2>
+                  <button
+                    onClick={closeScanner}
+                    className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-2 rounded-lg transition-colors duration-200"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
                 </div>
-                <button
-                  onClick={closeScanner}
-                  className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-2 rounded-lg transition-colors duration-200"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-              <div className="p-6">
-                <div
-                  id="qr-reader"
-                  className="w-full rounded-lg overflow-hidden"
-                />
+                <div className="p-6">
+                  <div
+                    id="qr-reader"
+                    className="w-full rounded-lg overflow-hidden"
+                  />
 
-                {zoomSupported && (
-                  <div className="mt-4">
-                    <label
-                      htmlFor="zoom-slider"
-                      className="block text-sm font-medium text-gray-700 text-center"
-                    >
-                      Zoom Level
-                    </label>
-                    <input
-                      id="zoom-slider"
-                      type="range"
-                      min={zoomRange.min}
-                      max={zoomRange.max}
-                      step="0.1"
-                      value={zoomValue}
-                      onChange={async (e) => {
-                        const value = parseFloat(e.target.value);
-                        setZoomValue(value);
+                  {zoomSupported && (
+                    <div className="mt-4">
+                      <label
+                        htmlFor="zoom-slider"
+                        className="block text-sm font-medium text-gray-700 text-center"
+                      >
+                        Zoom Level
+                      </label>
+                      <input
+                        id="zoom-slider"
+                        type="range"
+                        min={zoomRange.min}
+                        max={zoomRange.max}
+                        step="0.1"
+                        value={zoomValue}
+                        onChange={async (e) => {
+                          const value = parseFloat(e.target.value);
+                          setZoomValue(value);
 
-                        try {
-                          await scannerRef.current?.applyVideoConstraints({
-                            advanced: [{ zoom: value }],
-                          });
-                        } catch (error) {
-                          console.warn("Zoom change error:", error);
-                        }
-                      }}
-                      className="w-full mt-2 accent-blue-600"
-                    />
-                    <p className="text-xs text-center text-gray-500 mt-1">
-                      {zoomValue.toFixed(1)}x
+                          try {
+                            await scannerRef.current?.applyVideoConstraints({
+                              advanced: [{ zoom: value }],
+                            });
+                          } catch (error) {
+                            console.warn("Zoom change error:", error);
+                          }
+                        }}
+                        className="w-full mt-2 accent-blue-600"
+                      />
+                      <p className="text-xs text-center text-gray-500 mt-1">
+                        {zoomValue.toFixed(1)}x
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <p className="text-sm text-blue-800 text-center font-medium">
+                      Position the QR code within the camera frame
+                    </p>
+                    <p className="text-xs text-blue-600 text-center mt-1">
+                      Make sure the code is clearly visible and well-lit
                     </p>
                   </div>
-                )}
-
-                <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <p className="text-sm text-blue-800 text-center font-medium">
-                    Position the QR code within the camera frame
-                  </p>
-                  <p className="text-xs text-blue-600 text-center mt-1">
-                    Make sure the code is clearly visible and well-lit
-                  </p>
                 </div>
               </div>
             </div>
-          </div>
-        )}
-
-        {/* Attendance Section */}
-        <div className="bg-white p-6 rounded-xl shadow-sm">
-          {attendanceError ? (
-            <p className="text-center text-red-500 text-sm py-6">
-              Attendance Records not found
-            </p>
-          ) : stats === null ? (
-            <p className="text-center text-gray-500 text-sm py-6">
-              Attendance record not updated
-            </p>
-          ) : stats.length === 0 ? (
-            <p className="text-center text-gray-500 text-sm py-6">
-              No classes for today
-            </p>
-          ) : (
-            <div className="space-y-4">
-              {stats.map((course) => (
-                <StudentHomepageSubject
-                  key={course.classCode}
-                  classname={course.className}
-                  start={course.startTime}
-                  end={course.endTime}
-                  n={course.attendedLectures}
-                  t={course.totalLectures}
-                />
-              ))}
-            </div>
           )}
-        </div>
-        <div className="h-40">
-          <div className="w-full mt-16 flex flex-col items-center justify-center">
-            <p className="text-[29px] font-semibold bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 bg-clip-text text-transparent opacity-90">
-              Made with love
-            </p>
 
-            <p className="text-[27px] mt-1 bg-gradient-to-r from-blue-300 via-blue-400 to-blue-500 bg-clip-text text-transparent opacity-80">
-              by your friendly devs of CSE
-            </p>
+          {/* Attendance Section */}
+          <div className="bg-white p-6 rounded-xl shadow-sm">
+            {attendanceError ? (
+              <p className="text-center text-red-500 text-sm py-6">
+                Attendance Records not found
+              </p>
+            ) : stats === null ? (
+              <p className="text-center text-gray-500 text-sm py-6">
+                Attendance record not updated
+              </p>
+            ) : stats.length === 0 ? (
+              <p className="text-center text-gray-500 text-sm py-6">
+                No classes for today
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {stats.map((course) => (
+                  <StudentHomepageSubject
+                    key={course.classCode}
+                    classname={course.className}
+                    start={course.startTime}
+                    end={course.endTime}
+                    n={course.attendedLectures}
+                    t={course.totalLectures}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="h-40 flex items-center justify-center">
+            <div className="text-center space-y-1">
+              <p className="text-3xl md:text-4xl font-semibold bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 bg-clip-text text-transparent opacity-90">
+                Made with love
+              </p>
+              <p className="text-2xl md:text-3xl bg-gradient-to-r from-blue-300 via-blue-400 to-blue-500 bg-clip-text text-transparent opacity-80">
+                by your friendly devs of CSE
+              </p>
+            </div>
           </div>
         </div>
       </div>
