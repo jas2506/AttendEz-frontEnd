@@ -32,7 +32,7 @@ function getTodayAttendanceStats(attendance, timetable) {
   ];
 
   // const todayName = "Monday"; // for testing
-  
+
   const todayName = weekdays[new Date().getDay()];
 
   const todayClasses = timetable.timetable[todayName] || [];
@@ -104,6 +104,9 @@ function HomepageStudent() {
   const scannerRef = useRef(null);
   const scannerInitialized = useRef(false);
 
+  const [showFooter, setShowFooter] = useState(false);
+  //for the footer
+
   useEffect(() => {
     if (popup) {
       const timer = setTimeout(() => {
@@ -173,6 +176,19 @@ function HomepageStudent() {
     return () => {
       cleanupScanner();
     };
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrolledToBottom =
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 10;
+
+      setShowFooter(scrolledToBottom);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   function initializeScanner() {
@@ -348,7 +364,7 @@ function HomepageStudent() {
 
   return (
     <>
-      <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
+      <div className="min-h-screen p-6 space-y-6 pb-20">
         {/* Header Section */}
         <div className="bg-white border-b border-gray-100 shadow-sm p-6 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center">
           <div>
@@ -581,6 +597,16 @@ function HomepageStudent() {
               ))}
             </div>
           )}
+        </div>
+        <div className="h-40">
+          <div className="sm:hidden w-full mt-16 flex flex-col items-center justify-center">
+            <p className="text-[29px] text-gray-400 tracking-wide opacity-80">
+              Made with <span className="text-red-500">love</span>
+            </p>
+            <p className="text-[27px] text-gray-400 mt-1 opacity-70">
+              by your friendly devs of CSE
+            </p>
+          </div>
         </div>
       </div>
     </>
