@@ -1,3 +1,6 @@
+// Revamped LandingPage.jsx
+// Clean, fast animations, blue-indigo gradient theme, non-distracting, professional
+
 "use client";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,326 +16,173 @@ import { useEffect, useState } from "react";
 
 export default function LandingPage() {
   const [status, setStatus] = useState("loading");
-  // "loading" | "online" | "offline"
 
+  // keep checkStatus as is
   useEffect(() => {
     const checkStatus = async () => {
       try {
         const res = await fetch("/api/ping");
         const text = await res.text();
-        if (text === "pong") {
-          setStatus("online");
-        } else {
-          setStatus("offline");
-        }
-      } catch (err) {
+        if (text === "pong") setStatus("online");
+        else setStatus("offline");
+      } catch (e) {
         setStatus("offline");
       }
     };
-
     checkStatus();
   }, []);
-
-  const [scrollY, setScrollY] = useState(0);
-  const [isVisible, setIsVisible] = useState({});
 
   useEffect(() => {
     localStorage.clear();
   }, []);
 
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          setIsVisible((prev) => ({
-            ...prev,
-            [entry.target.id]: entry.isIntersecting,
-          }));
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    document.querySelectorAll("[id]").forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 text-slate-800 relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Floating orbs with parallax */}
-        <div
-          className="absolute top-1/4 -right-32 w-64 h-64 bg-gradient-to-br from-blue-100/40 to-indigo-100/40 rounded-full blur-3xl animate-pulse"
-          style={{ transform: `translateY(${scrollY * 0.3}px)` }}
-        ></div>
-        <div
-          className="absolute bottom-1/4 -left-32 w-64 h-64 bg-gradient-to-br from-slate-100/40 to-blue-100/40 rounded-full blur-3xl animate-pulse"
-          style={{ transform: `translateY(${scrollY * -0.2}px)` }}
-        ></div>
-
-        {/* Floating particles */}
-        {[...Array(6)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-2 h-2 bg-blue-200/60 rounded-full animate-bounce"
-            style={{
-              left: `${20 + i * 15}%`,
-              top: `${30 + i * 10}%`,
-              animationDelay: `${i * 0.05}s`,
-              animationDuration: `${1 + i * 0.2}s`,
-              transform: `translateY(${scrollY * (0.1 + i * 0.05)}px)`,
-            }}
-          ></div>
-        ))}
-
-        {/* Grid pattern */}
-        <div
-          className="absolute inset-0 opacity-[0.02]"
-          style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, rgb(51 65 85) 1px, transparent 0)`,
-            backgroundSize: "50px 50px",
-            transform: `translateY(${scrollY * 0.1}px)`,
-          }}
-        ></div>
-      </div>
-
-      {/* Header */}
-      <header
-        id="header"
-        className={`relative z-10 px-8 py-8 flex justify-between items-center transition-all duration-1000 ${
-          isVisible.header
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 -translate-y-10"
-        }`}
-        style={{ transform: `translateY(${scrollY * 0.1}px)` }}
-      >
-        <div className="group">
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight group-hover:scale-105 transition-transform duration-300">
-            AttendEz
-            <Sparkles className="inline-block ml-2 w-6 h-6 text-blue-500 animate-pulse" />
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-50 via-indigo-50/40 to-white text-slate-800">
+      {/* HEADER */}
+      <header className="px-8 py-6 flex justify-between items-center max-w-7xl mx-auto w-full animate-[fadeIn_.4s_ease-out]">
+        <div>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent bg-clip-text flex items-center gap-2">
+            AttendEz <Sparkles className="w-5 h-5 text-blue-500" />
           </h1>
-          <p className="text-sm mt-1 text-slate-600 font-medium">
+          <p className="text-sm text-slate-600 mt-1">
             Fast, Transparent and Secure.
           </p>
         </div>
-        <div className="hidden md:flex items-center gap-2 text-slate-500 text-sm relative">
+
+        <div className="hidden md:flex items-center gap-2 text-sm text-slate-500">
           {status === "loading" && (
             <>
-              <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
-              <span className="ml-2">Checking...</span>
+              <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
+              <span>Checking...</span>
             </>
           )}
           {status === "online" && (
             <>
-              <div className="w-2 h-2 bg-emerald-400 rounded-full animate-ping"></div>
-              <div className="w-2 h-2 bg-emerald-400 rounded-full absolute animate-pulse"></div>
-              <span className="ml-2">System Online</span>
+              <div className="relative w-2 h-2">
+                {" "}
+                <div className="absolute inset-0 bg-emerald-400 rounded-full animate-ping" />{" "}
+                <div className="absolute inset-0 bg-emerald-400 rounded-full" />{" "}
+              </div>
+              <span>System Online</span>
             </>
           )}
           {status === "offline" && (
             <>
-              <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
-              <span className="ml-2">System Offline</span>
+              <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse" />
+              <span>System Offline</span>
             </>
           )}
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="relative z-10 flex-1 flex flex-col lg:flex-row items-center justify-between px-8 py-16 gap-16 max-w-7xl mx-auto w-full">
-        {/* Left Section */}
+      {/* HERO SECTION */}
+      <main className="flex-1 w-full max-w-7xl mx-auto px-8 py-16 flex flex-col lg:flex-row items-center gap-16">
+        {/* LEFT */}
         <div
-          id="hero-content"
-          className={`flex-1 max-w-2xl space-y-10 transition-all duration-1000 delay-300 ${
-            isVisible["hero-content"]
-              ? "opacity-100 translate-x-0"
-              : "opacity-0 -translate-x-20"
-          }`}
+          className="flex-1 space-y-8 animate-[fadeInUp_.5s_ease-out]
+        "
         >
-          <div className="space-y-6">
-            <h2 className="text-4xl lg:text-6xl font-bold leading-tight text-slate-900 tracking-tight">
-              <span className="inline-block hover:scale-105 transition-transform duration-300">
-                Welcome
-              </span>{" "}
-              <span className="inline-block hover:scale-105 transition-transform duration-300 delay-100">
-                to
-              </span>
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 animate-gradient-x hover:scale-105 transition-transform duration-300 delay-200">
-                AttendEz
-              </span>
-            </h2>
-            <p
-              className="text-xl text-slate-600 leading-relaxed max-w-lg opacity-0 animate-fade-in-up"
-              style={{ animationDelay: "0.8s", animationFillMode: "forwards" }}
-            >
-              An attendance management system designed by students, for
-              students. Streamline your educational workflows with our intuitive
-              platform.
-            </p>
-          </div>
+          <h2 className="text-4xl lg:text-6xl font-bold leading-tight text-slate-900">
+            Built for{" "}
+            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent bg-clip-text inline-block leading-[1.25]">
+              Students
+            </span>
+            , Designed for{" "}
+            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent bg-clip-text inline-block leading-[1.25]">
+              Efficiency
+            </span>
+            .
+          </h2>
+
+          <p className="text-lg text-slate-600 max-w-lg">
+            A fast and intuitive attendance platform crafted to simplify your
+            academic workflow.
+          </p>
 
           {/* Features */}
-          <div
-            id="features"
-            className={`space-y-4 transition-all duration-1000 delay-500 ${
-              isVisible.features
-                ? "opacity-100 translate-y-0"
-                : "opacity-30 translate-y-10"
-            }`}
-          >
+          <div className="space-y-3">
             {[
               "Real-time attendance tracking",
               "On duty approval system",
-              "Collaborative platform for all users",
-              "Faster attendance using time-synced QR codes or one-time passcodes",
-            ].map((feature, index) => (
+              "Collaborative platform for faculty & students",
+              "Fast QR / passcode based attendance",
+            ].map((f, i) => (
               <div
-                key={index}
-                className={`flex items-center gap-4 text-slate-700 opacity-0 animate-fade-in-up hover:translate-x-2 transition-all duration-300`}
-                style={{
-                  animationDelay: `${1 + index * 0.1}s`,
-                  animationFillMode: "forwards",
-                }}
+                key={i}
+                className="flex items-center gap-3 text-slate-700 animate-[fadeIn_.4s_ease-out]"
+                style={{ animationDelay: `${i * 80}ms` }}
               >
-                <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-full flex items-center justify-center shadow-lg hover:shadow-emerald-200/50 hover:scale-110 transition-all duration-300">
-                  <CheckCircle size={14} className="text-emerald-600" />
+                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center">
+                  <CheckCircle size={14} className="text-blue-600" />
                 </div>
-                <span className="text-lg">{feature}</span>
+                <span>{f}</span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Right Section */}
-        <div
-          id="role-selector"
-          className={`flex-shrink-0 transition-all duration-1000 delay-700 ${
-            isVisible["role-selector"]
-              ? "opacity-100 translate-x-0 scale-100"
-              : "opacity-0 translate-x-20 scale-95"
-          }`}
-        >
-          <div className="bg-white/60 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-2xl shadow-slate-200/50 hover:shadow-3xl hover:shadow-slate-200/60 transition-all duration-500 hover:scale-[1.02]">
-            <h3 className="text-2xl font-semibold mb-8 text-center text-slate-900 relative">
+        {/* RIGHT */}
+        <div className="w-full max-w-sm animate-[fadeInUp_.5s_ease-out]">
+          <div className="bg-white shadow-xl rounded-3xl p-8 border border-slate-200/40">
+            <h3 className="text-xl font-semibold text-center mb-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent bg-clip-text">
               Choose Your Role
-              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-12 h-0.5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full"></div>
             </h3>
 
-            <div className="space-y-4 w-80">
+            <div className="space-y-4">
               {[
-                {
-                  role: "Super Admin",
-                  icon: ShieldCheck,
-                  href: "/superadmin",
-                  gradient: "from-red-100 to-red-200",
-                  iconColor: "text-red-600",
-                  delay: "0.2s",
-                },
-                {
-                  role: "Faculty",
-                  icon: Users,
-                  href: "/faculty",
-                  gradient: "from-blue-100 to-blue-200",
-                  iconColor: "text-blue-600",
-                  delay: "0.4s",
-                },
-                {
-                  role: "Student",
-                  icon: GraduationCap,
-                  href: "/student",
-                  gradient: "from-emerald-100 to-emerald-200",
-                  iconColor: "text-emerald-600",
-                  delay: "0.6s",
-                },
-              ].map((item, index) => (
+                { role: "Super Admin", icon: ShieldCheck, href: "/superadmin" },
+                { role: "Faculty", icon: Users, href: "/faculty" },
+                { role: "Student", icon: GraduationCap, href: "/student" },
+              ].map((item, i) => (
                 <Button
-                  key={index}
-                  className={`w-full text-lg flex gap-4 items-center justify-between bg-white/80 hover:bg-white text-slate-800 border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-200/60 rounded-2xl py-7 transition-all duration-500 hover:scale-[1.03] backdrop-blur-sm group opacity-0 animate-fade-in-up hover:-translate-y-1`}
-                  style={{
-                    animationDelay: item.delay,
-                    animationFillMode: "forwards",
-                  }}
+                  key={i}
                   onClick={() => (window.location.href = item.href)}
+                  className="w-full flex justify-between items-center py-6 px-5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-90 text-white shadow-lg transition"
                 >
-                  <div className="flex items-center gap-4">
-                    <div
-                      className={`w-10 h-10 bg-gradient-to-br ${item.gradient} rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg group-hover:scale-110 transition-all duration-300`}
-                    >
-                      <item.icon size={20} className={item.iconColor} />
-                    </div>
+                  <div className="flex items-center gap-3">
+                    <item.icon size={20} />
                     {item.role}
                   </div>
-                  <ArrowRight
-                    size={18}
-                    className="text-slate-400 group-hover:text-slate-600 group-hover:translate-x-2 transition-all duration-300"
-                  />
+                  <ArrowRight size={18} className="opacity-80" />
                 </Button>
               ))}
             </div>
           </div>
         </div>
       </main>
-      <footer
-        id="footer"
-        className={`relative z-10 bg-white/40 backdrop-blur-sm border-t border-white/20 text-slate-600 px-8 py-6 flex flex-col md:flex-row justify-between items-center transition-all duration-1000 delay-1000 ${
-          isVisible.footer
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 translate-y-10"
-        }`}
-      >
+
+      {/* FOOTER */}
+      <footer className="px-8 py-6 bg-white border-t border-slate-200 text-slate-600 flex flex-col md:flex-row justify-between items-center animate-[fadeIn_.4s_ease-out]">
         <p className="text-sm">
-          ©️ {new Date().getFullYear()} AttendEz. All rights reserved.
+          © {new Date().getFullYear()} AttendEz. All rights reserved.
         </p>
+
         <a
           href="/contact"
-          className="hover:text-slate-800 mt-3 md:mt-0 transition-all duration-300 flex items-center gap-2 hover:underline text-sm group hover:scale-105"
+          className="flex items-center gap-2 text-sm hover:text-slate-800 transition mt-3 md:mt-0"
         >
-          Contact Us
-          <Mail
-            size={14}
-            className="group-hover:translate-x-1 group-hover:scale-110 transition-all duration-300"
-          />
+          Contact Us <Mail size={14} />
         </a>
       </footer>
 
       <style jsx>{`
-        @keyframes fade-in-up {
+        @keyframes fadeInUp {
           from {
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(20px);
           }
           to {
             opacity: 1;
             transform: translateY(0);
           }
         }
-
-        @keyframes gradient-x {
-          0%,
-          100% {
-            background-size: 200% 200%;
-            background-position: left center;
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
           }
-          50% {
-            background-size: 200% 200%;
-            background-position: right center;
+          to {
+            opacity: 1;
           }
-        }
-
-        .animate-fade-in-up {
-          animation: fade-in-up 0.8s ease-out;
-        }
-
-        .animate-gradient-x {
-          background-size: 200% 200%;
-          animation: gradient-x 3s ease infinite;
         }
       `}</style>
     </div>
