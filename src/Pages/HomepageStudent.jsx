@@ -30,7 +30,7 @@ import {
  * - duration: number (ms) optional, default 3500
  * - onClose: () => void
  *
- * Uses lucide-react CheckCircle / AlertCircle icons (already imported).
+ * Uses lucide-react CheckCircle / AlertCirc le icons (already imported).
  */
 function BigPopup({
   open,
@@ -43,7 +43,7 @@ function BigPopup({
     if (!open) return;
     const t = setTimeout(() => {
       onClose();
-    }, duration);
+    }, duration); 
 
     return () => clearTimeout(t);
   }, [open, duration, onClose]);
