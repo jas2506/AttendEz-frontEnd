@@ -8,6 +8,8 @@ import {
   AlertCircle,
   QrCode,
   Camera,
+  User,
+  Calendar,
 } from "lucide-react";
 import StudentHomepageSubject from "../projectComponents/StudentHomepageSubject";
 import {
