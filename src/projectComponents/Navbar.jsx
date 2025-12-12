@@ -185,20 +185,25 @@ function Navbar({ setIsLoggedIn }) {
 
 /* ORIGINAL NavItem (used  everywhere including drawer) */
 function NavItem({ icon, label, path, isActive }) {
+  const activeTextColor = "text-blue-700";
+  const inactiveTextColor = "text-white";
+  const activeIconColor = "text-blue-700";
+  const inactiveIconColor = "text-white";
+
   return (
     <Link
       to={path}
       className={`cursor-pointer flex items-center gap-2 text-sm px-3 py-2 rounded-md transition-all duration-200
         ${
           isActive
-            ? "bg-white/90 shadow-md font-semibold text-blue-700"
-            : "hover:bg-white/10 text-white bg-transparent"
+            ? "bg-white/90 shadow-md font-semibold"
+            : "hover:bg-white/10 bg-transparent"
         }`}
     >
-      <div className={`${isActive ? "text-blue-700" : "text-white"}`}>
+      <div className={`${isActive ? activeIconColor : inactiveIconColor}`}>
         {icon}
       </div>
-      <span className={`${isActive ? "text-blue-700" : "text-white"}`}>
+      <span className={`${isActive ? activeTextColor : inactiveTextColor}`}>
         {label}
       </span>
     </Link>
@@ -211,7 +216,9 @@ function BottomNavItem({ icon, label, path, isActive }) {
     <Link
       to={path}
       className={`flex flex-col items-center text-xs ${
-        isActive ? "text-blue-600 font-semibold" : "text-gray-600"
+        isActive 
+          ? "text-blue-600 font-semibold"
+          : "bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent"
       }`}
     >
       {icon}
@@ -219,5 +226,6 @@ function BottomNavItem({ icon, label, path, isActive }) {
     </Link>
   );
 }
+
 
 export default Navbar;

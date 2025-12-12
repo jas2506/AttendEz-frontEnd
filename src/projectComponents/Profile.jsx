@@ -7,8 +7,11 @@ import {
 import DetailedProfile from "./DetailedProfile";
 
 function Profile({ det,setIsLoggedIn }) {
+
+  console.log(det)
   return (
     <>
+      
       <Popover>
         <PopoverTrigger>
           <button

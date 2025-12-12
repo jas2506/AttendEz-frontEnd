@@ -18,6 +18,120 @@ import {
   sendQR,
 } from "../Api";
 
+/**
+ * BigPopup - inlined component
+ *
+ * Props:
+ * - open: boolean
+ * - message: string
+ * - type: "success" | "error" | "info"
+ * - duration: number (ms) optional, default 3500
+ * - onClose: () => void
+ *
+ * Uses lucide-react CheckCircle / AlertCircle icons (already imported).
+ */
+function BigPopup({
+  open,
+  message = "",
+  type = "success",
+  duration = 3500,
+  onClose = () => {},
+}) {
+  useEffect(() => {
+    if (!open) return;
+    const t = setTimeout(() => {
+      onClose();
+    }, duration);
+
+    return () => clearTimeout(t);
+  }, [open, duration, onClose]);
+
+  if (!open) return null;
+
+  const Icon = type === "success" ? CheckCircle : AlertCircle;
+
+  return (
+    <>
+      {/* overlay */}
+      <div
+        aria-hidden="true"
+        className="fixed inset-0 bg-black/45 backdrop-blur-sm z-[60]"
+        onClick={onClose}
+      />
+
+      {/* modal */}
+      <div
+        role="dialog"
+        aria-modal="true"
+        className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-4"
+      >
+        <div
+          className={`relative w-full max-w-3xl mx-auto rounded-2xl shadow-2xl transform transition-all
+            sm:rounded-3xl
+            bg-gradient-to-b from-white to-slate-50
+            ring-1 ring-black/5
+            p-5 sm:p-8
+            animate-popup-in
+          `}
+        >
+          {/* top-right close */}
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 p-2 rounded-md hover:bg-black/5"
+            aria-label="Close popup"
+          >
+            <X className="w-5 h-5 text-slate-700" />
+          </button>
+
+          {/* content */}
+          <div className="flex flex-col items-center gap-4 text-center">
+            <div
+              className={`p-5 rounded-full border-2 flex items-center justify-center ${
+                type === "success"
+                  ? "border-green-200 bg-green-50"
+                  : "border-red-200 bg-red-50"
+              }`}
+            >
+              <Icon className="w-14 h-14" />
+            </div>
+
+            <h2 className="text-lg sm:text-2xl font-semibold text-slate-800">
+              {type === "success"
+                ? "Attendance marked"
+                : "Something went wrong"}
+            </h2>
+
+            <p className="text-sm sm:text-base text-slate-600 max-w-lg">
+              {message}
+            </p>
+
+            <div className="flex gap-3 mt-2">
+              <button
+                onClick={onClose}
+                className="px-5 py-2 rounded-full bg-slate-800 text-white text-sm font-medium shadow-sm hover:opacity-95"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* local styles / animation */}
+      <style>{`
+        @keyframes popupIn {
+          0% { opacity: 0; transform: translateY(18px) scale(0.98); }
+          60% { opacity: 1; transform: translateY(-6px) scale(1.02); }
+          100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-popup-in {
+          animation: popupIn 420ms cubic-bezier(.2,.9,.3,1);
+        }
+      `}</style>
+    </>
+  );
+}
+
 //set day properly for testing
 function getTodayAttendanceStats(attendance, timetable) {
   const today = new Date();
@@ -94,7 +208,13 @@ function HomepageStudent() {
 
   const [classCode, setClassCode] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [popup, setPopup] = useState(null);
+
+  // replaced popup state with bigPopup state
+  const [bigPopupOpen, setBigPopupOpen] = useState(false);
+  const [bigPopupData, setBigPopupData] = useState({
+    message: "",
+    type: "success",
+  });
 
   const [zoomSupported, setZoomSupported] = useState(false);
   const [zoomRange, setZoomRange] = useState({ min: 1, max: 1 });
@@ -107,16 +227,7 @@ function HomepageStudent() {
   const [showFooter, setShowFooter] = useState(false);
   //for the footer
 
-  useEffect(() => {
-    if (popup) {
-      const timer = setTimeout(() => {
-        setPopup(null);
-      }, 2500);
-
-      return () => clearTimeout(timer);
-    }
-  }, [popup]);
-
+  // Removed small-toast auto hide effect; BigPopup handles its own auto-close.
   useEffect(() => {
     const today = new Date();
     const options = {
@@ -176,6 +287,7 @@ function HomepageStudent() {
     return () => {
       cleanupScanner();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -222,10 +334,13 @@ function HomepageStudent() {
 
           try {
             const res = await sendQR(decodedText);
-            setPopup({
+
+            // Open big popup instead of small toast
+            setBigPopupData({
               message: res.message || "Successfully marked attendance",
               type: res.status === "S" ? "success" : "error",
             });
+            setBigPopupOpen(true);
           } catch (error) {
             console.error("Error sending QR:", error);
             let message = "Failed to submit QR. Please try again.";
@@ -233,10 +348,11 @@ function HomepageStudent() {
               message = error.response.data.message;
             }
 
-            setPopup({
+            setBigPopupData({
               message,
               type: "error",
             });
+            setBigPopupOpen(true);
           } finally {
             setShowScanner(false);
           }
@@ -295,10 +411,11 @@ function HomepageStudent() {
       setShowScanner(true);
     } catch (error) {
       console.error("Camera permission error:", error);
-      setPopup({
+      setBigPopupData({
         message: "Camera permission denied. Please enable camera access.",
         type: "error",
       });
+      setBigPopupOpen(true);
     }
   };
 
@@ -318,10 +435,11 @@ function HomepageStudent() {
     e.preventDefault();
 
     if (!classCode.trim()) {
-      setPopup({
+      setBigPopupData({
         message: "Please enter a class code",
         type: "error",
       });
+      setBigPopupOpen(true);
       return;
     }
 
@@ -330,10 +448,11 @@ function HomepageStudent() {
     try {
       const response = await sendPasscode(classCode);
 
-      setPopup({
+      setBigPopupData({
         message: response.message,
         type: response.status === "S" ? "success" : "error",
       });
+      setBigPopupOpen(true);
 
       if (response.status === "S") {
         setClassCode("");
@@ -349,17 +468,18 @@ function HomepageStudent() {
         }
       }
 
-      setPopup({
+      setBigPopupData({
         message,
         type: "error",
       });
+      setBigPopupOpen(true);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const closePopup = () => {
-    setPopup(null);
+    setBigPopupOpen(false);
   };
 
   return (
@@ -467,48 +587,14 @@ function HomepageStudent() {
             </button>
           </div>
 
-          {/* Popup */}
-          {popup && (
-            <div className="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 toast-slide-in">
-              <div
-                className={`border-l-4 p-4 rounded-md shadow-lg bg-white w-80 transition-all duration-300 ${
-                  popup.type === "success"
-                    ? "border-green-500"
-                    : "border-red-500"
-                }`}
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex gap-3">
-                    {popup.type === "success" ? (
-                      <CheckCircle className="text-green-600 w-5 h-5 mt-0.5 flex-shrink-0" />
-                    ) : (
-                      <AlertCircle className="text-red-600 w-5 h-5 mt-0.5 flex-shrink-0" />
-                    )}
-                    <div className="flex-1">
-                      <h3
-                        className={`font-semibold ${
-                          popup.type === "success"
-                            ? "text-green-700"
-                            : "text-red-700"
-                        }`}
-                      >
-                        {popup.type === "success" ? "Success" : "Error"}
-                      </h3>
-                      <p className="text-sm text-gray-700 mt-1">
-                        {popup.message}
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={closePopup}
-                    className="text-gray-400 hover:text-gray-600 ml-2 flex-shrink-0"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+          {/* Big Popup */}
+          <BigPopup
+            open={bigPopupOpen}
+            message={bigPopupData.message}
+            type={bigPopupData.type}
+            duration={3500}
+            onClose={closePopup}
+          />
 
           {/* QR Scanner Modal - Enhanced */}
           {showScanner && (
@@ -617,10 +703,10 @@ function HomepageStudent() {
           {/* Footer */}
           <div className="h-40 flex items-center justify-center">
             <div className="text-center space-y-1">
-              <p className="text-3xl md:text-4xl font-semibold bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 bg-clip-text text-transparent opacity-90">
+              <p className="text-3xl md:text-4xl font-semibold bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 bg-clip-text text-transparent opacity-90">
                 Made with love
               </p>
-              <p className="text-2xl md:text-3xl bg-gradient-to-r from-blue-300 via-blue-400 to-blue-500 bg-clip-text text-transparent opacity-80">
+              <p className="text-2xl md:text-3xl bg-gradient-to-r from-blue-600 via-blue-400 to-indigo-600 bg-clip-text text-transparent opacity-80">
                 by your friendly devs of CSE
               </p>
             </div>

@@ -47,7 +47,6 @@ export default function DetailedProfile({ details, setIsLoggedIn }) {
         <div className="w-full space-y-2 text-sm">
           <InfoRow label="Degree" value={details.degree} />
           <InfoRow label="Department" value={details.department} />
-          <InfoRow label="Section" value="B" />
           <InfoRow
             label="Digital ID"
             value={details.digitalid}
