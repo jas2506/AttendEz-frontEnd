@@ -103,7 +103,6 @@ export default function LandingPage() {
           <div className="space-y-3">
             {[
               "Real-time attendance tracking",
-              "On duty approval system",
               "Collaborative platform for faculty & students",
               "Fast QR / passcode based attendance",
             ].map((f, i) => (
